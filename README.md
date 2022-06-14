@@ -18,3 +18,51 @@
 - **Для владельца приложения:**  
 Дополнительный заработок за счёт использования небольших секций уже приобретенных им помещений.
 Тестирование нового канала продаж: сейчас от сайта ожидается только MVP, чтобы проверить спрос и найти аудиторию.
+
+---
+
+# DEV instructions
+
+1. Скачайте код
+```sh
+git clone https://github.com/gennadis/self-storage.git
+```
+
+2. Перейдите в каталог проекта
+```sh
+cd self-storage
+```
+
+3. В каталоге проекта создайте виртуальное окружение
+```sh
+python3 -m venv venv
+```
+
+4. Активируйте его
+```sh
+source venv/bin/activate
+```
+
+5. Установите зависимости
+```sh
+pip install -r requirements.txt
+```
+
+6. Накатите миграции
+```sh
+python manage.py migrate
+```
+
+7. Переименуйте файл `.env.example` на `.env` и заполните его
+```sh
+mv .env.example .env
+```
+- `DEBUG` — дебаг-режим, `True` или `False`
+- `SECRET_KEY` — секретный ключ проекта
+- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
+
+8. Запустите сервер и откройте сайт в браузере по адресу [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+
+```sh
+python manage.py runserver 127.0.0.1:8000
+```
