@@ -18,4 +18,4 @@ def rent(request):
     #     return render(request, "my-rent.html")
     # else:
     #     return render(request, "my-rent-empty.html")
-    return render(request, "my-rent-empty.html")
+    return render(request, "my-rent.html")
