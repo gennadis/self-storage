@@ -1,0 +1,7 @@
+<!--users/templates/users/dashboard.html-->
+
+{% extends 'users/base.html' %}
+
+{% block content %}
+Hello, {{ user.username|default:'Guest' }}!
+{% endblock %}
