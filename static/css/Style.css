@@ -116,13 +116,13 @@ body {
 }
 
 .SelfStorage__img {
-    background-image: url(img/image.png);
+    background-image: url(../img/image.png);
     background-repeat: no-repeat;
     background-position: center;
 }
 
 .SelfStorage__img2 {
-    background-image: url(img/image2.png);
+    background-image: url(../img/image2.png);
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
