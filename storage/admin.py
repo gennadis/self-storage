@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from storage.models import WarehouseImage
+from storage.models import Box, Warehouse, WarehouseImage
 
 
 class ImageInline(admin.TabularInline):
@@ -20,6 +20,11 @@ class ImageInline(admin.TabularInline):
         return format_html("<img src='{0}' height={1} />", obj.image_file.url, preview_image_height)
 
 
-@admin.register
+@admin.register(Warehouse)
 class WarehouseAdmin(admin.ModelAdmin):
     search_fields = ["address"]
+
+    inlines = [ImageInline,]
+
+
+admin.site.register(Box)
