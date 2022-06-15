@@ -1,6 +1,7 @@
 from collections import defaultdict
 from django.db.models import Prefetch, Count, Exists, OuterRef
-from django.shortcuts import render
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
 from storage.models import AdvertisingCompany, Box, Lease
@@ -59,7 +60,7 @@ def boxes(request):
             continue
 
         warehouses_serialized.append({
-            "id": f"wh{warehouse.id}",
+            "id": warehouse.id,
             "boxes_total": warehouse.boxes_total,
             "boxes_avaliable": len(warehouses_with_boxes[warehouse.id]),
             "starting_rate": warehouses_with_boxes[warehouse.id][0]["rate"],
@@ -76,6 +77,27 @@ def boxes(request):
     return render(request, "boxes.html", context={
         "warehouses": warehouses_serialized
     })
+
+
+def avaliable_boxes(request, warehouse_id):
+    warehouse = get_object_or_404(Warehouse, id=warehouse_id)
+
+    avaliable_boxes = warehouse.boxes.filter(
+        ~Exists(Lease.objects.filter(box=OuterRef("pk")))
+    )
+
+    boxes_serialized = [
+        {
+            "code": box.code,
+            "floor": box.floor,
+            "dimensions": box.get_dimensions_display(),
+            "area": box.get_area(),
+            "rate": box.monthly_rate
+        }
+        for box in avaliable_boxes
+    ]
+        
+    return JsonResponse({"boxes":boxes_serialized})
 
 
 def rent(request):
