@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from storage.models import WarehouseImage, AdvertisingCompany, Warehouse, Link
+from storage.models import Box, WarehouseImage, AdvertisingCompany, Warehouse, Link
 
 
 class ImageInline(admin.TabularInline):
@@ -23,6 +23,12 @@ class ImageInline(admin.TabularInline):
 @admin.register(Warehouse)
 class WarehouseAdmin(admin.ModelAdmin):
     search_fields = ["address"]
+    inlines = [ImageInline,]
+
+
+@admin.register(Box)
+class BoxAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(AdvertisingCompany)

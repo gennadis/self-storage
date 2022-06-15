@@ -183,3 +183,15 @@ body {
 .z-index-1 {
     z-index: -1;
 }
+
+.SelfStorage__thumbnail-image {
+    width: 270px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.SelfStorage__carousel-image {
+    width: 500px;
+    height: 354px;
+    object-fit: cover;
+}

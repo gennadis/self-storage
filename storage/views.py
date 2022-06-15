@@ -3,6 +3,8 @@ from django.utils import timezone
 
 from storage.models import AdvertisingCompany
 
+from storage.models import Warehouse
+
 
 def index(request):
     ad_parameter = request.GET.get('ad_company')
@@ -30,7 +32,24 @@ def faq(request):
 
 
 def boxes(request):
-    return render(request, "boxes.html")
+    warehouses = Warehouse.objects.prefetch_related("images").all()
+    warehouses_serialized = []
+    for warehouse in warehouses:
+        warehouses_serialized.append({
+            "id": f"wh{warehouse.id}",
+            "city": warehouse.city,
+            "address": warehouse.address,
+            "description": warehouse.description,
+            "thumbnail": warehouse.get_thumbnail_display(),
+            "contact_phone": warehouse.contact_phone,
+            "temperature": warehouse.temperature,
+            "ceiling_height": warehouse.ceiling_height/100,
+            "images": [image.image_file.url for image in warehouse.images.all()]
+        })
+
+    return render(request, "boxes.html", context={
+        "warehouses": warehouses_serialized
+    })
 
 
 def rent(request):
