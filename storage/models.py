@@ -180,21 +180,11 @@ class AdvertisingCompany(models.Model):
     end_date = models.DateTimeField(
         verbose_name="Дата окончания",
     )
-    #readonly_fields = ('amount',)
 
     clicks = models.IntegerField(
         verbose_name='Число кликов',
         default=0
     )
-
-    # @admin.display(description='Сумма')
-    # def amount(self):
-    #     orders = self.orders.all()
-    #     company_amount = 0
-    #     for order in orders:
-    #         company_amount += order.price
-    #
-    #     return company_amount
 
     class Meta:
         verbose_name = "Рекламная компания"
