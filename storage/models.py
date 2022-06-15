@@ -56,6 +56,31 @@ class Warehouse(models.Model):
         return f"{self.city}, {self.address}"
 
 
+class WarehouseImage(models.Model):
+    image_file = models.ImageField(
+        "Изображение"
+    )
+
+    index = models.PositiveIntegerField(
+        verbose_name="Приоритет при отображении",
+        default=0,
+        db_index=True
+    )
+
+    warehouse = models.ForeignKey(
+        Warehouse,
+        on_delete=models.CASCADE,
+        verbose_name="Склад",
+        related_name="images"
+    )
+
+    class Meta:
+        ordering = ["index"]
+
+    def __str__(self) -> str:
+        return f"{self.index}-{self.warehouse}"
+
+
 class Box(models.Model):
     code = models.CharField(
         "Код",
