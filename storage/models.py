@@ -1,7 +1,9 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
+from users.models import CustomUser
 
 
 class Warehouse(models.Model):
@@ -135,3 +137,62 @@ class Box(models.Model):
 
     def __str__(self):
         return self.code
+
+
+class Lease(models.Model):
+    class Status(models.IntegerChoices):
+        NOT_PAID = 0, _("Не оплачено")
+        PAID = 1, _("Оплачено")
+        OVERDUE = 2, _("Просрочено")
+        COMPLETED = 3, _("Завершено")
+        CANCELED = 4, _("Отменено")
+
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        verbose_name="Арендатор",
+        related_name="leases"
+    )
+
+    box = models.OneToOneField(
+        Box,
+        on_delete=models.CASCADE,
+        verbose_name="Бокс",
+        related_name="lease"
+    )
+
+    status = models.SmallIntegerField(
+        "Статус",
+        choices=Status.choices,
+        default=Status.NOT_PAID,
+        db_index=True
+    )
+
+    created_on = models.DateTimeField(
+        "Дата создания",
+        default=timezone.now
+    )
+
+    paid_on = models.DateTimeField(
+        "Дата оплаты",
+        null=True,
+        blank=True,
+        db_index=True
+    )
+
+    expires_on = models.DateTimeField(
+        "Дата окончания аренды"
+    )
+
+    price = models.DecimalField(
+        "Стоимость аренды",
+        max_digits=10,
+        decimal_places=2
+    )
+
+    class Meta:
+        verbose_name = "бокс"
+        verbose_name_plural = "боксы"
+
+    def __str__(self):
+        return f"{self.user.email} on box {self.box.code}"
