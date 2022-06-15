@@ -52,6 +52,10 @@ class Warehouse(models.Model):
         db_index=True
     )
 
+    class Meta:
+        verbose_name = "склад"
+        verbose_name_plural = "склады"
+
     def __str__(self):
         return f"{self.city}, {self.address}"
 
@@ -124,6 +128,10 @@ class Box(models.Model):
         db_index=True,
         validators=[MinValueValidator(0)]
     )
+
+    class Meta:
+        verbose_name = "бокс"
+        verbose_name_plural = "боксы"
 
     def __str__(self):
         return self.code
