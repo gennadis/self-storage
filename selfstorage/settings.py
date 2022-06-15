@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     # local
     "storage.apps.StorageConfig",
     "users.apps.UsersConfig",
+    "payments.apps.PaymentsConfig"
     # 3rd party
     "phonenumber_field",
     "allauth",
@@ -141,7 +142,7 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_PORT = os.getenv("EMAIL_PORT")
 
-BASE_URL = 'http://127.0.0.1:8000'
+BASE_URL = "http://127.0.0.1:8000"
 
 # Django-alauth settings
 
