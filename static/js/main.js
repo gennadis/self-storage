@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener("DOMContentLoaded", ()=>{   
     boxesTable = document.querySelector("#pills-all")
     boxesTable.replaceChildren()
 
@@ -7,6 +7,45 @@ document.addEventListener("DOMContentLoaded", ()=>{
         warehouseButton.addEventListener("click", fetch_data)
     }
 
+    buttonAllAreas = document.querySelector("#pills-all-tab")
+    buttonAllAreas.addEventListener("click", (event)=>{
+        pills = document.querySelectorAll(".js-box-row")
+        for (pill of pills){
+            pill.classList.remove("d-none")
+        }
+    })
+
+    buttonTo3 = document.querySelector("#pills-to3-tab")
+    buttonTo3.addEventListener("click", (event)=>{
+        pills = document.querySelectorAll(".js-box-row")
+        for (pill of pills){
+            if(pill.classList.contains("js-area-to-3"))
+                pill.classList.remove("d-none")
+            else
+                pill.classList.add("d-none")
+        }
+    })
+    buttonTo10 = document.querySelector("#pills-to10-tab")
+    buttonTo10.addEventListener("click", (event)=>{
+        pills = document.querySelectorAll(".js-box-row")
+        for (pill of pills){
+            if(pill.classList.contains("js-area-to-10"))
+                pill.classList.remove("d-none")
+            else
+                pill.classList.add("d-none")
+        }
+    })
+    buttonFrom10 = document.querySelector("#pills-from10-tab")
+    buttonFrom10.addEventListener("click", (event)=>{
+        pills = document.querySelectorAll(".js-box-row")
+        for (pill of pills){
+            if(pill.classList.contains("js-area-from-10"))
+                pill.classList.remove("d-none")
+            else
+                pill.classList.add("d-none")
+        }
+    })
+
     function fetch_data(event){
         id = event.currentTarget.dataset.warehouse
 
@@ -14,7 +53,11 @@ document.addEventListener("DOMContentLoaded", ()=>{
             console.log("Repeated fetch attempted. Skipping.")
             return
         }
-            
+        
+        buttonTo3.classList.remove("active")
+        buttonTo10.classList.remove("active")
+        buttonFrom10.classList.remove("active")
+        buttonAllAreas.classList.add("active")
 
         fetch("warehouse/"+id).then((response) => response.json()).then((data)=>{
             console.log("New data arrived... rebuilding DOM")
@@ -22,7 +65,14 @@ document.addEventListener("DOMContentLoaded", ()=>{
             boxPills = []
             for (box of data.boxes){
                 outerContainer = document.createElement("a")
-                outerContainer.classList.add("row", "text-decoration-none", "py-3", "px-4", "mt-5", "SelfStorage__boxlink")
+                outerContainer.classList.add("js-box-row", "row", "text-decoration-none", "py-3", "px-4", "mt-5", "SelfStorage__boxlink")
+                if(box.area<3)
+                    outerContainer.classList.add("js-area-to-3")
+                if(box.area<10)
+                    outerContainer.classList.add("js-area-to-10")
+                else
+                    outerContainer.classList.add("js-area-from-10")
+
                 floorCodeContainer = document.createElement("div")
                 floorCodeContainer.classList.add("col-12", "col-md-4", "col-lg-3", "d-flex", "justify-content-center", "align-items-center")
                 floorSpan = document.createElement("span")
