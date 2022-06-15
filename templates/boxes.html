@@ -59,11 +59,11 @@
                 <h6 class="text-center">{{ wh.address }}</h6>
               </div>
               <div class="col-12 col-md-4 col-lg-3 d-flex flex-column justify-content-center">
-                <h4 class="text-center">0 из 0</h4>
+                 <h4 class="text-center">{{ wh.boxes_avaliable }} из {{ wh.boxes_total }}</h4>
                 <h6 class="text-center">Боксов свободно</h6>
               </div>
               <div class="col-12 col-md-4 col-lg-3 d-flex flex-column justify-content-center">
-                <h4 class="text-center SelfStorage_green">от 0 ₽</h4>
+                <h4 class="text-center SelfStorage_green">от {{ wh.starting_rate }} ₽</h4>
                 <h6 class="text-center">{{ wh.thumbnail }}</h6>
               </div>
             </a>
@@ -154,13 +154,13 @@
                   <div class="col-6 d-flex flex-column align-items-center align-items-lg-start">
                     <span class="fs_30 fw-bold SelfStorage_orange">{{ wh.temperature }} °С</span>
                     <span class="SelfStorage_grey mb-3">Температура на складе</span>
-                    <span class="fs_30 fw-bold SelfStorage_orange">0 из 0</span>
+                    <span class="fs_30 fw-bold SelfStorage_orange">{{ wh.boxes_avaliable }} из {{ wh.boxes_total }}</span>
                     <span class="SelfStorage_grey mb-3">Боксов свободно</span>
                   </div>
                   <div class="col-6 d-flex flex-column align-items-center align-items-lg-start">
                     <span class="fs_30 fw-bold SelfStorage_orange">до {{ wh.ceiling_height }} м</span>
                     <span class="SelfStorage_grey mb-3">Высота потолка</span>
-                    <span class="fs_30 fw-bold SelfStorage_orange">от 0 ₽</span>
+                    <span class="fs_30 fw-bold SelfStorage_orange">от {{ wh.starting_rate }} ₽</span>
                     <span class="SelfStorage_grey mb-3">Оплата за месяц</span>
                   </div>
                   <div class="d-flex flex-column align-items-center align-items-lg-start">

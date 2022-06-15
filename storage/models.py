@@ -114,17 +114,17 @@ class Box(models.Model):
 
     # TODO: Ограничить верхний нижний предел? 
     length = models.IntegerField(
-        "Длина (м)",
+        "Длина (см)",
         validators=[MinValueValidator(0)]
     )
 
     width = models.IntegerField(
-        "Ширина (м)",
+        "Ширина (см)",
         validators=[MinValueValidator(0)]
     )
 
     depth = models.IntegerField(
-        "Высота (м)",
+        "Высота (см)",
         validators=[MinValueValidator(0)]
     )
 
@@ -139,6 +139,19 @@ class Box(models.Model):
     class Meta:
         verbose_name = "бокс"
         verbose_name_plural = "боксы"
+
+    def get_dimensions_display(self):
+        """Get box dimension string in meters in WxLxD format"""
+
+        width_m = self.width/100
+        length_m= self.length/100
+        depth_m = self.depth/100
+        return f"{width_m}x{length_m}x{depth_m}"
+
+    def get_area(self):
+        """Get box area in meters squared"""
+
+        return self.width * self.length / 10000
 
     def __str__(self):
         return self.code
