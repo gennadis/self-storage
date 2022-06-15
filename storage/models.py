@@ -196,8 +196,8 @@ class Lease(models.Model):
     )
 
     class Meta:
-        verbose_name = "бокс"
-        verbose_name_plural = "боксы"
+        verbose_name = "Аренда"
+        verbose_name_plural = "Аренды"
 
     def __str__(self):
         return f"{self.user.email} on box {self.box.code}"
