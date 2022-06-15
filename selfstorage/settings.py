@@ -137,6 +137,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.CustomUser"
 
+
+# Django-alauth settings
+
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 AUTHENTICATION_BACKENDS = (
@@ -148,9 +151,19 @@ AUTHENTICATION_BACKENDS = (
 
 SITE_ID = 1
 
+# Django-alauth settings for custom user models
+# https://django-allauth.readthedocs.io/en/latest/advanced.html#custom-user-models
+
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
+
+# Redirection settings
+
+LOGIN_REDIRECT_URL = "index"
+ACCOUNT_LOGOUT_REDIRECT_URL = "index"
