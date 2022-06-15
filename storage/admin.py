@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from storage.models import Box, WarehouseImage, AdvertisingCompany, Warehouse, Link
+from storage.models import Box, Lease, WarehouseImage, AdvertisingCompany, Warehouse, Link
 
 
 class ImageInline(admin.TabularInline):
@@ -28,6 +28,10 @@ class WarehouseAdmin(admin.ModelAdmin):
 
 @admin.register(Box)
 class BoxAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Lease)
+class LeaseAdmin(admin.ModelAdmin):
     pass
 
 
