@@ -22,10 +22,8 @@ from storage import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", views.index, name="index"),
-    path("faq", views.faq, name="faq"),
-    path("boxes", views.boxes, name="boxes"),
-    path("rent", views.rent, name="rent"),
+    path("accounts/", include("allauth.urls")),
+    path("", include("storage.urls")),
 ]
 
 # Serve media files in development
