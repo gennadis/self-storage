@@ -5,20 +5,20 @@
             aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="{% url 'index' %}">
             <img src="{% static 'img/Vector.svg' %}" alt="[]">
             <img src="{% static 'img/SelfStorage.svg' %}" alt="SelfStorage">
         </a>
         <div class="collapse navbar-collapse justify-content-end" id="navbar">
             <ul class="navbar-nav">
                 <li class="nav-item me-5">
-                    <a class="nav-link SelfStorage_black" href="#">Рассчитать стоимость</a>
+                    <a class="nav-link SelfStorage_black" href="{% url 'boxes' %}">Рассчитать стоимость</a>
                 </li>
                 <li class="nav-item me-5">
-                    <a class="nav-link SelfStorage_black" href="#">Правила хранения</a>
+                    <a class="nav-link SelfStorage_black" href="{% url 'faq' %}">Правила хранения</a>
                 </li>
                 <li class="nav-item me-5">
-                    <a class="nav-link SelfStorage_black" href="#">Арендовать бокс</a>
+                    <a class="nav-link SelfStorage_black" href="{% url 'index' %}">Арендовать бокс</a>
                 </li>
 
                 <!-- LOG IN BUTTON OR USERNAME-->

@@ -1,6 +1,6 @@
 {% load static %}
 <footer class="container py-5">
-    <div class="row mb-5">
+    <div class="row mb-5" id="contacts">
         <div class="col-6 col-md-4 d-flex flex-column mb-3">
             <a href="#" class="navbar-brand">
                 <img src="{% static 'img/Vector.svg' %}" alt="[]">
@@ -29,19 +29,19 @@
     </div>
     <div class="row">
         <div class="col-6 col-md-4 d-flex flex-column">
-            <p><a href="#" class="link-dark text-decoration-none">Тарифы</a></p>
-            <p><a href="#" class="link-dark text-decoration-none">Рассчитать стоимость</a></p>
-            <p><a href="#" class="link-dark text-decoration-none">Арендовать бокс</a></p>
+            <p><a href="{% url 'boxes' %}" class="link-dark text-decoration-none">Тарифы</a></p>
+            <p><a href="{% url 'boxes' %}" class="link-dark text-decoration-none">Рассчитать стоимость</a></p>
+            <p><a href="{% url 'boxes' %}" class="link-dark text-decoration-none">Арендовать бокс</a></p>
         </div>
         <div class="col-6 col-md-4 d-flex flex-column">
-            <p><a href="#" class="link-dark text-decoration-none">Правила хранения</a></p>
-            <p><a href="#" class="link-dark text-decoration-none">Адреса складов</a></p>
-            <p><a href="#" class="link-dark text-decoration-none">Отзывы</a></p>
+            <p><a href="{% url 'faq' %}" class="link-dark text-decoration-none">Правила хранения</a></p>
+            <p><a href="{% url 'boxes' %}" class="link-dark text-decoration-none">Адреса складов</a></p>
+            <p><a href="{% url 'index' %}#reviews" class="link-dark text-decoration-none">Отзывы</a></p>
         </div>
         <div class="col-6 col-md-4 d-flex flex-column">
-            <p><a href="#" class="link-dark text-decoration-none">Политика конфиденциальности</a></p>
-            <p><a href="#" class="link-dark text-decoration-none">Правовые документы</a></p>
-            <p><a href="#" class="link-dark text-decoration-none">Контакты</a></p>
+            <p><a href="{% static 'consent.pdf' %}" class="link-dark text-decoration-none">Политика конфиденциальности</a></p>
+            <p><a href="{% static 'consent.pdf' %}" class="link-dark text-decoration-none">Правовые документы</a></p>
+            <p><a href="#contacts" class="link-dark text-decoration-none">Контакты</a></p>
         </div>
         <h6 class="SelfStorage_grey text-center mt-5">© 2022 SelfStorage. Использование материалов запрещено без
             письменного согласия</h6>
