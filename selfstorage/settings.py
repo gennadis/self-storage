@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     # local
     "storage.apps.StorageConfig",
     "users.apps.UsersConfig",
-    "payments.apps.PaymentsConfig"
+    "payments.apps.PaymentsConfig",
     # 3rd party
     "phonenumber_field",
     "allauth",
