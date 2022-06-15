@@ -21,6 +21,55 @@
 		{% include 'includes/auth.html' %}
 	</aside>
 
+  <!-- CREATE LEASE FORM -->
+  <aside class="modal fade" id="LeaseModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex justify-content-center align-items-center">
+          <form class="d-flex flex-column align-items-center" style="max-width: 420px">
+            <h1 class="modal-title text-center fw-bold mb-4">Оформление аренды</h1>
+            
+            <div class="row">
+              <div class="col-12 d-flex flex-column align-items-center align-items-lg-start">
+                <h4 id="boxWhAddress" class="modal-title text-center mb-3">Москва, ул. Пушкина 17</h4>
+              </div>
+              <div class="col-6 d-flex flex-column align-items-center align-items-lg-start">
+                <span id="boxCode" class="fs_24 fw-bold SelfStorage_orange">Code</span>
+                <span class="SelfStorage_grey mb-3">Код ячейки</span>
+                <span id="boxArea" class="fs_24 fw-bold SelfStorage_orange">Area</span>
+                <span class="SelfStorage_grey mb-3">Площадь</span>
+              </div>
+              <div class="col-6 d-flex flex-column align-items-center align-items-lg-start">
+                <span id="boxDims" class="fs_24 fw-bold SelfStorage_orange">Dimensions</span>
+                <span class="SelfStorage_grey mb-3">Размер</span>
+                <span id="boxPrice" data-rate="0" class="fs_24 fw-bold SelfStorage_orange">Price</span>
+                <span class="SelfStorage_grey mb-3">Стоимость в месяц</span>
+              </div>
+              <div class="col-12 d-flex flex-column align-items-center align-items-lg-start">
+                <label for="leaseDuration" class="form-label mt-4">Укажите на какой срок Вы хотите арендовать бокс</label>
+                <input type="range" value="1" class="form-range" min="1" max="12" id="duration">
+              </div>
+              <div class="col-6 d-flex flex-column align-items-center align-items-lg-start">
+                <span id="leaseDuration" class="fs_30 fw-bold SelfStorage_orange">0</span>
+                <span class="SelfStorage_grey mb-3">Срок аренды</span>
+              </div>
+              <div class="col-6 d-flex flex-column align-items-center align-items-lg-start">
+                <span id="leasePrice" class="fs_30 fw-bold SelfStorage_orange">0</span>
+                <span class="SelfStorage_grey mb-3">Итоговая стоимость</span>
+              </div>
+            </div>
+            <input type="hidden" id="code" name="code" value="0">
+            <button class="btn border-8 py-3 px-5 mt-5 mb-3 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Оформить</button>
+            <span>Уже зарегистрированы? <a href="#" class="SelfStorage_orange" data-bs-toggle="modal" data-bs-target="#SignModal" data-bs-dismiss="modal" aria-label="Close">Войти в личный кабинет</a></span>
+          </form>
+        </div>
+      </div>
+    </div>
+  </aside>
+
 	<main class="container mt-header">
 		<article class="row">
 			<div class="col-12 col-lg-6 mb-3 mb-lg-0">

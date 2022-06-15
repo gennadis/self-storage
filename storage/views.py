@@ -88,6 +88,8 @@ def avaliable_boxes(request, warehouse_id):
 
     boxes_serialized = [
         {
+            "warehouse_city": warehouse.city,
+            "warehouse_address": warehouse.address,
             "code": box.code,
             "floor": box.floor,
             "dimensions": box.get_dimensions_display(),
@@ -97,7 +99,7 @@ def avaliable_boxes(request, warehouse_id):
         for box in avaliable_boxes
     ]
         
-    return JsonResponse({"boxes":boxes_serialized})
+    return JsonResponse({"boxes": boxes_serialized})
 
 
 def rent(request):

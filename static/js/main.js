@@ -46,6 +46,20 @@ document.addEventListener("DOMContentLoaded", ()=>{
         }
     })
 
+    leaseDuration = document.querySelector("#leaseDuration")
+    leasePrice = document.querySelector("#leasePrice")
+    duration.addEventListener("change", (event)=>{
+        leaseDuration.textContent = event.target.value + " месяц(ев)"
+        leasePrice.textContent = (parseInt(event.target.value) * parseFloat(modalBoxPrice.dataset.rate)) + " ₽"
+    })
+
+    inputCode = document.querySelector("#code")
+    modalBoxWhAddress = document.querySelector("#boxWhAddress")
+    modalBoxCode = document.querySelector("#boxCode")
+    modalBoxDims = document.querySelector("#boxDims")
+    modalBoxArea = document.querySelector("#boxArea")
+    modalBoxPrice = document.querySelector("#boxPrice")
+
     function fetch_data(event){
         id = event.currentTarget.dataset.warehouse
 
@@ -80,7 +94,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
                 floorSpan.textContent = box.floor + " эт."
                 codeSpan = document.createElement("span")
                 codeSpan.classList.add("fs_24")
-                codeSpan.textContent = box.code
+                codeSpan.textContent = "№"+box.code
 
                 floorCodeContainer.appendChild(floorSpan)
                 floorCodeContainer.appendChild(codeSpan)
@@ -108,7 +122,19 @@ document.addEventListener("DOMContentLoaded", ()=>{
                 rateContainer.classList.add("col-12", "col-lg-3")
                 rateSpan = document.createElement("span")
                 rateSpan.classList.add("btn", "my-2", "w-100", "text-white", "fs_24", "SelfStorage__bg_orange", "SelfStorage__btn2_orange", "border-8")
+                rateSpan.setAttribute("data-bs-toggle", "modal")
+                rateSpan.setAttribute("data-bs-target", "#LeaseModal")
                 rateSpan.textContent = box.rate + " ₽"
+
+                rateSpan.addEventListener("click", (event)=>{
+                    modalBoxWhAddress.textContent = box.warehouse_city+", "+box.warehouse_address
+                    modalBoxCode.textContent = "№"+box.code
+                    inputCode.value = box.code
+                    modalBoxArea.textContent = box.area + " м²"
+                    modalBoxDims.textContent = box.dimensions + " м"
+                    modalBoxPrice.textContent = box.rate + " ₽"
+                    modalBoxPrice.dataset.rate = box.rate
+                })
 
                 rateContainer.appendChild(rateSpan)
 
