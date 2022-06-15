@@ -112,7 +112,7 @@ USE_TZ = True
 # Serving Media content
 
 MEDIA_ROOT = os.path.join(BASE_DIR, os.getenv("MEDIA_ROOT", default="media"))
-MEDIA_URL = '/media/'
+MEDIA_URL = "/media/"
 
 
 # Static files (CSS, JavaScript, Images)
@@ -129,9 +129,4 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = "index"
-LOGOUT_REDIRECT_URL = "index"
-
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT = os.getenv("EMAIL_PORT")
+AUTH_USER_MODEL = "users.CustomUser"
