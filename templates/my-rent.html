@@ -86,17 +86,20 @@
 					<div class="tab-pane fade" id="Rent" role="tabpanel" aria-labelledby="Rent-tab">
 						<h1 class="fw-bold SelfStorage_green mb-5">Добрый день, {{ user.first_name}}!</h1>
 						<a href="#" class="SelfStorage_orange">История аренды</a>
-						<h4 class="SelfStorage_grey my-3">Срок Вашей аренды подходит к концу :(<br>Вы можете продлить
-							аренду или забрать вещи до 28 июня 2022 года включительно.</h4>
 
-						<!-- rented boxes list -->
+						<!-- #TODO -->
+						<!-- <h4 class="SelfStorage_grey my-3">Срок Вашей аренды подходит к концу :(<br>Вы можете продлить
+							аренду или забрать вещи до 28 июня 2022 года включительно.</h4> -->
+
+						{% if user_leases %}
+						{% for lease in user_leases %}
 						<div class="mb-5">
 							<h4 class="SelfStorage_green">Мой склад №1</h4>
-							<h4>Одинцово, ул. Северная, д. 36</h4>
+							<h4>{{ lease.box.warehouse.city }}, {{ lease.box.warehouse.address }}</h4>
 							<h4 class="SelfStorage_green">Мой бокс</h4>
-							<h4>№2389-12</h4>
+							<h4>{{ lease.box }}</h4>
 							<h4 class="SelfStorage_green">Срок аренды</h4>
-							<h4>15.03.2022 - 28.06.2022</h4>
+							<h4>{{ lease.created_on }} - {{ lease.expires_on }}</h4>
 							<div><button
 									class="btn fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3">Продлить
 									аренду</button></div>
@@ -105,21 +108,16 @@
 									бокс</button></div>
 							<a href="#" class="SelfStorage_orange">Нужна помощь?</a>
 						</div>
-						<div class="mb-5">
-							<h4 class="SelfStorage_green">Мой склад №2</h4>
-							<h4>Люберцы, ул. Советская, д. 88</h4>
-							<h4 class="SelfStorage_green">Мой бокс</h4>
-							<h4>№2335-10</h4>
-							<h4 class="SelfStorage_green">Срок аренды</h4>
-							<h4>18.03.2022 - 21.09.2022</h4>
-							<div><button
-									class="btn fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3">Продлить
-									аренду</button></div>
-							<div><button
-									class="btn fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange mb-3">Открыть
-									бокс</button></div>
-							<a href="#" class="SelfStorage_orange">Нужна помощь?</a>
-						</div>
+						{% endfor %}
+
+						{% else %}
+						<h4 class="SelfStorage_grey my-5">У вас еще нет аренды :(<br>Но вы можете арендовать свой первый
+							бокс по привлекательной цене прямо сейчас</h4>
+						<div><button
+								class="btn fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange mb-3">Арендовать
+								бокс</button></div>
+
+						{% endif %}
 					</div>
 				</div>
 				{% else %}
