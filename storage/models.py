@@ -173,11 +173,11 @@ class Lease(models.Model):
         related_name="leases"
     )
 
-    box = models.OneToOneField(
+    box = models.ForeignKey(
         Box,
         on_delete=models.CASCADE,
         verbose_name="Бокс",
-        related_name="lease"
+        related_name="leases"
     )
 
     status = models.SmallIntegerField(
