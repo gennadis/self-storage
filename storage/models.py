@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils import timezone
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -268,3 +269,52 @@ class AdvertisingCompany(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Delivery(models.Model):
+    STATUSES = (
+        ("Unprocessed", "Курьер не назначен"),
+        ("In_process", "Курьер в пути"),
+        ("Completed", "Груз на складе"),
+    )
+    lease = models.ForeignKey(
+        Lease,
+        on_delete=models.CASCADE,
+        verbose_name="Заказ",
+        related_name="lease"
+    )
+    courier = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        verbose_name="Курьер",
+        related_name="courier"
+    )
+    delivery_status = models.CharField(
+        "Статус доставки заказа",
+        max_length=15,
+        choices=STATUSES,
+        default="Unprocessed",
+        db_index=True
+    )
+    comment = models.TextField(
+        "Комментарий",
+        blank=True
+    )
+    registered_at = models.DateTimeField(
+        "Время назначения курьера",
+        default=now,
+        db_index=True
+    )
+    delivered_at = models.DateTimeField(
+        "Время доставки груза",
+        blank=True,
+        null=True,
+        db_index=True
+    )
+
+    class Meta:
+        verbose_name = 'Заказ на доставку'
+        verbose_name_plural = 'Заказы на доставку'
+
+    def __str__(self):
+        return f"Заказ {self.id} для бокса {self.lease.box.code}"
