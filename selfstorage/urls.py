@@ -25,6 +25,8 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("__debug__/", include("debug_toolbar.urls")),
     path("", include("storage.urls")),
+    path("", include("users.urls")),
+    path("", include("payments.urls")),
 ]
 
 # Serve media files in development

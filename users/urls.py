@@ -1,4 +1,7 @@
-from django.urls import path, include
-from users.views import dashboard
+from django.urls import path
 
-urlpatterns = []
+from . import views
+
+urlpatterns = [
+    path("profile", views.profile, name="profile"),
+]
