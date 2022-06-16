@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/Style.css' %}">
+    <script src="https://yookassa.ru/checkout-widget/v1/checkout-widget.js"></script>
+    <title>Прием платежа с помощью виджета ЮKassa</title>
+</head>
+
+<body>
+    <header>
+        {% include 'includes/navbar.html' %}
+    </header>
+
+    <main class="container mt-header">
+        <div id="payment-form"></div>
+
+        <p>Данные банковской карты для оплаты в <b>тестовом магазине</b>:</p>
+        <ul>
+            <li>номер — <b>5555 5555 5555 4477</b></li>
+            <li>срок действия — <b>01/30</b> (или другая дата, больше текущей)</li>
+            <li>CVC — <b>123</b> (или три любые цифры)</li>
+            <li>код для прохождения 3-D Secure — <b>123</b> (или три любые цифры)</li>
+        </ul>
+        <p><a href=https://yookassa.ru/developers/payment-acceptance/testing-and-going-live/testing#test-bank-card>Другие
+                тестовые банковские карты</a></p>
+
+        <script>
+            //Инициализация виджета. Все параметры обязательные.
+            const checkout = new window.YooMoneyCheckoutWidget({
+                confirmation_token: '{{ confirmation_token }}', //Токен, который перед проведением оплаты нужно получить от ЮKassa
+                return_url: 'http://127.0.0.1:8000/confirm_payment', //Ссылка на страницу завершения оплаты, это может быть любая ваша страница
+
+                error_callback: function (error) {
+                    console.log(error)
+                }
+            });
+
+            //Отображение платежной формы в контейнере
+            checkout.render('payment-form');
+        </script>
+
+    </main>
+
+    <footer>
+        {% include 'includes/footer.html' %}
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+
+
+
+</body>
+
+</html>
