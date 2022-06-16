@@ -1,7 +1,10 @@
-from django.shortcuts import render
+from collections import defaultdict
+from django.db.models import Prefetch, Count, Exists, OuterRef
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
-from storage.models import AdvertisingCompany
+from storage.models import AdvertisingCompany, Box, Lease
 
 from storage.models import Warehouse
 
@@ -32,11 +35,35 @@ def faq(request):
 
 
 def boxes(request):
-    warehouses = Warehouse.objects.prefetch_related("images").all()
+    warehouses_with_boxes = defaultdict(list)
+    avaliable_boxes = Box.objects.select_related("warehouse").filter(
+        ~Exists(Lease.objects.filter(box=OuterRef("pk")))
+        ).order_by("monthly_rate")
+
+    for box in avaliable_boxes:
+        warehouses_with_boxes[box.warehouse.id].append({
+            "code": box.code,
+            "floor": box.floor,
+            "dimensions": box.get_dimensions_display(),
+            "square_size": box.get_area(),
+            "rate": box.monthly_rate
+        })
+
+    warehouses = (
+        Warehouse.objects.prefetch_related("images")
+        .annotate(boxes_total=Count('boxes', distinct=True)).all()
+    )
     warehouses_serialized = []
     for warehouse in warehouses:
+        #Do not display warehouses that have no boxes avaliable
+        if not warehouses_with_boxes[warehouse.id]:
+            continue
+
         warehouses_serialized.append({
-            "id": f"wh{warehouse.id}",
+            "id": warehouse.id,
+            "boxes_total": warehouse.boxes_total,
+            "boxes_avaliable": len(warehouses_with_boxes[warehouse.id]),
+            "starting_rate": warehouses_with_boxes[warehouse.id][0]["rate"],
             "city": warehouse.city,
             "address": warehouse.address,
             "description": warehouse.description,
@@ -50,6 +77,29 @@ def boxes(request):
     return render(request, "boxes.html", context={
         "warehouses": warehouses_serialized
     })
+
+
+def avaliable_boxes(request, warehouse_id):
+    warehouse = get_object_or_404(Warehouse, id=warehouse_id)
+
+    avaliable_boxes = warehouse.boxes.filter(
+        ~Exists(Lease.objects.filter(box=OuterRef("pk")))
+    )
+
+    boxes_serialized = [
+        {
+            "warehouse_city": warehouse.city,
+            "warehouse_address": warehouse.address,
+            "code": box.code,
+            "floor": box.floor,
+            "dimensions": box.get_dimensions_display(),
+            "area": box.get_area(),
+            "rate": box.monthly_rate
+        }
+        for box in avaliable_boxes
+    ]
+        
+    return JsonResponse({"boxes": boxes_serialized})
 
 
 def rent(request):
