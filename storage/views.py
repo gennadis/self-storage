@@ -1,7 +1,7 @@
 from collections import defaultdict
 from dateutil.relativedelta import relativedelta
 from django.db.models import Prefetch, Count, Exists, OuterRef
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.utils import timezone
 
@@ -111,13 +111,15 @@ def show_lease(request, lease_id):
     if not request.user.is_authenticated:
         return redirect("account_login")
 
-    # FIXME: Implement some validation
-    lease = (
-        Lease.objects.select_related("user").select_related("box").get(id=int(lease_id))
-    )
+    try:
+        lease = (
+            Lease.objects.select_related("user").select_related("box").get(id=int(lease_id))
+        )
+    except Lease.DoesNotExist:
+        raise Http404("Lease does not exist")
+
     if lease.user != request.user:
-        # FIXME: Display error message if user is not owner of the lease
-        return redirect(request.META.get("HTTP_REFERER", "/"))
+        raise Http404("User cannot access this data")
 
     lease_seialized = {
         "id": lease.id,
@@ -129,6 +131,26 @@ def show_lease(request, lease_id):
     }
 
     return render(request, "lease.html", context=lease_seialized)
+
+
+def cancel_lease(request):
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+
+    lease_id = int(request.GET.get("lease_id"))
+    try:
+        lease = (
+            Lease.objects.select_related("user").get(id=int(lease_id))
+        )
+    except Lease.DoesNotExist:
+        raise Http404("Lease does not exist")
+    
+    if lease.user != request.user or lease.status != Lease.Status.NOT_PAID:
+        raise Http404("User cannot access this data")
+
+    lease.status = Lease.Status.CANCELED
+    lease.save()
+    return redirect("show_lease", lease_id=lease.id)
 
 
 def create_lease(request):
