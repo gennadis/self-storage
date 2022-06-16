@@ -105,7 +105,9 @@ def avaliable_boxes(request, warehouse_id):
 
 
 def show_lease(request, lease_id):
-    #FIXME: Check if user is logged in properly
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+
     #FIXME: Implement some validation
     lease = Lease.objects.select_related("user").select_related("box").get(id=int(lease_id))
     if lease.user != request.user:
@@ -125,7 +127,9 @@ def show_lease(request, lease_id):
 
 
 def create_lease(request):
-    #FIXME: Check if user is logged in properly
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+
     #FIXME: Implement some validation
     box_code = request.GET.get("code")
     lease_duration = int(request.GET.get("duration"))
@@ -161,6 +165,9 @@ def create_lease(request):
 
 
 def profile(request):
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+        
     user_leases = (
         Lease.objects.select_related("box", "box__warehouse")
         .filter(user__email=request.user.email)
