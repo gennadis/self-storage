@@ -4,10 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
-from storage.models import AdvertisingCompany, Box, Lease, Delivery
-
-from storage.models import Warehouse
-from users.models import CustomUser
+from storage.models import AdvertisingCompany, Box, Lease, Delivery, Warehouse
 
 
 def index(request):
@@ -16,9 +13,7 @@ def index(request):
         now = timezone.localtime()
         try:
             advertising_company = AdvertisingCompany.objects.get(
-                key_word=ad_parameter,
-                start_date__lt=now,
-                end_date__gt=now
+                key_word=ad_parameter, start_date__lt=now, end_date__gt=now
             )
             advertising_company.clicks += 1
             advertising_company.save()
@@ -36,22 +31,27 @@ def faq(request):
 
 def boxes(request):
     warehouses_with_boxes = defaultdict(list)
-    avaliable_boxes = Box.objects.select_related("warehouse").filter(
-        ~Exists(Lease.objects.filter(box=OuterRef("pk")))
-    ).order_by("monthly_rate")
+    avaliable_boxes = (
+        Box.objects.select_related("warehouse")
+        .filter(~Exists(Lease.objects.filter(box=OuterRef("pk"))))
+        .order_by("monthly_rate")
+    )
 
     for box in avaliable_boxes:
-        warehouses_with_boxes[box.warehouse.id].append({
-            "code": box.code,
-            "floor": box.floor,
-            "dimensions": box.get_dimensions_display(),
-            "square_size": box.get_area(),
-            "rate": box.monthly_rate
-        })
+        warehouses_with_boxes[box.warehouse.id].append(
+            {
+                "code": box.code,
+                "floor": box.floor,
+                "dimensions": box.get_dimensions_display(),
+                "square_size": box.get_area(),
+                "rate": box.monthly_rate,
+            }
+        )
 
     warehouses = (
         Warehouse.objects.prefetch_related("images")
-            .annotate(boxes_total=Count('boxes', distinct=True)).all()
+        .annotate(boxes_total=Count("boxes", distinct=True))
+        .all()
     )
     warehouses_serialized = []
     for warehouse in warehouses:
@@ -59,24 +59,24 @@ def boxes(request):
         if not warehouses_with_boxes[warehouse.id]:
             continue
 
-        warehouses_serialized.append({
-            "id": warehouse.id,
-            "boxes_total": warehouse.boxes_total,
-            "boxes_avaliable": len(warehouses_with_boxes[warehouse.id]),
-            "starting_rate": warehouses_with_boxes[warehouse.id][0]["rate"],
-            "city": warehouse.city,
-            "address": warehouse.address,
-            "description": warehouse.description,
-            "thumbnail": warehouse.get_thumbnail_display(),
-            "contact_phone": warehouse.contact_phone,
-            "temperature": warehouse.temperature,
-            "ceiling_height": warehouse.ceiling_height / 100,
-            "images": [image.image_file.url for image in warehouse.images.all()]
-        })
+        warehouses_serialized.append(
+            {
+                "id": warehouse.id,
+                "boxes_total": warehouse.boxes_total,
+                "boxes_avaliable": len(warehouses_with_boxes[warehouse.id]),
+                "starting_rate": warehouses_with_boxes[warehouse.id][0]["rate"],
+                "city": warehouse.city,
+                "address": warehouse.address,
+                "description": warehouse.description,
+                "thumbnail": warehouse.get_thumbnail_display(),
+                "contact_phone": warehouse.contact_phone,
+                "temperature": warehouse.temperature,
+                "ceiling_height": warehouse.ceiling_height / 100,
+                "images": [image.image_file.url for image in warehouse.images.all()],
+            }
+        )
 
-    return render(request, "boxes.html", context={
-        "warehouses": warehouses_serialized
-    })
+    return render(request, "boxes.html", context={"warehouses": warehouses_serialized})
 
 
 def avaliable_boxes(request, warehouse_id):
@@ -94,7 +94,7 @@ def avaliable_boxes(request, warehouse_id):
             "floor": box.floor,
             "dimensions": box.get_dimensions_display(),
             "area": box.get_area(),
-            "rate": box.monthly_rate
+            "rate": box.monthly_rate,
         }
         for box in avaliable_boxes
     ]
@@ -103,11 +103,12 @@ def avaliable_boxes(request, warehouse_id):
 
 
 def rent(request):
-    # if user has rent:
-    #     return render(request, "my-rent.html")
-    # else:
-    #     return render(request, "my-rent-empty.html")
-    return render(request, "my-rent.html")
+    user = get_object_or_404(CustomUser, email=request.user)
+    context = {
+        "user_leases": user.leases.all(),
+    }
+
+    return render(request, "my-rent.html", context)
 
 
 def delivery(request):
