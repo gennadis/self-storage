@@ -9,6 +9,10 @@ from storage.models import AdvertisingCompany, Box, Lease, Delivery, Warehouse
 from users.models import CustomUser
 
 
+def page_not_found(request, exception=None):
+    return render(request, "404.html")
+
+
 def index(request):
     ad_parameter = request.GET.get("ad_company")
     if ad_parameter:
@@ -167,7 +171,7 @@ def create_lease(request):
 def profile(request):
     if not request.user.is_authenticated:
         return redirect("account_login")
-        
+
     user_leases = (
         Lease.objects.select_related("box", "box__warehouse")
         .filter(user__email=request.user.email)
