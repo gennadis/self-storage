@@ -93,13 +93,14 @@
 
 						{% if user_leases %}
 						{% for lease in user_leases %}
+
 						<div class="mb-5">
-							<h4 class="SelfStorage_green">Мой склад №1</h4>
-							<h4>{{ lease.box.warehouse.city }}, {{ lease.box.warehouse.address }}</h4>
+							<h4 class="SelfStorage_green">Мой склад № {{ lease.counter }}</h4>
+							<h4>{{ lease.warehouse_city }}, {{ lease.warehouse_address }}</h4>
 							<h4 class="SelfStorage_green">Мой бокс</h4>
-							<h4>{{ lease.box }}</h4>
+							<h4>{{ lease.box_number }}</h4>
 							<h4 class="SelfStorage_green">Срок аренды</h4>
-							<h4>{{ lease.created_on }} - {{ lease.expires_on }}</h4>
+							<h4>{{ lease.lease_from }} - {{ lease.lease_till }}</h4>
 							<div><button
 									class="btn fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3">Продлить
 									аренду</button></div>
