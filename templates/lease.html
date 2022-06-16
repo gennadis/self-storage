@@ -20,19 +20,68 @@
 	<aside>
 		{% include 'includes/auth.html' %}
 	</aside>
-
+  {% if status == "Не оплачено" %}
+    <aside class="modal fade" id="CancelModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body d-flex justify-content-center align-items-center">
+            <form method="get" action="/cancel_lease" class="d-flex flex-column align-items-center" style="max-width: 420px">
+              <h1 class="modal-title text-center fw-bold mb-4">Отмена заказа</h1>
+              
+              <div class="row">
+                <div class="col-12 d-flex flex-column align-items-center align-items-lg-start">
+                  <h4 id="boxWhAddress" class="modal-title text-center mb-3">Вы уверены, что хотите отменить заказ?</h4>
+                </div>
+              <input type="hidden" name="lease_id" value="{{ id }}">
+              <button type="submit" class="btn border-8 py-3 px-5 mt-5 mb-3 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Отменить заказ</button>
+              <a data-bs-dismiss="modal" class="btn border-8 py-3 px-5 mb-3 w-100 text-white fs_12 SelfStorage__bg_orange SelfStorage__btn2_orange">Вернуться к аренде</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </aside>
+  {% endif %}
   <main class="container mt-header">
     <div class="card text-bg-warning text-center">
       <div class="card-header">
-        Аренда #{{ id }} - {{ status }}
+        Аренда #{{ id }}
+        {% if status == "Не оплачено" %}
+          <span class="badge bg-warning">{{ status }}</span>
+        {% elif status == "Оплачено" %}
+          <span class="badge bg-success">{{ status }}</span>
+        {% elif status == "Просрочено" %}
+          <span class="badge bg-danger">{{ status }}</span>
+        {% elif status == "Завершено" %}
+          <span class="badge bg-dark">{{ status }}</span>
+        {% else %}
+          <span class="badge bg-secondary">{{ status }}</span>
+        {% endif %}
       </div>
       <div class="card-body text">
-        <form>
+        {% if status == "Не оплачено" %}
+          <form method="post" action="/pay/">{% csrf_token %}
+        {% else %}
+          <form>
+        {% endif %}
           <h5 class="card-title">Бокс №{{ box_code }}</h5>
           <p class="card-text">Цена в месяц - {{ box_rate }} Р.</p>
           <p class="card-text">Срок аренды - до {{ expires_on }}.</p>
           <p class="card-text">Итого - {{ total_price }}.</p>
-          <a href="#" class="btn btn-primary">Оплатить</a>
+          <input type="hidden" name="order_price" value="{{ total_price }}"/>
+          <input type="hidden" name="order_description" value="Аренда бокса №{{ box_code }} - {{ total_price }} Р"/>
+          <input type="hidden" name="lease_id" value="{{ id }}"/>
+          {% if status == "Не оплачено" %}
+            <button type="submit" class="btn btn-success">Оплатить</button>
+            <a data-bs-toggle="modal" data-bs-target="#CancelModal" class="btn btn-danger">Отменить</a>
+            <p class="card-text">Оплатите аренду, чтобы получить доступ к боксу и доставке</p>
+            <button type="button" class="btn btn-secondary" disabled>Заказать бесплатную доставку</button>
+            <button type="button" class="btn btn-secondary" disabled>Получить QR-код доступа</button>
+          {% elif status == "Оплачено" %}
+            
+          {% endif %}
         </form>
       </div>
     </div>
