@@ -5,10 +5,11 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
 from storage.models import AdvertisingCompany, Box, Lease, Delivery, Warehouse
+from users.models import CustomUser
 
 
 def index(request):
-    ad_parameter = request.GET.get('ad_company')
+    ad_parameter = request.GET.get("ad_company")
     if ad_parameter:
         now = timezone.localtime()
         try:
@@ -102,7 +103,7 @@ def avaliable_boxes(request, warehouse_id):
     return JsonResponse({"boxes": boxes_serialized})
 
 
-def rent(request):
+def profile(request):
     user = get_object_or_404(CustomUser, email=request.user)
     context = {
         "user_leases": user.leases.all(),
@@ -113,7 +114,9 @@ def rent(request):
 
 def delivery(request):
     if request.user.is_authenticated:
-        courier_delivery_orders = Delivery.objects.prefetch_related("lease", "courier").filter(courier=request.user)
+        courier_delivery_orders = Delivery.objects.prefetch_related(
+            "lease", "courier"
+        ).filter(courier=request.user)
         delivery_orders_serialized = [
             {
                 "order_number": order.id,
@@ -123,14 +126,11 @@ def delivery(request):
                 "client_phone_number": order.lease.user.phone_number,
                 "delivery_status": order.get_delivery_status_display,
                 "client_first_name": order.lease.user.phone_number,
-
             }
             for order in courier_delivery_orders
         ]
-        context = {
-            "delivery_orders": delivery_orders_serialized
-        }
+        context = {"delivery_orders": delivery_orders_serialized}
 
-        return render(request, 'delivery_orders.html', context)
+        return render(request, "delivery_orders.html", context)
     else:
-        return render(request, 'delivery_orders.html')
+        return render(request, "delivery_orders.html")
