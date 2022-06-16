@@ -317,4 +317,4 @@ class Delivery(models.Model):
         verbose_name_plural = 'Заказы на доставку'
 
     def __str__(self):
-        return self.lease.id
+        return f"Заказ {self.id} для бокса {self.lease.box.code}"

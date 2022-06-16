@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from storage.models import Box, Lease, WarehouseImage, AdvertisingCompany, Warehouse, Link, DeliveryLease
+from storage.models import Box, Lease, WarehouseImage, AdvertisingCompany, Warehouse, Link, Delivery
 
 
 class ImageInline(admin.TabularInline):
@@ -46,6 +46,6 @@ class LinkAdmin(admin.ModelAdmin):
     list_display_links = ('create_link', )
 
 
-@admin.register(DeliveryLease)
-class DeliveryLeaseAdmin(admin.ModelAdmin):
+@admin.register(Delivery)
+class DeliveryAdmin(admin.ModelAdmin):
     pass
