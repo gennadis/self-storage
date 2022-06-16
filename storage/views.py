@@ -4,14 +4,14 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
-from storage.models import AdvertisingCompany, Box, Lease
+from storage.models import AdvertisingCompany, Box, Lease, Delivery
 
 from storage.models import Warehouse
+from users.models import CustomUser
 
 
 def index(request):
     ad_parameter = request.GET.get('ad_company')
-    print(ad_parameter)
     if ad_parameter:
         now = timezone.localtime()
         try:
@@ -38,7 +38,7 @@ def boxes(request):
     warehouses_with_boxes = defaultdict(list)
     avaliable_boxes = Box.objects.select_related("warehouse").filter(
         ~Exists(Lease.objects.filter(box=OuterRef("pk")))
-        ).order_by("monthly_rate")
+    ).order_by("monthly_rate")
 
     for box in avaliable_boxes:
         warehouses_with_boxes[box.warehouse.id].append({
@@ -51,11 +51,11 @@ def boxes(request):
 
     warehouses = (
         Warehouse.objects.prefetch_related("images")
-        .annotate(boxes_total=Count('boxes', distinct=True)).all()
+            .annotate(boxes_total=Count('boxes', distinct=True)).all()
     )
     warehouses_serialized = []
     for warehouse in warehouses:
-        #Do not display warehouses that have no boxes avaliable
+        # Do not display warehouses that have no boxes avaliable
         if not warehouses_with_boxes[warehouse.id]:
             continue
 
@@ -70,7 +70,7 @@ def boxes(request):
             "thumbnail": warehouse.get_thumbnail_display(),
             "contact_phone": warehouse.contact_phone,
             "temperature": warehouse.temperature,
-            "ceiling_height": warehouse.ceiling_height/100,
+            "ceiling_height": warehouse.ceiling_height / 100,
             "images": [image.image_file.url for image in warehouse.images.all()]
         })
 
@@ -98,7 +98,7 @@ def avaliable_boxes(request, warehouse_id):
         }
         for box in avaliable_boxes
     ]
-        
+
     return JsonResponse({"boxes": boxes_serialized})
 
 
@@ -108,3 +108,28 @@ def rent(request):
     # else:
     #     return render(request, "my-rent-empty.html")
     return render(request, "my-rent.html")
+
+
+def delivery(request):
+    if request.user.is_authenticated:
+        courier_delivery_orders = Delivery.objects.prefetch_related("lease", "courier").filter(courier=request.user)
+        delivery_orders_serialized = [
+            {
+                "order_number": order.id,
+                "warehouse_city": order.lease.box.warehouse.city,
+                "warehouse_address": order.lease.box.warehouse.address,
+                "box_number": order.lease.box.code,
+                "client_phone_number": order.lease.user.phone_number,
+                "delivery_status": order.get_delivery_status_display,
+                "client_first_name": order.lease.user.phone_number,
+
+            }
+            for order in courier_delivery_orders
+        ]
+        context = {
+            "delivery_orders": delivery_orders_serialized
+        }
+
+        return render(request, 'delivery_orders.html', context)
+    else:
+        return render(request, 'delivery_orders.html')
