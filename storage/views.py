@@ -1,7 +1,8 @@
 from collections import defaultdict
+from dateutil.relativedelta import relativedelta
 from django.db.models import Prefetch, Count, Exists, OuterRef
 from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.utils import timezone
 
 from storage.models import AdvertisingCompany, Box, Lease, Delivery, Warehouse
@@ -101,6 +102,91 @@ def avaliable_boxes(request, warehouse_id):
     ]
 
     return JsonResponse({"boxes": boxes_serialized})
+
+
+def show_lease(request, lease_id):
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+
+    # FIXME: Implement some validation
+    lease = (
+        Lease.objects.select_related("user").select_related("box").get(id=int(lease_id))
+    )
+    if lease.user != request.user:
+        # FIXME: Display error message if user is not owner of the lease
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+    lease_seialized = {
+        "id": lease.id,
+        "status": lease.get_status_display(),
+        "box_code": lease.box.code,
+        "box_rate": lease.box.monthly_rate,
+        "expires_on": lease.expires_on,
+        "total_price": lease.price,
+    }
+
+    return render(request, "lease.html", context=lease_seialized)
+
+
+def create_lease(request):
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+
+    # FIXME: Implement some validation
+    box_code = request.GET.get("code")
+    lease_duration = int(request.GET.get("duration"))
+
+    active_leases = Lease.objects.filter(
+        status__in=[Lease.Status.NOT_PAID, Lease.Status.PAID, Lease.Status.OVERDUE]
+    )
+
+    # FIXME: Catch ObjectDoesNotExist exception.
+    box = Box.objects.prefetch_related(
+        Prefetch("leases", queryset=active_leases, to_attr="active_leases")
+    ).get(code=box_code)
+
+    if box.active_leases:
+        # FIXME: Display error message if box is not avaliable
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+    lease_expiration_date = timezone.now() + relativedelta(months=+lease_duration)
+    lease_total_price = box.monthly_rate * lease_duration
+
+    new_lease = Lease.objects.create(
+        user=request.user,
+        box=box,
+        expires_on=lease_expiration_date,
+        price=lease_total_price,
+    )
+    return redirect("show_lease", lease_id=new_lease.id)
+
+
+def profile(request):
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+
+    user_leases = (
+        Lease.objects.select_related("box", "box__warehouse")
+        .filter(user__email=request.user.email)
+        .order_by("expires_on")
+    )
+    user_leases_serialized = [
+        {
+            "counter": count,
+            "warehouse_city": lease.box.warehouse.city,
+            "warehouse_address": lease.box.warehouse.address,
+            "box_number": lease.box.code,
+            "lease_from": lease.created_on,
+            "lease_till": lease.expires_on,
+        }
+        for count, lease in enumerate(user_leases, start=1)
+    ]
+
+    context = {
+        "user_leases": user_leases_serialized,
+    }
+
+    return render(request, "my-rent.html", context=context)
 
 
 def delivery(request):
