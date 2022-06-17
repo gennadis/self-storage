@@ -293,7 +293,8 @@ class Delivery(models.Model):
         CustomUser,
         on_delete=models.CASCADE,
         verbose_name="Курьер",
-        related_name="courier"
+        related_name="courier",
+        null=True
     )
     delivery_status = models.CharField(
         "Статус доставки заказа",
@@ -304,7 +305,8 @@ class Delivery(models.Model):
     )
     comment = models.TextField(
         "Комментарий",
-        blank=True
+        blank=True,
+        null=True
     )
     registered_at = models.DateTimeField(
         "Время назначения курьера",
