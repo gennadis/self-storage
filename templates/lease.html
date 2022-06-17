@@ -1,4 +1,5 @@
 {% load static %}
+{% load storage_tags %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -71,11 +72,11 @@
                     <a data-bs-dismiss="modal" class="btn border-8 py-3 px-5 mb-3 w-100 text-white fs_12 SelfStorage__bg_orange SelfStorage__btn2_orange">Вернуться к аренде</a>
                   </div>
                   <script>
-                    deliveryForm = document.querySelector("#deliveryForm")
-                    submitButton = document.querySelector("#submitButton")
-                    errorPrompt = document.querySelector("#errorPrompt")
-                    deliveryReply = document.querySelector("#deliveryReply")
-                    deliveryMessage = document.querySelector("#deliveryMessage")
+                    let deliveryForm = document.querySelector("#deliveryForm")
+                    let submitButton = document.querySelector("#submitButton")
+                    let errorPrompt = document.querySelector("#errorPrompt")
+                    let deliveryReply = document.querySelector("#deliveryReply")
+                    let deliveryMessage = document.querySelector("#deliveryMessage")
 
                     deliveryForm.addEventListener("submit", (event)=>{
                       event.preventDefault()
@@ -85,7 +86,6 @@
                         body: new FormData(deliveryForm),
                       }).then(response => response.json())
                       .then(json => {
-                        console.log(json)
                         if(json.status == "validation_error"){
                           errorPrompt.textContent = json.message
                           errorPrompt.classList.remove("d-none")
@@ -145,17 +145,7 @@
     <div class="card text-bg-warning text-center">
       <div class="card-header">
         Аренда #{{ id }}
-        {% if status == "Не оплачено" %}
-          <span class="badge bg-warning">{{ status }}</span>
-        {% elif status == "Оплачено" %}
-          <span class="badge bg-success">{{ status }}</span>
-        {% elif status == "Просрочено" %}
-          <span class="badge bg-danger">{{ status }}</span>
-        {% elif status == "Завершено" %}
-          <span class="badge bg-dark">{{ status }}</span>
-        {% else %}
-          <span class="badge bg-secondary">{{ status }}</span>
-        {% endif %}
+        <span class="badge {{ status|badge_bg }}">{{ status }}</span>
       </div>
       <div class="card-body text">
         {% if status == "Не оплачено" %}
@@ -166,7 +156,7 @@
           <h5 class="card-title">Бокс №{{ box_code }}</h5>
           <p class="card-text">Цена в месяц - {{ box_rate }} Р.</p>
           <p class="card-text">Срок аренды - до {{ expires_on }}.</p>
-          <p class="card-text">Итого - {{ total_price }}.</p>
+          <p class="card-text">Итого - {{ total_price }} Р.</p>
           <input type="hidden" name="order_price" value="{{ total_price }}"/>
           <input type="hidden" name="order_description" value="Аренда бокса №{{ box_code }} - {{ total_price }} Р"/>
           <input type="hidden" name="lease_id" value="{{ id }}"/>
