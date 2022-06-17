@@ -1,5 +1,19 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from storage.models import Lease
+from users.forms import CustomUserCreationForm
+
+
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            custom_user = form.save()
+            custom_user.save()
+            return redirect('index')
+    else:
+        form = CustomUserCreationForm()
+
+    return render(request, 'account/signup.html', {'form': form})
 
 
 def profile(request):

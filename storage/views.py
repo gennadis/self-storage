@@ -122,6 +122,7 @@ def create_lease_qr_code(lease):
     qr_code.save(blob, "JPEG")
     lease.qr_code.save(f"{qr_code_info}.jpg", File(blob))
     lease.save()
+
     return lease.qr_code.url
 
 
@@ -141,7 +142,7 @@ def show_lease(request, lease_id):
 
     already_delivered = Delivery.objects.filter(lease=lease, delivery_status="Completed").exists()
 
-    lease_seialized = {
+    lease_serialized = {
         "id": lease.id,
         "status": lease.get_status_display(),
         "box_code": lease.box.code,
@@ -152,9 +153,9 @@ def show_lease(request, lease_id):
     }
     if lease.status == Lease.Status.OVERDUE:
         tolerance_period_months = 6
-        lease_seialized["seize_on"] = lease.expires_on + relativedelta(months=+tolerance_period_months)
+        lease_serialized["seize_on"] = lease.expires_on + relativedelta(months=+tolerance_period_months)
 
-    return render(request, "lease.html", context=lease_seialized)
+    return render(request, "lease.html", context=lease_serialized)
 
 
 def get_qr_code(request, lease_id):
