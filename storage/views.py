@@ -44,8 +44,15 @@ def boxes(request):
     warehouses_with_boxes = defaultdict(list)
     avaliable_boxes = (
         Box.objects.select_related("warehouse")
-        .filter(~Exists(Lease.objects.filter(box=OuterRef("pk"))))
-        .order_by("monthly_rate")
+        .filter(~Exists(Lease.objects.filter(
+            box=OuterRef("pk"), 
+            status__in=[
+                Lease.Status.PAID, 
+                Lease.Status.NOT_PAID, 
+                Lease.Status.OVERDUE
+            ]
+        ))).order_by("monthly_rate")
+        
     )
 
     for box in avaliable_boxes:
@@ -94,8 +101,15 @@ def avaliable_boxes(request, warehouse_id):
     warehouse = get_object_or_404(Warehouse, id=warehouse_id)
 
     avaliable_boxes = warehouse.boxes.filter(
-        ~Exists(Lease.objects.filter(box=OuterRef("pk")))
-    )
+        ~Exists(Lease.objects.filter(
+            box=OuterRef("pk"), 
+            status__in=[
+                Lease.Status.PAID, 
+                Lease.Status.NOT_PAID, 
+                Lease.Status.OVERDUE
+            ]
+        )
+    ))
 
     boxes_serialized = [
         {
