@@ -124,15 +124,6 @@ def create_lease_qr_code(lease):
     return lease.qr_code.url
 
 
-def rent(request):
-    user = get_object_or_404(CustomUser, email=request.user)
-    context = {
-        "user_leases": user.leases.all(),
-    }
-
-    return render(request, "boxes.html", context)
-
-
 def show_lease(request, lease_id):
     if not request.user.is_authenticated:
         return redirect("account_login")
