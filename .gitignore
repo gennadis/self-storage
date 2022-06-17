@@ -4,4 +4,6 @@ venv
 media
 
 .env
+.env.dev
+.env.prod
 *.sqlite3
