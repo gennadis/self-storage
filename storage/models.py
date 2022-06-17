@@ -196,8 +196,8 @@ class LeaseQuerySet(models.QuerySet):
 class Lease(models.Model):
     class Status(models.IntegerChoices):
         NOT_PAID = 0, _("Не оплачено")
-        PAID = 1, _("Оплачено")
-        OVERDUE = 2, _("Просрочено")
+        OVERDUE = 1, _("Просрочено")
+        PAID = 2, _("Оплачено")
         COMPLETED = 3, _("Завершено")
         CANCELED = 4, _("Отменено")
 
