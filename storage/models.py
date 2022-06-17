@@ -187,19 +187,19 @@ class Lease(models.Model):
         db_index=True
     )
 
-    created_on = models.DateTimeField(
+    created_on = models.DateField(
         "Дата создания",
         default=timezone.now
     )
 
-    paid_on = models.DateTimeField(
+    paid_on = models.DateField(
         "Дата оплаты",
         null=True,
         blank=True,
         db_index=True
     )
 
-    expires_on = models.DateTimeField(
+    expires_on = models.DateField(
         "Дата окончания аренды"
     )
 
