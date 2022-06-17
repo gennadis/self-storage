@@ -1,6 +1,7 @@
 import os
 from collections import defaultdict
 from io import BytesIO
+import phonenumbers
 
 import qrcode
 from dateutil.relativedelta import relativedelta
@@ -225,3 +226,51 @@ def delivery(request):
         context = {"delivery_orders": delivery_orders_serialized}
 
     return render(request, 'delivery_orders.html', context)
+
+
+def request_delivery(request):
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+
+    lease_id = int(request.POST.get("lease_id"))
+    address = request.POST.get("address")
+
+    try:
+        lease = (
+            Lease.objects.select_related("user").get(id=int(lease_id))
+        )
+    except Lease.DoesNotExist:
+        raise Http404("Lease does not exist")
+    
+    if lease.user != request.user or lease.status != Lease.Status.PAID:
+        raise Http404("User cannot access this data")
+
+    already_requested = Delivery.objects.filter(lease=lease).exists()
+    if already_requested:
+        return JsonResponse(
+            {
+                "status":"already_exists", 
+                "message":(
+                    "У вас уже есть необработанный заказ на доставку. "
+                    "Пожалуйста, дождитесь пока с Вами свяжется наш "
+                    "менеджер"
+                )
+            }
+        ) 
+
+    delivery = Delivery.objects.create(
+        lease=lease,
+        pickup_address=address,
+        delivery_status="Unprocessed"
+        )
+
+    return JsonResponse(
+            {
+                "status":"ok", 
+                "message":(
+                    "Мы приняли Ваш заказ на обработку. В близжайщее "
+                    "время с Вами свяжется наш менеджер, чтобы уточнить"
+                    " детали. Спасибо!"
+                )
+            }
+        ) 
