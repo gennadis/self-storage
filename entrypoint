@@ -28,8 +28,4 @@ until postgres_ready; do
 done
 >&2 echo '-----> PostgreSQL is available'
 
-echo '-----> Applying migrations...'
-python manage.py migrate --no-input
-echo '-----> Migrations applied'
-
 exec "$@"
