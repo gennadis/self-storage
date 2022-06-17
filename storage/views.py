@@ -1,10 +1,17 @@
+import os
 from collections import defaultdict
+from io import BytesIO
+
+import qrcode
+from django.core.files.base import ContentFile, File
 from django.db.models import Prefetch, Count, Exists, OuterRef
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
+from selfstorage.settings import BASE_DIR, MEDIA_URL, MEDIA_ROOT
 from storage.models import AdvertisingCompany, Box, Lease, Delivery, Warehouse
+from users.models import CustomUser
 
 
 def index(request):
@@ -102,6 +109,16 @@ def avaliable_boxes(request, warehouse_id):
     return JsonResponse({"boxes": boxes_serialized})
 
 
+def create_lease_qr_code(lease):
+    qr_code_info = f"{lease.box.code}{lease.expires_on}{lease.user.id}"
+    qr_code = qrcode.make(qr_code_info)
+    blob = BytesIO()
+    qr_code.save(blob, "JPEG")
+    lease.qr_code.save(f"{qr_code_info}.jpg", File(blob))
+    lease.save()
+    return lease.qr_code.url
+
+
 def rent(request):
     user = get_object_or_404(CustomUser, email=request.user)
     context = {
@@ -112,25 +129,29 @@ def rent(request):
 
 
 def delivery(request):
+    lease = Lease.objects.get(id=1)
+    create_lease_qr_code(lease)
+    context = {}
     if request.user.is_authenticated:
         courier_delivery_orders = Delivery.objects.prefetch_related("lease", "courier").filter(courier=request.user)
         delivery_orders_serialized = [
             {
-                "order_number": order.id,
-                "warehouse_city": order.lease.box.warehouse.city,
-                "warehouse_address": order.lease.box.warehouse.address,
-                "box_number": order.lease.box.code,
-                "client_phone_number": order.lease.user.phone_number,
-                "delivery_status": order.get_delivery_status_display,
-                "client_first_name": order.lease.user.phone_number,
-
+                "order_number": delivery_order.id,
+                "warehouse_city": delivery_order.lease.box.warehouse.city,
+                "warehouse_address": delivery_order.lease.box.warehouse.address,
+                "box_number": delivery_order.lease.box.code,
+                "client_phone_number": delivery_order.lease.user.phone_number,
+                "delivery_status": delivery_order.get_delivery_status_display,
+                "client_first_name": delivery_order.lease.user.first_name,
+                "pickup_address": delivery_order.pickup_address,
             }
-            for order in courier_delivery_orders
+            for delivery_order in courier_delivery_orders
         ]
         context = {
             "delivery_orders": delivery_orders_serialized
         }
 
-        return render(request, 'delivery_orders.html', context)
-    else:
-        return render(request, 'delivery_orders.html')
+    return render(request, 'delivery_orders.html', context)
+
+
+

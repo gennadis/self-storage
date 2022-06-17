@@ -208,6 +208,12 @@ class Lease(models.Model):
         max_digits=10,
         decimal_places=2
     )
+    qr_code = models.ImageField(
+        "QR code",
+        upload_to="leaves/",
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         verbose_name = "Аренда"
@@ -309,6 +315,11 @@ class Delivery(models.Model):
         "Время доставки груза",
         blank=True,
         null=True,
+        db_index=True
+    )
+    pickup_address = models.CharField(
+        "Адрес забора груза",
+        max_length=150,
         db_index=True
     )
 

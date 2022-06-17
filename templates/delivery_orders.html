@@ -31,6 +31,7 @@
     <tr>
        <th>Имя клиента</th>
        <th>Телефон клиента</th>
+       <th>Адрес забора груза</th>
        <th>Город склада</th>
        <th>Адрес склада</th>
        <th>Номер бокса</th>
@@ -40,6 +41,7 @@
         <tr>
             <td>{{delivery_order.client_first_name|default_if_none:""}}</td>
             <td>{{delivery_order.client_phone_number|default_if_none:""}}</td>
+            <td>{{delivery_order.pickup_address|default_if_none:""}}</td>
             <td>{{delivery_order.warehouse_city}}</td>
             <td>{{delivery_order.warehouse_address}}</td>
             <td>{{delivery_order.box_number}}</td>
