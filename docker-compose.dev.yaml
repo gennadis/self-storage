@@ -26,6 +26,12 @@ services:
     env_file:
       - ./.env.dev
 
+  redis:
+    container_name: storage-redis
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - 6379:6379
+
 volumes:
   postgres_volume:
-  
