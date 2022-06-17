@@ -139,6 +139,8 @@ def show_lease(request, lease_id):
     if lease.user != request.user:
         raise Http404("User cannot access this data")
 
+    already_delivered = Delivery.objects.filter(lease=lease, delivery_status="Completed").exists()
+
     lease_seialized = {
         "id": lease.id,
         "status": lease.get_status_display(),
@@ -146,6 +148,7 @@ def show_lease(request, lease_id):
         "box_rate": lease.box.monthly_rate,
         "expires_on": lease.expires_on,
         "total_price": lease.price,
+        "already_delivered": already_delivered,
     }
 
     return render(request, "lease.html", context=lease_seialized)

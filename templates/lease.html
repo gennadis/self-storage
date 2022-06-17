@@ -140,11 +140,16 @@
           {% if status == "Не оплачено" %}
             <button type="submit" class="btn btn-success">Оплатить</button>
             <a data-bs-toggle="modal" data-bs-target="#CancelModal" class="btn btn-danger">Отменить</a>
-            <p class="card-text">Оплатите аренду, чтобы получить доступ к боксу и доставке</p>
+            <p class="card-text">Оплатите аренду, чтобы получить доступ к боксу или заказать доставку</p>
             <button type="button" class="btn btn-secondary" disabled>Заказать бесплатную доставку</button>
             <button type="button" class="btn btn-secondary" disabled>Получить QR-код доступа</button>
           {% elif status == "Оплачено" %}
-            <a data-bs-toggle="modal" data-bs-target="#DeliveryModal" class="btn btn-danger">Заказать бесплатную доставку</a>
+            {% if already_delivered %}
+              <button type="button" class="btn btn-secondary" disabled>Доставка исполнена</button>
+            {% else %}
+              <p class="card-text">Наш курьер приедет к Вам и самостоятельно замерит габариты Ваших вещей</p>
+              <a data-bs-toggle="modal" data-bs-target="#DeliveryModal" class="btn btn-success">Заказать бесплатную доставку</a>
+            {% endif %}
           {% endif %}
         </form>
       </div>
