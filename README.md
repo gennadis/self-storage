@@ -51,6 +51,7 @@ POSTGRES_PORT=5432
 docker compose -f docker-compose.dev.yaml up -d --build
 docker compose -f docker-compose.dev.yaml exec backend python manage.py makemigrations
 docker compose -f docker-compose.dev.yaml exec backend python manage.py migrate
+docker compose -f docker-compose.dev.yaml exec backend python manage.py loaddata db.json
 docker compose -f docker-compose.dev.yaml exec backend python manage.py createsuperuser
 ```
 
