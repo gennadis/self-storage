@@ -1,4 +1,5 @@
 import os
+import socket
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -36,6 +37,7 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "payments.apps.PaymentsConfig",
     # 3rd party
+    "debug_toolbar",
     "phonenumber_field",
     "allauth",
     "allauth.account",
@@ -50,6 +52,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "selfstorage.urls"
@@ -177,3 +180,11 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "index"
 # YOOKASSA
 YOOKASSA_API_KEY = os.getenv("YOOKASSA_API_KEY")
 YOOKASSA_SHOP_ID = os.getenv("YOOKASSA_SHOP_ID")
+
+# Django debug toolbar settings for Docker
+if DEBUG:
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + [
+        "127.0.0.1",
+        "10.0.2.2",
+    ]

@@ -29,7 +29,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body d-flex justify-content-center align-items-center">
-          <form class="d-flex flex-column align-items-center" style="max-width: 420px">
+          <form method="get" action="/lease" class="d-flex flex-column align-items-center" style="max-width: 420px">
             <h1 class="modal-title text-center fw-bold mb-4">Оформление аренды</h1>
             
             <div class="row">
@@ -50,7 +50,7 @@
               </div>
               <div class="col-12 d-flex flex-column align-items-center align-items-lg-start">
                 <label for="leaseDuration" class="form-label mt-4">Укажите на какой срок Вы хотите арендовать бокс</label>
-                <input type="range" value="1" class="form-range" min="1" max="12" id="duration">
+                <input type="range" name="duration" value="1" class="form-range" min="1" max="12" id="duration">
               </div>
               <div class="col-6 d-flex flex-column align-items-center align-items-lg-start">
                 <span id="leaseDuration" class="fs_30 fw-bold SelfStorage_orange">0</span>
@@ -62,7 +62,7 @@
               </div>
             </div>
             <input type="hidden" id="code" name="code" value="0">
-            <button class="btn border-8 py-3 px-5 mt-5 mb-3 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Оформить</button>
+            <button type="submit" class="btn border-8 py-3 px-5 mt-5 mb-3 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Оформить</button>
             <span>Уже зарегистрированы? <a href="#" class="SelfStorage_orange" data-bs-toggle="modal" data-bs-target="#SignModal" data-bs-dismiss="modal" aria-label="Close">Войти в личный кабинет</a></span>
           </form>
         </div>
@@ -71,24 +71,6 @@
   </aside>
 
 	<main class="container mt-header">
-		<article class="row">
-			<div class="col-12 col-lg-6 mb-3 mb-lg-0">
-				<h1 class="fw-bold SelfStorage_green mb-5">Доставка и бережное хранение ваших вещей</h1>
-				<h4 class="fw-lighter SelfStorage_grey mb-5">Аренда бокса на любой срок Бесплатная доставка от вашего
-					дома </h4>
-				<form class="">
-					<input type="text" required name="EMAIL1"
-						class="form-control  border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey"
-						placeholder="Укажите ваш e-mail">
-					<button
-						class="btn  border-8 py-3 px-5 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Рассчитать
-						стоимость</button>
-					<span class="text-center fw-light">Нажимая на кнопку, вы подтверждаете свое <a href="#"
-							class="link-dark">согласие на обработку персональных данных</a></span>
-				</form>
-			</div>
-			<div class="col-12 col-lg-6 SelfStorage__img"></div>
-		</article>
 		<article class="mt-header">
 			<h1 class="text-center fw-bold SelfStorage_green mb-5">Аренда боксов</h1>
 			<h6 class="text-center SelfStorage_grey">Арендуйте склад индивидуального хранения по уникальной цене прямо
@@ -252,185 +234,7 @@
 			</ul>
 			<div class="tab-content" id="pills-tabContent">
 				<div class="tab-pane fade show active" id="pills-all" role="tabpanel" aria-labelledby="pills-home-tab" data-current="-1">
-					<a href="#" class="row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink">
-						<div class="col-12 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-							<span class="SelfStorage_green fs_24 me-2">1 эт.</span><span class="fs_24">№1389-11</span>
-						</div>
-						<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-							<span class="fs_24">2 м²</span>
-						</div>
-						<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-							<span class="fs_24">2 х 1 х 2.5 м²</span>
-						</div>
-						<div class="col-12 col-lg-3">
-							<span
-								class="btn my-2 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange border-8">От
-								2264 ₽</span>
-						</div>
-					</a>
-					<a href="#" class="row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink">
-						<div class="col-12 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-							<span class="SelfStorage_green fs_24 me-2">2 эт.</span><span class="fs_24">№2389-13</span>
-						</div>
-						<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-							<span class="fs_24">3 м²</span>
-						</div>
-						<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-							<span class="fs_24">2 х 2 х 2.5 м²</span>
-						</div>
-						<div class="col-12 col-lg-3">
-							<span
-								class="btn my-2 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange border-8">От
-								2561 ₽</span>
-						</div>
-					</a>
-					<div class="collapse" id="collapse-all">
-						<a href="#" class="row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink">
-							<div class="col-12 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="SelfStorage_green fs_24 me-2">1 эт.</span><span
-									class="fs_24">№1234-56</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">4 м²</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">2 х 4 х 2.5 м²</span>
-							</div>
-							<div class="col-12 col-lg-3">
-								<span
-									class="btn my-2 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange border-8">От
-									1234 ₽</span>
-							</div>
-						</a>
-						<a href="#" class="row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink">
-							<div class="col-12 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="SelfStorage_green fs_24 me-2">2 эт.</span><span
-									class="fs_24">№2345-67</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">5 м²</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">5 х 2 х 2 м²</span>
-							</div>
-							<div class="col-12 col-lg-3">
-								<span
-									class="btn my-2 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange border-8">От
-									2345 ₽</span>
-							</div>
-						</a>
-						<a href="#" class="row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink">
-							<div class="col-12 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="SelfStorage_green fs_24 me-2">2 эт.</span><span
-									class="fs_24">№3456-78</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">6 м²</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">4 х 4 х 2 м²</span>
-							</div>
-							<div class="col-12 col-lg-3">
-								<span
-									class="btn my-2 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange border-8">От
-									3456 ₽</span>
-							</div>
-						</a>
-						<a href="#" class="row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink">
-							<div class="col-12 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="SelfStorage_green fs_24 me-2">2 эт.</span><span
-									class="fs_24">№4567-89</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">7 м²</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">5 х 2 х 2 м²</span>
-							</div>
-							<div class="col-12 col-lg-3">
-								<span
-									class="btn my-2 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange border-8">От
-									4567 ₽</span>
-							</div>
-						</a>
-						<a href="#" class="row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink">
-							<div class="col-12 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="SelfStorage_green fs_24 me-2">2 эт.</span><span
-									class="fs_24">№5678-90</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">8 м²</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">5 х 2 х 2 м²</span>
-							</div>
-							<div class="col-12 col-lg-3">
-								<span
-									class="btn my-2 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange border-8">От
-									5678 ₽</span>
-							</div>
-						</a>
-						<a href="#" class="row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink">
-							<div class="col-12 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="SelfStorage_green fs_24 me-2">2 эт.</span><span
-									class="fs_24">№6789-10</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">9 м²</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">5 х 3 х 3 м²</span>
-							</div>
-							<div class="col-12 col-lg-3">
-								<span
-									class="btn my-2 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange border-8">От
-									6789 ₽</span>
-							</div>
-						</a>
-						<a href="#" class="row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink">
-							<div class="col-12 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="SelfStorage_green fs_24 me-2">3 эт.</span><span
-									class="fs_24">№7890-11</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">10 м²</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">5 х 2 х 1 м²</span>
-							</div>
-							<div class="col-12 col-lg-3">
-								<span
-									class="btn my-2 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange border-8">От
-									7890 ₽</span>
-							</div>
-						</a>
-						<a href="#" class="row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink">
-							<div class="col-12 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="SelfStorage_green fs_24 me-2">3 эт.</span><span
-									class="fs_24">№8901-23</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">11 м²</span>
-							</div>
-							<div class="col-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
-								<span class="fs_24">5 х 4 х 1 м²</span>
-							</div>
-							<div class="col-12 col-lg-3">
-								<span
-									class="btn my-2 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange border-8">От
-									8901 ₽</span>
-							</div>
-						</a>
-					</div>
-					<div class="d-flex justify-content-center mt-5">
-						<button
-							class="btn w-auto py-3 px-5 SelfStorage__bg_orange SelfStorage__btn2_orange text-white text-center fs_24 border-8"
-							id="btn-collapse-all" data-bs-toggle="collapse" data-bs-target="#collapse-all"
-							aria-expanded="false" aria-controls="collapse-all">Другие боксы</button>
-						<script>
-							document.getElementById('btn-collapse-all').addEventListener('click', () => document.getElementById('btn-collapse-all').classList.add('d-none'))
-						</script>
-					</div>
+					<!-- BOXES WILL BE DISPLAYED HERE -->
 				</div>
 			</div>
 		</article>

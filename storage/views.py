@@ -3,19 +3,23 @@ from collections import defaultdict
 from io import BytesIO
 
 import qrcode
+from dateutil.relativedelta import relativedelta
 from django.core.files.base import ContentFile, File
-from django.db.models import Prefetch, Count, Exists, OuterRef
-from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.db.models import Count, Exists, OuterRef, Prefetch
+from django.http import Http404, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-
-from selfstorage.settings import BASE_DIR, MEDIA_URL, MEDIA_ROOT
-from storage.models import AdvertisingCompany, Box, Lease, Delivery, Warehouse
+from selfstorage.settings import BASE_DIR, MEDIA_ROOT, MEDIA_URL
+from storage.models import AdvertisingCompany, Box, Delivery, Lease, Warehouse
 from users.models import CustomUser
 
 
+def page_not_found(request, exception=None):
+    return render(request, "404.html")
+
+
 def index(request):
-    ad_parameter = request.GET.get('ad_company')
+    ad_parameter = request.GET.get("ad_company")
     if ad_parameter:
         now = timezone.localtime()
         try:
@@ -109,6 +113,7 @@ def avaliable_boxes(request, warehouse_id):
     return JsonResponse({"boxes": boxes_serialized})
 
 
+
 def create_lease_qr_code(lease):
     qr_code_info = f"{lease.box.code}{lease.expires_on}{lease.user.id}"
     qr_code = qrcode.make(qr_code_info)
@@ -125,15 +130,94 @@ def rent(request):
         "user_leases": user.leases.all(),
     }
 
-    return render(request, "my-rent.html", context)
+    return render(request, "boxes.html", context)
+
+
+def show_lease(request, lease_id):
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+
+    try:
+        lease = (
+            Lease.objects.select_related("user").select_related("box").get(id=int(lease_id))
+        )
+    except Lease.DoesNotExist:
+        raise Http404("Lease does not exist")
+
+    if lease.user != request.user:
+        raise Http404("User cannot access this data")
+
+    lease_seialized = {
+        "id": lease.id,
+        "status": lease.get_status_display(),
+        "box_code": lease.box.code,
+        "box_rate": lease.box.monthly_rate,
+        "expires_on": lease.expires_on,
+        "total_price": lease.price,
+    }
+
+    return render(request, "lease.html", context=lease_seialized)
+
+
+def cancel_lease(request):
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+
+    lease_id = int(request.GET.get("lease_id"))
+    try:
+        lease = (
+            Lease.objects.select_related("user").get(id=int(lease_id))
+        )
+    except Lease.DoesNotExist:
+        raise Http404("Lease does not exist")
+    
+    if lease.user != request.user or lease.status != Lease.Status.NOT_PAID:
+        raise Http404("User cannot access this data")
+
+    lease.status = Lease.Status.CANCELED
+    lease.save()
+    return redirect("show_lease", lease_id=lease.id)
+
+
+def create_lease(request):
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+
+    # FIXME: Implement some validation
+    box_code = request.GET.get("code")
+    lease_duration = int(request.GET.get("duration"))
+
+    active_leases = Lease.objects.filter(
+        status__in=[Lease.Status.NOT_PAID, Lease.Status.PAID, Lease.Status.OVERDUE]
+    )
+
+    # FIXME: Catch ObjectDoesNotExist exception.
+    box = Box.objects.prefetch_related(
+        Prefetch("leases", queryset=active_leases, to_attr="active_leases")
+    ).get(code=box_code)
+
+    if box.active_leases:
+        # FIXME: Display error message if box is not avaliable
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+    lease_expiration_date = timezone.now() + relativedelta(months=+lease_duration)
+    lease_total_price = box.monthly_rate * lease_duration
+
+    new_lease = Lease.objects.create(
+        user=request.user,
+        box=box,
+        expires_on=lease_expiration_date,
+        price=lease_total_price,
+    )
+    return redirect("show_lease", lease_id=new_lease.id)
 
 
 def delivery(request):
-    lease = Lease.objects.get(id=1)
-    create_lease_qr_code(lease)
     context = {}
     if request.user.is_authenticated:
-        courier_delivery_orders = Delivery.objects.prefetch_related("lease", "courier").filter(courier=request.user)
+        courier_delivery_orders = Delivery.objects.prefetch_related(
+            "lease", "courier"
+        ).filter(courier=request.user)
         delivery_orders_serialized = [
             {
                 "order_number": delivery_order.id,
@@ -147,11 +231,6 @@ def delivery(request):
             }
             for delivery_order in courier_delivery_orders
         ]
-        context = {
-            "delivery_orders": delivery_orders_serialized
-        }
+        context = {"delivery_orders": delivery_orders_serialized}
 
     return render(request, 'delivery_orders.html', context)
-
-
-

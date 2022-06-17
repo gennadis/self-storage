@@ -1,7 +1,7 @@
 import uuid
-
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from selfstorage.settings import YOOKASSA_API_KEY, YOOKASSA_SHOP_ID
+from storage.models import Lease
 from yookassa import Configuration, Payment
 
 
@@ -14,24 +14,36 @@ def make_payment(request):
     # https://yookassa.ru/developers/using-api/interaction-format#idempotence
     idempotence_key = uuid.uuid4()
 
-    order_details: dict = request.POST.get("order_details")
-    price_value = order_details["price"]
-    order_description = order_details["description"]
+    # order_details: dict = request.POST.get("order_details")
+    price_value = request.POST.get("order_price").replace(",",".")
+    order_description = request.POST.get("order_description")
+    lease_id = request.POST.get("lease_id")
 
     payment = Payment.create(
         {
             "amount": {
-                "value": f"{price_value}.00",  # API takes 10 in "10.00" format
+                "value": f"{price_value}",
                 "currency": "RUB",
             },
             "confirmation": {
-                "type": "redirect",
-                "return_url": "http://127.0.0.1:8000/payment",
+                "type": "embedded",
             },
             "capture": True,
             "description": order_description,
         },
         idempotency_key=str(idempotence_key),
     )
+    context = {
+        "confirmation_token": payment.confirmation.confirmation_token,
+        "lease_id": lease_id
+    }
 
-    return redirect(payment.confirmation.confirmation_url)
+    return render(request, "payment.html", context=context)
+
+
+def confirm_payment(request, lease_id):
+    lease = get_object_or_404(Lease, id=int(lease_id))
+    lease.status = Lease.Status.PAID
+    lease.save()
+
+    return redirect("show_lease", lease_id=lease.id)

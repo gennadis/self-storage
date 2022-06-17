@@ -23,6 +23,14 @@ from storage import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
+    path("__debug__/", include("debug_toolbar.urls")),
     path("", include("storage.urls")),
+    path("", include("users.urls")),
+    path("", include("payments.urls")),
 ]
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler404 = "storage.views.page_not_found"
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -18,13 +18,13 @@
                     <a class="nav-link SelfStorage_black" href="{% url 'faq' %}">Правила хранения</a>
                 </li>
                 <li class="nav-item me-5">
-                    <a class="nav-link SelfStorage_black" href="{% url 'index' %}">Арендовать бокс</a>
+                    <a class="nav-link SelfStorage_black" href="{% url 'boxes' %}">Арендовать бокс</a>
                 </li>
 
                 <!-- LOG IN BUTTON OR USERNAME-->
                 <li class="nav-item d-flex align-items-center me-5">
                     {% if user.is_authenticated %}
-                    <a href="/rent" class="text-decoration-none d-flex align-items-center">
+                    <a href="/profile" class="text-decoration-none d-flex align-items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#579586"
                             class="bi bi-person border border-2 rounded-pill" viewBox="0 0 16 16">
                             <path
