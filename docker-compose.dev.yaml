@@ -1,11 +1,13 @@
 version: '3.8'
 
 services:
-  backend:
-    container_name: storage-backend
+  django:
+    container_name: storage-django
     build: ./
-    restart: always
-    command: python manage.py runserver 0.0.0.0:8000
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
     ports:
       - 8000:8000
     volumes:
@@ -14,11 +16,12 @@ services:
       - ./.env.dev
     depends_on:
       - db
+      - redis
 
   db:
     container_name: storage-postgres
     image: postgres:14.0-alpine
-    restart: always
+    restart: unless-stopped
     ports:
       - 5432:5432
     volumes:
@@ -29,9 +32,33 @@ services:
   redis:
     container_name: storage-redis
     image: redis:7-alpine
-    restart: always
+    restart: unless-stopped
     ports:
       - 6379:6379
+
+  celery-worker:
+    container_name: storage-celery-worker
+    build: ./
+    restart: unless-stopped
+    command: celery -A selfstorage worker -l info
+    volumes:
+      - ./:/home/storage/web
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - redis
+
+  celery-beat:
+    container_name: storage-celery-beat
+    build: ./
+    restart: unless-stopped
+    command: celery -A selfstorage beat -l info
+    volumes:
+      - ./:/home/storage/web
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - redis
 
 volumes:
   postgres_volume:
