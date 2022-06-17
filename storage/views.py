@@ -44,14 +44,7 @@ def boxes(request):
     warehouses_with_boxes = defaultdict(list)
     avaliable_boxes = (
         Box.objects.select_related("warehouse")
-        .filter(~Exists(Lease.objects.filter(
-            box=OuterRef("pk"), 
-            status__in=[
-                Lease.Status.PAID, 
-                Lease.Status.NOT_PAID, 
-                Lease.Status.OVERDUE
-            ]
-        ))).order_by("monthly_rate")
+        .available().order_by("monthly_rate")
         
     )
 
@@ -100,16 +93,7 @@ def boxes(request):
 def avaliable_boxes(request, warehouse_id):
     warehouse = get_object_or_404(Warehouse, id=warehouse_id)
 
-    avaliable_boxes = warehouse.boxes.filter(
-        ~Exists(Lease.objects.filter(
-            box=OuterRef("pk"), 
-            status__in=[
-                Lease.Status.PAID, 
-                Lease.Status.NOT_PAID, 
-                Lease.Status.OVERDUE
-            ]
-        )
-    ))
+    avaliable_boxes = warehouse.boxes.available()
 
     boxes_serialized = [
         {
@@ -178,7 +162,7 @@ def get_qr_code(request, lease_id):
 
     try:
         lease = (
-            Lease.objects.select_related("user").select_related("box").get(id=int(lease_id))
+            Lease.objects.select_related("user").get(id=int(lease_id))
         )
     except Lease.DoesNotExist:
         raise Http404("Lease does not exist")
@@ -218,9 +202,7 @@ def create_lease(request):
     box_code = request.GET.get("code")
     lease_duration = int(request.GET.get("duration"))
 
-    active_leases = Lease.objects.filter(
-        status__in=[Lease.Status.NOT_PAID, Lease.Status.PAID, Lease.Status.OVERDUE]
-    )
+    active_leases = Lease.objects.active()
 
     # FIXME: Catch ObjectDoesNotExist exception.
     box = Box.objects.prefetch_related(
@@ -307,7 +289,7 @@ def request_delivery(request):
             {
                 "status":"ok", 
                 "message":(
-                    "Мы приняли Ваш заказ на обработку. В близжайщее "
+                    "Мы приняли Ваш заказ на обработку. В близжайшее "
                     "время с Вами свяжется наш менеджер, чтобы уточнить"
                     " детали. Спасибо!"
                 )
