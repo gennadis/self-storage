@@ -6,22 +6,22 @@ document.addEventListener("DOMContentLoaded", ()=>{
     boxesTable.replaceChildren()
 
     let warehouseButtons = document.querySelectorAll(".js-select-warehouse")
-    for (warehouseButton of warehouseButtons){
+    for (let warehouseButton of warehouseButtons){
         warehouseButton.addEventListener("click", fetch_data)
     }
 
     let buttonAllAreas = document.querySelector("#pills-all-tab")
     buttonAllAreas.addEventListener("click", (event)=>{
-        pills = document.querySelectorAll(".js-box-row")
-        for (pill of pills){
+        let pills = document.querySelectorAll(".js-box-row")
+        for (let pill of pills){
             pill.classList.remove("d-none")
         }
     })
 
     let buttonTo3 = document.querySelector("#pills-to3-tab")
     buttonTo3.addEventListener("click", (event)=>{
-        pills = document.querySelectorAll(".js-box-row")
-        for (pill of pills){
+        let pills = document.querySelectorAll(".js-box-row")
+        for (let pill of pills){
             if(pill.classList.contains("js-area-to-3"))
                 pill.classList.remove("d-none")
             else
@@ -40,8 +40,8 @@ document.addEventListener("DOMContentLoaded", ()=>{
     })
     let buttonFrom10 = document.querySelector("#pills-from10-tab")
     buttonFrom10.addEventListener("click", (event)=>{
-        pills = document.querySelectorAll(".js-box-row")
-        for (pill of pills){
+        let pills = document.querySelectorAll(".js-box-row")
+        for (let pill of pills){
             if(pill.classList.contains("js-area-from-10"))
                 pill.classList.remove("d-none")
             else
