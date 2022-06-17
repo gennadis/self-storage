@@ -31,7 +31,7 @@
           Наш курьер приедет и самостоятельно измерит габариты Ваших вещей.
         </h4>
 				<div class="">
-					<a href="{% url 'index' %}"
+					<a href="{% url 'boxes' %}"
 						class="btn border-8 py-3 px-5 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Рассчитать
 						стоимость</a>
 					<span class="text-center fw-light">Нажимая на кнопку, вы подтверждаете свое <a href="{% static 'consent.pdf' %}"
@@ -88,9 +88,9 @@
 						<span class="text-white">Другие идеи хранения</span>
 					</div>
 
-					<h4 class="text-white mt-5 mb-3">Бокс от 190 р. за м²</h4>
-					<button
-						class="btn fs_24 SelfStorage_green bg-white SelfStorage__btn_green border-8 w-50 py-3">Подробнее</button>
+					<h4 class="text-white mt-5 mb-3">Бокс от {{ lowest_rate }} р. за м²</h4>
+					<a href="{% url 'boxes' %}"
+						class="btn fs_24 SelfStorage_green bg-white SelfStorage__btn_green border-8 w-50 py-3">Подробнее</a>
 				</div>
 			</div>
 			<div class="col-12 col-lg-6 d-flex justify-content-center justify-content-lg-start">
@@ -104,9 +104,9 @@
 						<span class="text-white">Непродовольственные товары</span><br>
 						<span class="text-white">Другие идеи хранения</span>
 					</div>
-					<h4 class="text-white mt-5 mb-3">Бокс от 210 р. за м²</h4>
-					<button
-						class="btn fs_24 SelfStorage_orange bg-white SelfStorage__btn_orange border-8 w-50 py-3">Подробнее</button>
+					<h4 class="text-white mt-5 mb-3">Бокс от {{ lowest_rate }} р. за м²</h4>
+					<a href="{% url 'boxes' %}"
+						class="btn fs_24 SelfStorage_orange bg-white SelfStorage__btn_orange border-8 w-50 py-3">Подробнее</a>
 				</div>
 			</div>
 		</article>

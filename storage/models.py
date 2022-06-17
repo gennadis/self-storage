@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.db.models import F, Exists, OuterRef
 from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
@@ -93,6 +94,27 @@ class WarehouseImage(models.Model):
         return f"{self.index}-{self.warehouse}"
 
 
+class BoxQuerySet(models.QuerySet):
+    def with_price_per_sqm(self):
+        """Annotate monthly price per square meter"""
+        sqm_to_sqcm_ratio = 10000
+        return (
+            self.annotate(
+                price_per_sqm=(
+                    F("monthly_rate")/((F("width")*F("length"))/sqm_to_sqcm_ratio)
+                )
+            )
+        )
+
+    def available(self):
+        """Filter out Boxes with active leases"""
+        return self.filter(
+            ~Exists(
+                Lease.objects.filter(box=OuterRef("pk")).active()
+            )
+        )
+
+
 class Box(models.Model):
     code = models.CharField(
         "Код",
@@ -137,13 +159,14 @@ class Box(models.Model):
         validators=[MinValueValidator(0)]
     )
 
+    objects = BoxQuerySet.as_manager()
+
     class Meta:
         verbose_name = "бокс"
         verbose_name_plural = "боксы"
 
     def get_dimensions_display(self):
         """Get box dimension string in meters in WxLxD format"""
-
         width_m = self.width/100
         length_m= self.length/100
         depth_m = self.depth/100
@@ -151,11 +174,23 @@ class Box(models.Model):
 
     def get_area(self):
         """Get box area in meters squared"""
-
-        return self.width * self.length / 10000
+        sqm_to_sqcm_ratio = 10000
+        return self.width * self.length / sqm_to_sqcm_ratio
 
     def __str__(self):
         return self.code
+
+
+class LeaseQuerySet(models.QuerySet):
+    def active(self):
+        """Filter active leases"""
+        return self.filter(
+            status__in=[
+                Lease.Status.NOT_PAID, 
+                Lease.Status.PAID, 
+                Lease.Status.OVERDUE
+            ]
+        )
 
 
 class Lease(models.Model):
@@ -214,6 +249,8 @@ class Lease(models.Model):
         null=True,
         blank=True,
     )
+
+    objects = LeaseQuerySet.as_manager()
 
     class Meta:
         verbose_name = "Аренда"
