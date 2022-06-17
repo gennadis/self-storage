@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  backend:
+    container_name: storage-backend
+    build: ./
+    restart: always
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/home/storage/web
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+
+  db:
+    container_name: storage-postgres
+    image: postgres:14.0-alpine
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.dev
+
+volumes:
+  postgres_volume:
+  
