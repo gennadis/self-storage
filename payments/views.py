@@ -38,12 +38,18 @@ def make_payment(request):
         "lease_id": lease_id
     }
 
+    # Save Yookassa payment ID for status checking
+    lease = get_object_or_404(Lease, id=int(lease_id))
+    lease.payment_id = payment.id
+    lease.status = Lease.Status.NOT_PAID
+    lease.save()
+
     return render(request, "payment.html", context=context)
 
 
 def confirm_payment(request, lease_id):
     lease = get_object_or_404(Lease, id=int(lease_id))
-    lease.status = Lease.Status.PAID
+
     lease.save()
 
     return redirect("show_lease", lease_id=lease.id)
