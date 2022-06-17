@@ -40,8 +40,10 @@ def index(request):
         .first()        
     )
 
+    lowest_rate = lowest_rate_box.price_per_sqm if lowest_rate_box else 0
+
     return render(request, "index.html", context={
-        "lowest_rate": lowest_rate_box.price_per_sqm
+        "lowest_rate": lowest_rate
     })
 
 
@@ -151,7 +153,8 @@ def show_lease(request, lease_id):
 
     lease_serialized = {
         "id": lease.id,
-        "status": lease.get_status_display(),
+        "status": lease.status,
+        "status_verbose": lease.get_status_display(),
         "box_code": lease.box.code,
         "box_rate": lease.box.monthly_rate,
         "expires_on": lease.expires_on,
@@ -211,11 +214,9 @@ def create_lease(request):
     box_code = request.GET.get("code")
     lease_duration = int(request.GET.get("duration"))
 
-    active_leases = Lease.objects.active()
-
     # FIXME: Catch ObjectDoesNotExist exception.
     box = Box.objects.prefetch_related(
-        Prefetch("leases", queryset=active_leases, to_attr="active_leases")
+        Prefetch("leases", queryset=Lease.objects.active(), to_attr="active_leases")
     ).get(code=box_code)
 
     if box.active_leases:
