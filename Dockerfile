@@ -2,6 +2,9 @@ FROM python:3.9-slim
 
 WORKDIR /home/storage/web
 
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
 # add `psycopg2` dependencies
 RUN apt-get update \
     && apt-get -y install \
