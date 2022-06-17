@@ -227,6 +227,14 @@ class Lease(models.Model):
         default=timezone.now
     )
 
+    payment_id = models.CharField(
+        verbose_name='ID оплаты от Юкассы', 
+        max_length=250,
+        blank=True,
+        unique=True,
+        null=True,
+    )
+
     paid_on = models.DateField(
         "Дата оплаты",
         null=True,
