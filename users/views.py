@@ -25,7 +25,8 @@ def profile(request):
     user_leases_serialized = [
         {
             "id": lease.id,
-            "status": lease.get_status_display(),
+            "status": lease.status,
+            "status_verbose": lease.get_status_display(),
             "warehouse_city": lease.box.warehouse.city,
             "warehouse_address": lease.box.warehouse.address,
             "box_number": lease.box.code,
