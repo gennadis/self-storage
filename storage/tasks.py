@@ -8,7 +8,8 @@ from dateutil.relativedelta import relativedelta
 from django.core.mail import mail_admins
 from django.utils import timezone
 from django.db.models import F
-
+from yookassa import Payment, Configuration
+from selfstorage.settings import YOOKASSA_API_KEY, YOOKASSA_SHOP_ID
 
 """Подходит конец срока аренды → Хочу об этом не забыть и забрать вещи вовремя → 
 Мне приходят напоминания на почту за месяц, 2 недели, неделю и 3 дня, пока я не заберу вещи.
@@ -48,3 +49,16 @@ def send_lease_end_notice():
                 recipient_list=[lease.user.email],
                 fail_silently=False,
             )
+
+
+@app.task
+def check_lease_payment_status():
+    Configuration.secret_key = YOOKASSA_API_KEY
+    Configuration.account_id = YOOKASSA_SHOP_ID
+
+    unpaid_leases = Lease.objects.filter(status=0)
+    for lease in unpaid_leases:
+        lease_payment = Payment.find_one(lease.payment_id)
+        if lease_payment.status == "succeeded":
+            lease.status = 2
+            lease.save()
