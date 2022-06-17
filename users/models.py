@@ -29,7 +29,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         null=True,
         unique=True,
         db_index=True,
-        help_text="номер телефона в формате +79991234567",
+        help_text="<br> *в формате +79991234567",
     )
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

@@ -113,7 +113,6 @@ def avaliable_boxes(request, warehouse_id):
     return JsonResponse({"boxes": boxes_serialized})
 
 
-
 def create_lease_qr_code(lease):
     qr_code_info = f"{lease.box.code}{lease.expires_on}{lease.user.id}"
     qr_code = qrcode.make(qr_code_info)
@@ -121,6 +120,7 @@ def create_lease_qr_code(lease):
     qr_code.save(blob, "JPEG")
     lease.qr_code.save(f"{qr_code_info}.jpg", File(blob))
     lease.save()
+
     return lease.qr_code.url
 
 
@@ -138,7 +138,7 @@ def show_lease(request, lease_id):
     if lease.user != request.user:
         raise Http404("User cannot access this data")
 
-    lease_seialized = {
+    lease_serialized = {
         "id": lease.id,
         "status": lease.get_status_display(),
         "box_code": lease.box.code,
@@ -147,7 +147,7 @@ def show_lease(request, lease_id):
         "total_price": lease.price,
     }
 
-    return render(request, "lease.html", context=lease_seialized)
+    return render(request, "lease.html", context=lease_serialized)
 
 
 def cancel_lease(request):
