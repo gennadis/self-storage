@@ -21,6 +21,40 @@
 
 ---
 
+# DEV `docker compose` instrucitons
+1.
+```sh
+git clone https://github.com/gennadis/self-storage.git
+cd self-storage
+```
+
+2.
+```sh
+cp .env.dev.example .env.dev
+
+SECRET_KEY=<your_secret_key>
+DEBUG=True
+ALLOWED_HOSTS=localhost 127.0.0.1
+
+YOOKASSA_API_KEY=<yookassa_api_key>
+YOOKASSA_SHOP_ID=<yookassa_shop_id>
+
+POSTGRES_USER=storage_user
+POSTGRES_PASSWORD=storage_password
+POSTGRES_DB=storage_db
+POSTGRES_ENGINE=django.db.backends.postgresql
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+```
+3.
+```sh
+docker compose -f docker-compose.dev.yaml up -d --build
+docker compose -f docker-compose.dev.yaml exec backend python manage.py makemigrations
+docker compose -f docker-compose.dev.yaml exec backend python manage.py migrate
+docker compose -f docker-compose.dev.yaml exec backend python manage.py createsuperuser
+```
+
+
 # DEV instructions
 
 1. Скачайте код
