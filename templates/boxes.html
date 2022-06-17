@@ -86,7 +86,7 @@
 			<ul class="nav nav-pills mb-3 d-flex justify-content-between" id="boxes-links" role="tablist">
         {% for wh in warehouses %}
           <li class="nav-item flex-grow-1 mx-2" role="presentation">
-            <a href="#BOX" class="js-select-warehouse row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink"
+            <a class="js-select-warehouse row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink"
               data-warehouse="{{ wh.id }}" data-bs-toggle="pill" data-bs-target="#pills-{{ wh.id }}" role="tab"
               aria-controls="pills-{{ wh.id }}" aria-selected="true">
               <div class="col-12 col-lg-3 d-flex justify-content-center">
@@ -185,12 +185,9 @@
                     <span class="SelfStorage_grey mb-3">Оплата за месяц</span>
                   </div>
                   <div class="d-flex flex-column align-items-center align-items-lg-start">
-                    <button
-                      class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3">Арендовать
-                      бокс</button>
-                    <button
-                      class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange">Позвонить
-                      мне</button>
+                    <button class="js-rent-storage btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3">
+                      Арендовать бокс
+                    </button>
                   </div>
                   <a href="#" class="text-center text-lg-start mt-4 SelfStorage_orange">Нужна помощь?</a>
                 </div>
@@ -200,7 +197,7 @@
         {% endfor %}
 			</div>
 
-			<form class="row mt-5 d-none">
+			<form class="row mt-5 d-none" id="boxesList">
 				<div class="col-6 col-lg-3">
 					<input type="radio" name="BOXES_FILTER" id="ALL_BOXES" class="SelfStorage_radio d-none" checked>
 					<label for="ALL_BOXES" class="btn my-2 w-100 fs_24">Все боксы</label>
