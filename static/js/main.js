@@ -49,6 +49,23 @@ document.addEventListener("DOMContentLoaded", ()=>{
         }
     })
 
+    let warehousePreviewButtons = document.querySelectorAll(".js-select-warehouse")
+    let warehouseBox = document.querySelector("#BOX")
+    for (let whButton of warehousePreviewButtons){
+      whButton.addEventListener("click",(event)=>{
+        warehouseBox.scrollIntoView()
+      })
+    }
+
+    let warehouseRentButtons = document.querySelectorAll(".js-rent-storage")
+    let boxesList = document.querySelector("#pills-tabContent")
+    for (let whButton of warehouseRentButtons){
+      whButton.addEventListener("click",(event)=>{
+        console.log("poop")
+        boxesList.scrollIntoView()
+      })
+    }
+
     let leaseDuration = document.querySelector("#leaseDuration")
     let leasePrice = document.querySelector("#leasePrice")
     let durationSlider = document.querySelector("#duration")

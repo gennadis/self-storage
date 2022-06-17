@@ -1,17 +1,17 @@
-import os
 from collections import defaultdict
 from io import BytesIO
+import random
+import sys
 
 import qrcode
 from dateutil.relativedelta import relativedelta
-from django.core.files.base import ContentFile, File
+from django.core.files.base import File
+from django.db import transaction
 from django.db.models import Count, Exists, OuterRef, Prefetch
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-from selfstorage.settings import BASE_DIR, MEDIA_ROOT, MEDIA_URL
 from storage.models import AdvertisingCompany, Box, Delivery, Lease, Warehouse
-from users.models import CustomUser
 
 
 def page_not_found(request, exception=None):
@@ -113,9 +113,11 @@ def avaliable_boxes(request, warehouse_id):
     return JsonResponse({"boxes": boxes_serialized})
 
 
+@transaction.atomic
 def create_lease_qr_code(lease):
-    qr_code_info = f"{lease.box.code}{lease.expires_on}{lease.user.id}"
-    qr_code = qrcode.make(qr_code_info)
+    random_number = random.randint(-sys.maxsize, sys.maxsize)
+    qr_code_info = f"{lease.box.code}{lease.expires_on}{lease.user.id}{random_number}"
+    qr_code = qrcode.make(hash(qr_code_info))
     blob = BytesIO()
     qr_code.save(blob, "JPEG")
     lease.qr_code.save(f"{qr_code_info}.jpg", File(blob))
@@ -138,6 +140,8 @@ def show_lease(request, lease_id):
     if lease.user != request.user:
         raise Http404("User cannot access this data")
 
+    already_delivered = Delivery.objects.filter(lease=lease, delivery_status="Completed").exists()
+
     lease_serialized = {
         "id": lease.id,
         "status": lease.get_status_display(),
@@ -145,9 +149,31 @@ def show_lease(request, lease_id):
         "box_rate": lease.box.monthly_rate,
         "expires_on": lease.expires_on,
         "total_price": lease.price,
+        "already_delivered": already_delivered,
     }
+    if lease.status == Lease.Status.OVERDUE:
+        tolerance_period_months = 6
+        lease_serialized["seize_on"] = lease.expires_on + relativedelta(months=+tolerance_period_months)
 
     return render(request, "lease.html", context=lease_serialized)
+
+
+def get_qr_code(request, lease_id):
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+
+    try:
+        lease = (
+            Lease.objects.select_related("user").select_related("box").get(id=int(lease_id))
+        )
+    except Lease.DoesNotExist:
+        raise Http404("Lease does not exist")
+
+    if lease.user != request.user:
+        raise Http404("User cannot access this data")
+
+    qr_url = create_lease_qr_code(lease)
+    return JsonResponse({"qr_url": qr_url}) 
 
 
 def cancel_lease(request):
@@ -225,3 +251,51 @@ def delivery(request):
         context = {"delivery_orders": delivery_orders_serialized}
 
     return render(request, 'delivery_orders.html', context)
+
+
+def request_delivery(request):
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+
+    lease_id = int(request.POST.get("lease_id"))
+    address = request.POST.get("address")
+
+    try:
+        lease = (
+            Lease.objects.select_related("user").get(id=int(lease_id))
+        )
+    except Lease.DoesNotExist:
+        raise Http404("Lease does not exist")
+    
+    if lease.user != request.user or lease.status != Lease.Status.PAID:
+        raise Http404("User cannot access this data")
+
+    already_requested = Delivery.objects.filter(lease=lease).exists()
+    if already_requested:
+        return JsonResponse(
+            {
+                "status":"already_exists", 
+                "message":(
+                    "У вас уже есть необработанный заказ на доставку. "
+                    "Пожалуйста, дождитесь пока с Вами свяжется наш "
+                    "менеджер"
+                )
+            }
+        ) 
+
+    delivery = Delivery.objects.create(
+        lease=lease,
+        pickup_address=address,
+        delivery_status="Unprocessed"
+        )
+
+    return JsonResponse(
+            {
+                "status":"ok", 
+                "message":(
+                    "Мы приняли Ваш заказ на обработку. В близжайщее "
+                    "время с Вами свяжется наш менеджер, чтобы уточнить"
+                    " детали. Спасибо!"
+                )
+            }
+        ) 

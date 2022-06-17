@@ -1,9 +1,5 @@
 .DS_Store
 __pycache__/
 venv
-media
 
-.env
-.env.dev
-.env.prod
 *.sqlite3
