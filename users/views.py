@@ -6,18 +6,19 @@ def profile(request):
     user_leases = (
         Lease.objects.select_related("box", "box__warehouse")
         .filter(user__email=request.user.email)
-        .order_by("expires_on")
+        .order_by("status")
     )
     user_leases_serialized = [
         {
-            "counter": count,
+            "id": lease.id,
+            "status": lease.get_status_display(),
             "warehouse_city": lease.box.warehouse.city,
             "warehouse_address": lease.box.warehouse.address,
             "box_number": lease.box.code,
             "lease_from": lease.created_on,
             "lease_till": lease.expires_on,
         }
-        for count, lease in enumerate(user_leases, start=1)
+        for lease in user_leases
     ]
 
     context = {
