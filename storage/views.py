@@ -33,7 +33,16 @@ def index(request):
     else:
         advertising_company = None
 
-    return render(request, "index.html")
+    lowest_rate_box = (
+        Box.objects.available()
+        .with_price_per_sqm()
+        .order_by("price_per_sqm")
+        .first()        
+    )
+
+    return render(request, "index.html", context={
+        "lowest_rate": lowest_rate_box.price_per_sqm
+    })
 
 
 def faq(request):
