@@ -3,7 +3,7 @@ version: '3.8'
 services:
   django:
     container_name: storage-django
-    build: ./
+    build: ./src
     restart: unless-stopped
     command: >
       sh -c "python manage.py migrate &&
@@ -11,7 +11,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./:/home/storage/web
+      - ./src:/home/storage/web
     env_file:
       - ./.env.dev
     depends_on:
@@ -38,11 +38,11 @@ services:
 
   celery-worker:
     container_name: storage-celery-worker
-    build: ./
+    build: ./src
     restart: unless-stopped
     command: celery -A selfstorage worker -l info
     volumes:
-      - ./:/home/storage/web
+      - ./src:/home/storage/web
     env_file:
       - ./.env.dev
     depends_on:
@@ -50,11 +50,11 @@ services:
 
   celery-beat:
     container_name: storage-celery-beat
-    build: ./
+    build: ./src
     restart: unless-stopped
     command: celery -A selfstorage beat -l info
     volumes:
-      - ./:/home/storage/web
+      - ./src:/home/storage/web
     env_file:
       - ./.env.dev
     depends_on:
