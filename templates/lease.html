@@ -81,7 +81,7 @@
                     deliveryForm.addEventListener("submit", (event)=>{
                       event.preventDefault()
                       submitButton.disabled = true
-                      fetch("/request_delivery/", {
+                      fetch("{% url 'request_delivery' %}", {
                         method: 'post',
                         body: new FormData(deliveryForm),
                       }).then(response => response.json())
@@ -127,7 +127,7 @@
                       let generateQR = document.querySelector("#generateQR")
                       let qrImage = document.querySelector("#QRImage")
                       generateQR.addEventListener("click", (event)=>{
-                        fetch("/leases/{{ id }}/qrcode")
+                        fetch("{% url 'get_qr_code' id %}")
                         .then(response => response.json())
                         .then(json => {
                           qrImage.src = json.qr_url
@@ -148,18 +148,11 @@
         <span class="badge {{ status|badge_bg }}">{{ status_verbose }}</span>
       </div>
       <div class="card-body text">
-        {% if status|is_not_paid %}
-          <form method="post" action="/pay/">{% csrf_token %}
-        {% else %}
-          <form>
-        {% endif %}
+        <div>
           <h5 class="card-title">Бокс №{{ box_code }}</h5>
           <p class="card-text">Цена в месяц - {{ box_rate }} Р.</p>
           <p class="card-text">Срок аренды - до {{ expires_on }}</p>
           <p class="card-text">Итого - {{ total_price }} Р.</p>
-          <input type="hidden" name="order_price" value="{{ total_price }}"/>
-          <input type="hidden" name="order_description" value="Аренда бокса №{{ box_code }} - {{ total_price }} Р"/>
-          <input type="hidden" name="lease_id" value="{{ id }}"/>
           {% if status|is_not_paid %}
             <a href="{% url 'make_payment' id %}" class="btn btn-success">Оплатить</a>
             <a data-bs-toggle="modal" data-bs-target="#CancelModal" class="btn btn-danger">Отменить</a>
@@ -182,7 +175,7 @@
             <p class="card-text text-danger">Если Вы не заберете Ваши вещи до {{ seize_on }} - они будут изъяты.</p>
             <a data-bs-toggle="modal" id="generateQR" data-bs-target="#QRModal" class="btn btn-success">Сгенерировать QR-код</a>
           {% endif %}
-        </form>
+        </div>
       </div>
     </div>
 
