@@ -2,6 +2,7 @@ import os
 import socket
 from pathlib import Path
 
+import rollbar
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -60,6 +61,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "rollbar.contrib.django.middleware.RollbarNotifierMiddleware",
 ]
 
 ROOT_URLCONF = "selfstorage.urls"
@@ -220,3 +222,13 @@ EMAIL_PORT = os.getenv("EMAIL_PORT")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Rollbar
+ROLLBAR_TOKEN = os.getenv("ROLLBAR_TOKEN", default="")
+ROLLBAR = {
+    "access_token": ROLLBAR_TOKEN,
+    "environment": "development" if DEBUG else "production",
+    "root": BASE_DIR,
+    "enabled": bool(ROLLBAR_TOKEN),
+}
+rollbar.init(**ROLLBAR)
