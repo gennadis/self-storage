@@ -65,5 +65,19 @@ class Payment(models.Model):
         verbose_name = "Платеж"
         verbose_name_plural = "Платежи"
 
+    def success(self):
+        """Mark payment as successfull and lease as active"""
+        self.status = Payment.Status.SUCCESSFUL
+        self.completed_on = timezone.now()
+        self.save()
+        self.lease.status = Lease.Status.PAID
+        self.lease.save()
+
+    def cancel(self):
+        """Mark payment as canceled"""
+        self.status = Payment.Status.CANCELED
+        self.completed_on = timezone.now()
+        self.save()
+
     def __str__(self):
         return f"{self.id} - {self.lease.box.code}"

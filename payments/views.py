@@ -73,17 +73,9 @@ def confirm_payment(request, payment_id):
 
     payment = YooPayment.find_one(payment_id)
     if payment.status == "succeeded":
-        payment_attmept.status = Payment.Status.SUCCESSFUL
-        payment_attmept.completed_on = timezone.now()
-        payment_attmept.save()
-        lease.status = Lease.Status.PAID
-        lease.save()
+        payment_attmept.success()
     elif payment.status == "canceled":
-        payment_attmept.status = Payment.Status.CANCELED
-        payment_attmept.completed_on = timezone.now()
-        payment_attmept.save()
-        lease.status = Lease.Status.NOT_PAID
-        lease.save()
+        payment_attmept.cancel()
     else:
         # User manually attempted to access confirm_payment view
         return redirect("make_payment", lease_id=lease.id)
