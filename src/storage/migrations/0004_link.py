@@ -7,19 +7,35 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('storage', '0003_advertisingcompany'),
+        ("storage", "0003_advertisingcompany"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Link',
+            name="Link",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('advertising_company', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='link', to='storage.advertisingcompany', verbose_name='Рекламная компания')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "advertising_company",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="link",
+                        to="storage.advertisingcompany",
+                        verbose_name="Рекламная компания",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Ссылка',
-                'verbose_name_plural': 'Ссылки',
+                "verbose_name": "Ссылка",
+                "verbose_name_plural": "Ссылки",
             },
         ),
     ]

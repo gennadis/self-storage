@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('payments', '0001_initial'),
+        ("payments", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='payment',
-            name='status',
-            field=models.SmallIntegerField(choices=[(0, 'Ожидает оплаты'), (1, 'Успешный'), (2, 'Отклоненный')], db_index=True, default=0, verbose_name='Статус'),
+            model_name="payment",
+            name="status",
+            field=models.SmallIntegerField(
+                choices=[(0, "Ожидает оплаты"), (1, "Успешный"), (2, "Отклоненный")],
+                db_index=True,
+                default=0,
+                verbose_name="Статус",
+            ),
         ),
     ]

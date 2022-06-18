@@ -10,34 +10,133 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Warehouse',
+            name="Warehouse",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('address', models.CharField(db_index=True, max_length=200, verbose_name='Адрес склада')),
-                ('city', models.CharField(db_index=True, max_length=40, verbose_name='Город')),
-                ('description', models.TextField(verbose_name='Описание')),
-                ('thumbnail', models.SmallIntegerField(choices=[(0, ''), (1, 'Рядом с метро'), (2, 'Парковка'), (3, 'Высокие потолки'), (4, 'Большие боксы')], db_index=True, default=0, verbose_name='Короткое описание')),
-                ('contact_phone', phonenumber_field.modelfields.PhoneNumberField(max_length=128, region=None, verbose_name='Контактный телефон')),
-                ('temperature', models.SmallIntegerField(db_index=True, validators=[django.core.validators.MinValueValidator(-50), django.core.validators.MaxValueValidator(80)], verbose_name='Температура на складе')),
-                ('ceiling_height', models.IntegerField(db_index=True, verbose_name='Высота потолка (см)')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "address",
+                    models.CharField(
+                        db_index=True, max_length=200, verbose_name="Адрес склада"
+                    ),
+                ),
+                (
+                    "city",
+                    models.CharField(
+                        db_index=True, max_length=40, verbose_name="Город"
+                    ),
+                ),
+                ("description", models.TextField(verbose_name="Описание")),
+                (
+                    "thumbnail",
+                    models.SmallIntegerField(
+                        choices=[
+                            (0, ""),
+                            (1, "Рядом с метро"),
+                            (2, "Парковка"),
+                            (3, "Высокие потолки"),
+                            (4, "Большие боксы"),
+                        ],
+                        db_index=True,
+                        default=0,
+                        verbose_name="Короткое описание",
+                    ),
+                ),
+                (
+                    "contact_phone",
+                    phonenumber_field.modelfields.PhoneNumberField(
+                        max_length=128, region=None, verbose_name="Контактный телефон"
+                    ),
+                ),
+                (
+                    "temperature",
+                    models.SmallIntegerField(
+                        db_index=True,
+                        validators=[
+                            django.core.validators.MinValueValidator(-50),
+                            django.core.validators.MaxValueValidator(80),
+                        ],
+                        verbose_name="Температура на складе",
+                    ),
+                ),
+                (
+                    "ceiling_height",
+                    models.IntegerField(
+                        db_index=True, verbose_name="Высота потолка (см)"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Box',
+            name="Box",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.CharField(db_index=True, max_length=10, unique=True, verbose_name='Код')),
-                ('floor', models.SmallIntegerField(db_index=True, verbose_name='Этаж')),
-                ('length', models.IntegerField(validators=[django.core.validators.MinValueValidator(0)], verbose_name='Длина (м)')),
-                ('width', models.IntegerField(validators=[django.core.validators.MinValueValidator(0)], verbose_name='Ширина (м)')),
-                ('depth', models.IntegerField(validators=[django.core.validators.MinValueValidator(0)], verbose_name='Высота (м)')),
-                ('monthly_rate', models.DecimalField(db_index=True, decimal_places=2, max_digits=10, validators=[django.core.validators.MinValueValidator(0)], verbose_name='Стоимость аренды')),
-                ('warehouse', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='boxes', to='storage.warehouse', verbose_name='Склад')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "code",
+                    models.CharField(
+                        db_index=True, max_length=10, unique=True, verbose_name="Код"
+                    ),
+                ),
+                ("floor", models.SmallIntegerField(db_index=True, verbose_name="Этаж")),
+                (
+                    "length",
+                    models.IntegerField(
+                        validators=[django.core.validators.MinValueValidator(0)],
+                        verbose_name="Длина (м)",
+                    ),
+                ),
+                (
+                    "width",
+                    models.IntegerField(
+                        validators=[django.core.validators.MinValueValidator(0)],
+                        verbose_name="Ширина (м)",
+                    ),
+                ),
+                (
+                    "depth",
+                    models.IntegerField(
+                        validators=[django.core.validators.MinValueValidator(0)],
+                        verbose_name="Высота (м)",
+                    ),
+                ),
+                (
+                    "monthly_rate",
+                    models.DecimalField(
+                        db_index=True,
+                        decimal_places=2,
+                        max_digits=10,
+                        validators=[django.core.validators.MinValueValidator(0)],
+                        verbose_name="Стоимость аренды",
+                    ),
+                ),
+                (
+                    "warehouse",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="boxes",
+                        to="storage.warehouse",
+                        verbose_name="Склад",
+                    ),
+                ),
             ],
         ),
     ]

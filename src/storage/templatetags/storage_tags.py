@@ -4,6 +4,7 @@ from storage.models import Lease
 
 register = template.Library()
 
+
 @register.filter(name="badge_bg")
 def badge_bg(value):
     """Get appropriate CSS style for status"""

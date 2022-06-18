@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('storage', '0011_lease_qr_code'),
+        ("storage", "0011_lease_qr_code"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='lease',
-            name='qr_code',
-            field=models.FileField(blank=True, null=True, upload_to='', verbose_name='QR code'),
+            model_name="lease",
+            name="qr_code",
+            field=models.FileField(
+                blank=True, null=True, upload_to="", verbose_name="QR code"
+            ),
         ),
     ]

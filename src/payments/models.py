@@ -19,46 +19,30 @@ class Payment(models.Model):
     )
 
     idempotence_key = models.UUIDField(
-        "Ключ идемпотентности",
-        default=uuid.uuid4, 
-        editable=False
+        "Ключ идемпотентности", default=uuid.uuid4, editable=False
     )
 
-    description = models.TextField(
-        "Описание платежа"
-    )
+    description = models.TextField("Описание платежа")
 
     lease = models.ForeignKey(
         Lease,
         on_delete=models.CASCADE,
         verbose_name="Элемент аренды",
-        related_name="payments"
+        related_name="payments",
     )
 
-    amount = models.DecimalField(
-        "Сумма платежа",
-        max_digits=10,
-        decimal_places=2
-    ) 
+    amount = models.DecimalField("Сумма платежа", max_digits=10, decimal_places=2)
 
     created_on = models.DateTimeField(
-        "Дата создания",
-        default=timezone.now,
-        db_index=True
+        "Дата создания", default=timezone.now, db_index=True
     )
 
     completed_on = models.DateTimeField(
-        "Дата завершения",
-        null=True,
-        blank=True,
-        db_index=True
+        "Дата завершения", null=True, blank=True, db_index=True
     )
 
     status = models.SmallIntegerField(
-        "Статус",
-        choices=Status.choices,
-        default=Status.PENDING,
-        db_index=True
+        "Статус", choices=Status.choices, default=Status.PENDING, db_index=True
     )
 
     class Meta:

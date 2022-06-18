@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('storage', '0010_delivery_pickup_address'),
+        ("storage", "0010_delivery_pickup_address"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='lease',
-            name='qr_code',
-            field=models.ImageField(blank=True, null=True, upload_to='', verbose_name='QR code'),
+            model_name="lease",
+            name="qr_code",
+            field=models.ImageField(
+                blank=True, null=True, upload_to="", verbose_name="QR code"
+            ),
         ),
     ]

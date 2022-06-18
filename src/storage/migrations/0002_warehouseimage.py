@@ -7,20 +7,46 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('storage', '0001_initial'),
+        ("storage", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='WarehouseImage',
+            name="WarehouseImage",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image_file', models.ImageField(upload_to='', verbose_name='Изображение')),
-                ('index', models.PositiveIntegerField(db_index=True, default=0, verbose_name='Приоритет при отображении')),
-                ('warehouse', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='images', to='storage.warehouse', verbose_name='Склад')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "image_file",
+                    models.ImageField(upload_to="", verbose_name="Изображение"),
+                ),
+                (
+                    "index",
+                    models.PositiveIntegerField(
+                        db_index=True,
+                        default=0,
+                        verbose_name="Приоритет при отображении",
+                    ),
+                ),
+                (
+                    "warehouse",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="images",
+                        to="storage.warehouse",
+                        verbose_name="Склад",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['index'],
+                "ordering": ["index"],
             },
         ),
     ]

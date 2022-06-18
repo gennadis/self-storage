@@ -9,23 +9,31 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('storage', '0012_alter_lease_qr_code'),
+        ("storage", "0012_alter_lease_qr_code"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='delivery',
-            name='comment',
-            field=models.TextField(blank=True, null=True, verbose_name='Комментарий'),
+            model_name="delivery",
+            name="comment",
+            field=models.TextField(blank=True, null=True, verbose_name="Комментарий"),
         ),
         migrations.AlterField(
-            model_name='delivery',
-            name='courier',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='courier', to=settings.AUTH_USER_MODEL, verbose_name='Курьер'),
+            model_name="delivery",
+            name="courier",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="courier",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="Курьер",
+            ),
         ),
         migrations.AlterField(
-            model_name='lease',
-            name='qr_code',
-            field=models.ImageField(blank=True, null=True, upload_to='leaves/', verbose_name='QR code'),
+            model_name="lease",
+            name="qr_code",
+            field=models.ImageField(
+                blank=True, null=True, upload_to="leaves/", verbose_name="QR code"
+            ),
         ),
     ]

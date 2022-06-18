@@ -19,7 +19,9 @@ def make_payment(request, lease_id):
 
     # If there is already a pending payment use idempotence to repeat payment attempt
     try:
-        pending_payment = Payment.objects.get(lease=lease, status=Payment.Status.PENDING)
+        pending_payment = Payment.objects.get(
+            lease=lease, status=Payment.Status.PENDING
+        )
     except Payment.DoesNotExist:
         pending_payment = None
 
@@ -29,7 +31,9 @@ def make_payment(request, lease_id):
         idempotence_key = pending_payment.idempotence_key
     else:
         payment_amount = lease.price
-        payment_description = f"Оплата аренды бокса №{lease.box.code} до {lease.expires_on}"
+        payment_description = (
+            f"Оплата аренды бокса №{lease.box.code} до {lease.expires_on}"
+        )
         idempotence_key = uuid.uuid4()
 
     payment = YooPayment.create(
@@ -55,13 +59,15 @@ def make_payment(request, lease_id):
             idempotence_key=idempotence_key,
             lease=lease,
             description=payment_description,
-            amount=payment_amount
+            amount=payment_amount,
         )
 
     context = {
         "confirmation_token": payment.confirmation.confirmation_token,
         "payment_id": payment.id,
-        "return_url": request.build_absolute_uri(reverse("confirm_payment", kwargs={"payment_id": payment.id}))
+        "return_url": request.build_absolute_uri(
+            reverse("confirm_payment", kwargs={"payment_id": payment.id})
+        ),
     }
 
     return render(request, "payment.html", context=context)

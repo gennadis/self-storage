@@ -6,9 +6,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('storage', '0003_alter_box_options_alter_warehouse_options_lease'),
-        ('storage', '0004_link'),
+        ("storage", "0003_alter_box_options_alter_warehouse_options_lease"),
+        ("storage", "0004_link"),
     ]
 
-    operations = [
-    ]
+    operations = []

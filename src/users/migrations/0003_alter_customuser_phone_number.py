@@ -7,13 +7,21 @@ import phonenumber_field.modelfields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0002_alter_customuser_email_alter_customuser_first_name_and_more'),
+        ("users", "0002_alter_customuser_email_alter_customuser_first_name_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='customuser',
-            name='phone_number',
-            field=phonenumber_field.modelfields.PhoneNumberField(db_index=True, help_text='<br> *в формате +79991234567', max_length=128, null=True, region=None, unique=True, verbose_name='номер телефона'),
+            model_name="customuser",
+            name="phone_number",
+            field=phonenumber_field.modelfields.PhoneNumberField(
+                db_index=True,
+                help_text="<br> *в формате +79991234567",
+                max_length=128,
+                null=True,
+                region=None,
+                unique=True,
+                verbose_name="номер телефона",
+            ),
         ),
     ]

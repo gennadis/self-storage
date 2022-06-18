@@ -6,13 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('storage', '0014_alter_lease_created_on_alter_lease_expires_on_and_more'),
+        ("storage", "0014_alter_lease_created_on_alter_lease_expires_on_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='lease',
-            name='status',
-            field=models.SmallIntegerField(choices=[(0, 'Не оплачено'), (1, 'Просрочено'), (2, 'Оплачено'), (3, 'Завершено'), (4, 'Отменено')], db_index=True, default=0, verbose_name='Статус'),
+            model_name="lease",
+            name="status",
+            field=models.SmallIntegerField(
+                choices=[
+                    (0, "Не оплачено"),
+                    (1, "Просрочено"),
+                    (2, "Оплачено"),
+                    (3, "Завершено"),
+                    (4, "Отменено"),
+                ],
+                db_index=True,
+                default=0,
+                verbose_name="Статус",
+            ),
         ),
     ]

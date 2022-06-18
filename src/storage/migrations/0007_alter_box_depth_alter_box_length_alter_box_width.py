@@ -7,23 +7,32 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('storage', '0006_alter_lease_options'),
+        ("storage", "0006_alter_lease_options"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='box',
-            name='depth',
-            field=models.IntegerField(validators=[django.core.validators.MinValueValidator(0)], verbose_name='Высота (см)'),
+            model_name="box",
+            name="depth",
+            field=models.IntegerField(
+                validators=[django.core.validators.MinValueValidator(0)],
+                verbose_name="Высота (см)",
+            ),
         ),
         migrations.AlterField(
-            model_name='box',
-            name='length',
-            field=models.IntegerField(validators=[django.core.validators.MinValueValidator(0)], verbose_name='Длина (см)'),
+            model_name="box",
+            name="length",
+            field=models.IntegerField(
+                validators=[django.core.validators.MinValueValidator(0)],
+                verbose_name="Длина (см)",
+            ),
         ),
         migrations.AlterField(
-            model_name='box',
-            name='width',
-            field=models.IntegerField(validators=[django.core.validators.MinValueValidator(0)], verbose_name='Ширина (см)'),
+            model_name="box",
+            name="width",
+            field=models.IntegerField(
+                validators=[django.core.validators.MinValueValidator(0)],
+                verbose_name="Ширина (см)",
+            ),
         ),
     ]

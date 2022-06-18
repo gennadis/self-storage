@@ -4,16 +4,16 @@ from users.forms import CustomUserCreationForm
 
 
 def register(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             custom_user = form.save()
             custom_user.save()
-            return redirect('index')
+            return redirect("index")
     else:
         form = CustomUserCreationForm()
 
-    return render(request, 'account/signup.html', {'form': form})
+    return render(request, "account/signup.html", {"form": form})
 
 
 def profile(request):
@@ -40,10 +40,9 @@ def profile(request):
         else:
             irrelevant_leases_serialized.append(lease_serialized)
 
-
     context = {
         "relevant_user_leases": relevant_leases_serialized,
-        "irrelevant_user_leases": irrelevant_leases_serialized
+        "irrelevant_user_leases": irrelevant_leases_serialized,
     }
 
     return render(request, "my-rent.html", context=context)

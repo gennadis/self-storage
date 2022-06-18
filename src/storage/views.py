@@ -34,17 +34,12 @@ def index(request):
         advertising_company = None
 
     lowest_rate_box = (
-        Box.objects.available()
-        .with_price_per_sqm()
-        .order_by("price_per_sqm")
-        .first()        
+        Box.objects.available().with_price_per_sqm().order_by("price_per_sqm").first()
     )
 
     lowest_rate = lowest_rate_box.price_per_sqm if lowest_rate_box else 0
 
-    return render(request, "index.html", context={
-        "lowest_rate": lowest_rate
-    })
+    return render(request, "index.html", context={"lowest_rate": lowest_rate})
 
 
 def faq(request):
@@ -54,9 +49,7 @@ def faq(request):
 def boxes(request):
     warehouses_with_boxes = defaultdict(list)
     avaliable_boxes = (
-        Box.objects.select_related("warehouse")
-        .available().order_by("monthly_rate")
-        
+        Box.objects.select_related("warehouse").available().order_by("monthly_rate")
     )
 
     for box in avaliable_boxes:
@@ -141,7 +134,9 @@ def show_lease(request, lease_id):
 
     try:
         lease = (
-            Lease.objects.select_related("user").select_related("box").get(id=int(lease_id))
+            Lease.objects.select_related("user")
+            .select_related("box")
+            .get(id=int(lease_id))
         )
     except Lease.DoesNotExist:
         raise Http404("Lease does not exist")
@@ -149,7 +144,9 @@ def show_lease(request, lease_id):
     if lease.user != request.user:
         raise Http404("User cannot access this data")
 
-    already_delivered = Delivery.objects.filter(lease=lease, delivery_status="Completed").exists()
+    already_delivered = Delivery.objects.filter(
+        lease=lease, delivery_status="Completed"
+    ).exists()
 
     lease_serialized = {
         "id": lease.id,
@@ -163,7 +160,9 @@ def show_lease(request, lease_id):
     }
     if lease.status == Lease.Status.OVERDUE:
         tolerance_period_months = 6
-        lease_serialized["seize_on"] = lease.expires_on + relativedelta(months=+tolerance_period_months)
+        lease_serialized["seize_on"] = lease.expires_on + relativedelta(
+            months=+tolerance_period_months
+        )
 
     return render(request, "lease.html", context=lease_serialized)
 
@@ -173,9 +172,7 @@ def get_qr_code(request, lease_id):
         return redirect("account_login")
 
     try:
-        lease = (
-            Lease.objects.select_related("user").get(id=int(lease_id))
-        )
+        lease = Lease.objects.select_related("user").get(id=int(lease_id))
     except Lease.DoesNotExist:
         raise Http404("Lease does not exist")
 
@@ -183,7 +180,7 @@ def get_qr_code(request, lease_id):
         raise Http404("User cannot access this data")
 
     qr_url = create_lease_qr_code(lease)
-    return JsonResponse({"qr_url": qr_url}) 
+    return JsonResponse({"qr_url": qr_url})
 
 
 def cancel_lease(request, lease_id):
@@ -191,12 +188,10 @@ def cancel_lease(request, lease_id):
         return redirect("account_login")
 
     try:
-        lease = (
-            Lease.objects.select_related("user").get(id=int(lease_id))
-        )
+        lease = Lease.objects.select_related("user").get(id=int(lease_id))
     except Lease.DoesNotExist:
         raise Http404("Lease does not exist")
-    
+
     if lease.user != request.user or lease.status != Lease.Status.NOT_PAID:
         raise Http404("User cannot access this data")
 
@@ -255,7 +250,7 @@ def delivery(request):
         ]
         context = {"delivery_orders": delivery_orders_serialized}
 
-    return render(request, 'delivery_orders.html', context)
+    return render(request, "delivery_orders.html", context)
 
 
 def request_delivery(request):
@@ -266,12 +261,10 @@ def request_delivery(request):
     address = request.POST.get("address")
 
     try:
-        lease = (
-            Lease.objects.select_related("user").get(id=int(lease_id))
-        )
+        lease = Lease.objects.select_related("user").get(id=int(lease_id))
     except Lease.DoesNotExist:
         raise Http404("Lease does not exist")
-    
+
     if lease.user != request.user or lease.status != Lease.Status.PAID:
         raise Http404("User cannot access this data")
 
@@ -279,28 +272,26 @@ def request_delivery(request):
     if already_requested:
         return JsonResponse(
             {
-                "status":"already_exists", 
-                "message":(
+                "status": "already_exists",
+                "message": (
                     "У вас уже есть необработанный заказ на доставку. "
                     "Пожалуйста, дождитесь пока с Вами свяжется наш "
                     "менеджер"
-                )
+                ),
             }
-        ) 
-
-    delivery = Delivery.objects.create(
-        lease=lease,
-        pickup_address=address,
-        delivery_status="Unprocessed"
         )
 
+    delivery = Delivery.objects.create(
+        lease=lease, pickup_address=address, delivery_status="Unprocessed"
+    )
+
     return JsonResponse(
-            {
-                "status":"ok", 
-                "message":(
-                    "Мы приняли Ваш заказ на обработку. В близжайшее "
-                    "время с Вами свяжется наш менеджер, чтобы уточнить"
-                    " детали. Спасибо!"
-                )
-            }
-        ) 
+        {
+            "status": "ok",
+            "message": (
+                "Мы приняли Ваш заказ на обработку. В близжайшее "
+                "время с Вами свяжется наш менеджер, чтобы уточнить"
+                " детали. Спасибо!"
+            ),
+        }
+    )

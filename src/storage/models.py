@@ -21,45 +21,29 @@ class Warehouse(models.Model):
         HIGH_CEILING = 3, _("Высокие потолки")
         BIG_BOXES = 4, _("Большие боксы")
 
+    address = models.CharField("Адрес склада", max_length=200, db_index=True)
 
-    address = models.CharField(
-        "Адрес склада",
-        max_length=200,
-        db_index=True
-    )
+    city = models.CharField("Город", max_length=40, db_index=True)
 
-    city = models.CharField(
-        "Город",
-        max_length=40,
-        db_index=True
-    )
-
-    description = models.TextField(
-        "Описание"
-    )
+    description = models.TextField("Описание")
 
     thumbnail = models.SmallIntegerField(
         "Короткое описание",
         choices=Thumbnail.choices,
         default=Thumbnail.NO_THUMBNAIL,
-        db_index=True
+        db_index=True,
     )
 
-    contact_phone = PhoneNumberField(
-        "Контактный телефон"
-    )
+    contact_phone = PhoneNumberField("Контактный телефон")
 
     temperature = models.SmallIntegerField(
         "Температура на складе",
         db_index=True,
-        validators=[MinValueValidator(-50), MaxValueValidator(80)]
+        validators=[MinValueValidator(-50), MaxValueValidator(80)],
     )
 
     # TODO: Ограничить верхний нижний предел?
-    ceiling_height = models.IntegerField(
-        "Высота потолка (см)",
-        db_index=True
-    )
+    ceiling_height = models.IntegerField("Высота потолка (см)", db_index=True)
 
     class Meta:
         verbose_name = "склад"
@@ -70,21 +54,14 @@ class Warehouse(models.Model):
 
 
 class WarehouseImage(models.Model):
-    image_file = models.ImageField(
-        "Изображение"
-    )
+    image_file = models.ImageField("Изображение")
 
     index = models.PositiveIntegerField(
-        verbose_name="Приоритет при отображении",
-        default=0,
-        db_index=True
+        verbose_name="Приоритет при отображении", default=0, db_index=True
     )
 
     warehouse = models.ForeignKey(
-        Warehouse,
-        on_delete=models.CASCADE,
-        verbose_name="Склад",
-        related_name="images"
+        Warehouse, on_delete=models.CASCADE, verbose_name="Склад", related_name="images"
     )
 
     class Meta:
@@ -98,65 +75,39 @@ class BoxQuerySet(models.QuerySet):
     def with_price_per_sqm(self):
         """Annotate monthly price per square meter"""
         sqm_to_sqcm_ratio = 10000
-        return (
-            self.annotate(
-                price_per_sqm=(
-                    F("monthly_rate")/((F("width")*F("length"))/sqm_to_sqcm_ratio)
-                )
+        return self.annotate(
+            price_per_sqm=(
+                F("monthly_rate") / ((F("width") * F("length")) / sqm_to_sqcm_ratio)
             )
         )
 
     def available(self):
         """Filter out Boxes with active leases"""
-        return self.filter(
-            ~Exists(
-                Lease.objects.filter(box=OuterRef("pk")).active()
-            )
-        )
+        return self.filter(~Exists(Lease.objects.filter(box=OuterRef("pk")).active()))
 
 
 class Box(models.Model):
-    code = models.CharField(
-        "Код",
-        max_length=10,
-        unique=True,
-        db_index=True
-    )
+    code = models.CharField("Код", max_length=10, unique=True, db_index=True)
 
     warehouse = models.ForeignKey(
-        Warehouse,
-        on_delete=models.CASCADE,
-        verbose_name="Склад",
-        related_name="boxes"
+        Warehouse, on_delete=models.CASCADE, verbose_name="Склад", related_name="boxes"
     )
 
-    floor = models.SmallIntegerField(
-        "Этаж",
-        db_index=True
-    )
+    floor = models.SmallIntegerField("Этаж", db_index=True)
 
-    # TODO: Ограничить верхний нижний предел? 
-    length = models.IntegerField(
-        "Длина (см)",
-        validators=[MinValueValidator(0)]
-    )
+    # TODO: Ограничить верхний нижний предел?
+    length = models.IntegerField("Длина (см)", validators=[MinValueValidator(0)])
 
-    width = models.IntegerField(
-        "Ширина (см)",
-        validators=[MinValueValidator(0)]
-    )
+    width = models.IntegerField("Ширина (см)", validators=[MinValueValidator(0)])
 
-    depth = models.IntegerField(
-        "Высота (см)",
-        validators=[MinValueValidator(0)]
-    )
+    depth = models.IntegerField("Высота (см)", validators=[MinValueValidator(0)])
 
     monthly_rate = models.DecimalField(
         "Стоимость аренды",
         decimal_places=2,
         max_digits=10,
         db_index=True,
-        validators=[MinValueValidator(0)]
+        validators=[MinValueValidator(0)],
     )
 
     objects = BoxQuerySet.as_manager()
@@ -167,9 +118,9 @@ class Box(models.Model):
 
     def get_dimensions_display(self):
         """Get box dimension string in meters in WxLxD format"""
-        width_m = self.width/100
-        length_m= self.length/100
-        depth_m = self.depth/100
+        width_m = self.width / 100
+        length_m = self.length / 100
+        depth_m = self.depth / 100
         return f"{width_m}x{length_m}x{depth_m}"
 
     def get_area(self):
@@ -185,11 +136,7 @@ class LeaseQuerySet(models.QuerySet):
     def active(self):
         """Filter active leases"""
         return self.filter(
-            status__in=[
-                Lease.Status.NOT_PAID, 
-                Lease.Status.PAID, 
-                Lease.Status.OVERDUE
-            ]
+            status__in=[Lease.Status.NOT_PAID, Lease.Status.PAID, Lease.Status.OVERDUE]
         )
 
 
@@ -205,37 +152,22 @@ class Lease(models.Model):
         CustomUser,
         on_delete=models.CASCADE,
         verbose_name="Арендатор",
-        related_name="leases"
+        related_name="leases",
     )
 
     box = models.ForeignKey(
-        Box,
-        on_delete=models.CASCADE,
-        verbose_name="Бокс",
-        related_name="leases"
+        Box, on_delete=models.CASCADE, verbose_name="Бокс", related_name="leases"
     )
 
     status = models.SmallIntegerField(
-        "Статус",
-        choices=Status.choices,
-        default=Status.NOT_PAID,
-        db_index=True
+        "Статус", choices=Status.choices, default=Status.NOT_PAID, db_index=True
     )
 
-    created_on = models.DateField(
-        "Дата создания",
-        default=timezone.now
-    )
+    created_on = models.DateField("Дата создания", default=timezone.now)
 
-    expires_on = models.DateField(
-        "Дата окончания аренды"
-    )
+    expires_on = models.DateField("Дата окончания аренды")
 
-    price = models.DecimalField(
-        "Стоимость аренды",
-        max_digits=10,
-        decimal_places=2
-    )
+    price = models.DecimalField("Стоимость аренды", max_digits=10, decimal_places=2)
     qr_code = models.ImageField(
         "QR code",
         upload_to="leaves/",
@@ -260,12 +192,12 @@ class Link(models.Model):
         related_name="link",
         on_delete=models.CASCADE,
     )
-    readonly_fields = ('create_link',)
+    readonly_fields = ("create_link",)
 
-    @admin.display(description='Созданная ссылка')
+    @admin.display(description="Созданная ссылка")
     def create_link(self):
         params = {
-            'ad_company': self.advertising_company.key_word,
+            "ad_company": self.advertising_company.key_word,
         }
         req = PreparedRequest()
         req.prepare_url(BASE_URL, params)
@@ -293,10 +225,7 @@ class AdvertisingCompany(models.Model):
         verbose_name="Дата окончания",
     )
 
-    clicks = models.IntegerField(
-        verbose_name='Число кликов',
-        default=0
-    )
+    clicks = models.IntegerField(verbose_name="Число кликов", default=0)
 
     class Meta:
         verbose_name = "Рекламная компания"
@@ -314,50 +243,36 @@ class Delivery(models.Model):
         ("Completed", "Груз на складе"),
     )
     lease = models.ForeignKey(
-        Lease,
-        on_delete=models.CASCADE,
-        verbose_name="Заказ",
-        related_name="lease"
+        Lease, on_delete=models.CASCADE, verbose_name="Заказ", related_name="lease"
     )
     courier = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
         verbose_name="Курьер",
         related_name="courier",
-        null=True
+        null=True,
     )
     delivery_status = models.CharField(
         "Статус доставки заказа",
         max_length=15,
         choices=STATUSES,
         default="Unprocessed",
-        db_index=True
+        db_index=True,
     )
-    comment = models.TextField(
-        "Комментарий",
-        blank=True,
-        null=True
-    )
+    comment = models.TextField("Комментарий", blank=True, null=True)
     registered_at = models.DateTimeField(
-        "Время назначения курьера",
-        default=now,
-        db_index=True
+        "Время назначения курьера", default=now, db_index=True
     )
     delivered_at = models.DateTimeField(
-        "Время доставки груза",
-        blank=True,
-        null=True,
-        db_index=True
+        "Время доставки груза", blank=True, null=True, db_index=True
     )
     pickup_address = models.CharField(
-        "Адрес забора груза",
-        max_length=150,
-        db_index=True
+        "Адрес забора груза", max_length=150, db_index=True
     )
 
     class Meta:
-        verbose_name = 'Заказ на доставку'
-        verbose_name_plural = 'Заказы на доставку'
+        verbose_name = "Заказ на доставку"
+        verbose_name_plural = "Заказы на доставку"
 
     def __str__(self):
         return f"Заказ {self.id} для бокса {self.lease.box.code}"
