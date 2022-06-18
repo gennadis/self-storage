@@ -3,7 +3,7 @@ version: '3'
 services:
   django:
     container_name: storage-django
-    build: ../
+    build: ../src
     restart: unless-stopped
     command: gunicorn selfstorage.wsgi:application --bind 0.0.0.0:8000
     expose:
@@ -37,11 +37,11 @@ services:
 
   celery-worker:
     container_name: storage-celery-worker
-    build: ../
+    build: ../src
     restart: unless-stopped
     command: celery -A selfstorage worker -l info
     # volumes:
-    #   - ./:/home/storage/web
+    #   - ./src:/home/storage/web
     env_file:
       - ./.env.prod
     depends_on:
@@ -49,11 +49,11 @@ services:
 
   celery-beat:
     container_name: storage-celery-beat
-    build: ../
+    build: ../src
     restart: unless-stopped
     command: celery -A selfstorage beat -l info
     # volumes:
-    #   - ./:/home/storage/web
+    #   - ./src:/home/storage/web
     env_file:
       - ./.env.prod
     depends_on:
