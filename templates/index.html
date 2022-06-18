@@ -167,37 +167,6 @@
 				<h6>Удобная система напоминаний о сроках аренды бокса</h6>
 			</div>
 		</article>
-
-		<article class="row pt-header">
-			<div class="col-12 col-lg-6 mb-3 mb-lg-0 SelfStorage__img2"></div>
-			<div class="col-12 col-lg-6 d-flex flex-column align-items-center align-items-lg-start">
-				<h1 class="text-start fw-bold SelfStorage_green mb-4">Всегда рядом</h1>
-				<h4 class="SelfStorage_grey">Одинцово, ул. Северная, д. 36</h4>
-				<div class="row">
-					<div class="col-6 d-flex flex-column align-items-center align-items-lg-start">
-						<span class="fs_30 fw-bold SelfStorage_orange">18 °С</span>
-						<span class="SelfStorage_grey mb-3">Температура на складе</span>
-						<span class="fs_30 fw-bold SelfStorage_orange">24 из 258</span>
-						<span class="SelfStorage_grey mb-3">Боксов свободно</span>
-					</div>
-					<div class="col-6 d-flex flex-column align-items-center align-items-lg-start">
-						<span class="fs_30 fw-bold SelfStorage_orange">до 3.5 м</span>
-						<span class="SelfStorage_grey mb-3">Высота потолка</span>
-						<span class="fs_30 fw-bold SelfStorage_orange">2264 ₽</span>
-						<span class="SelfStorage_grey mb-3">Оплата за месяц</span>
-					</div>
-					<a href="#" class="text-center text-lg-start mt-4 mb-5 SelfStorage_green">Подробнее о складе</a>
-					<div class="d-flex flex-column align-items-center align-items-lg-start">
-						<button
-							class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3">Арендовать
-							бокс</button>
-						<button
-							class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange">Выбрать
-							склад</button>
-					</div>
-				</div>
-			</div>
-		</article>
 		<article class="row pt-header" id="reviews">
 			<h1 class="text-center fw-bold SelfStorage_green mb-4">Забота о ваших ценностях – наша главная задача</h1>
 			<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
@@ -211,7 +180,6 @@
 									<p class="fs_24">Удобная система напоминания о том, что срок хранения подходит к
 										концу.</p>
 									<p class="fs_24">Вещи были в целостности, ничего не повредилось.</p>
-									<a href="#" class="SelfStorage_green">Читать отзыв полностью</a>
 								</div>
 							</div>
 							<div class="col-12 col-lg-6 d-flex flex-column align-items-center justify-content-center">
@@ -232,7 +200,6 @@
 										На новую квартиру все никак не могло уместиться, начал ломать голову, что же
 										делать.
 										Решил попробовать арендовать бокс на полгода, такой опыт был впервые.</p>
-									<a href="#" class="SelfStorage_green">Читать отзыв полностью</a>
 								</div>
 							</div>
 							<div class="col-12 col-lg-6 d-flex flex-column align-items-center justify-content-center">
@@ -268,30 +235,6 @@
 			</div>
 		</article>
 	</main>
-	<aside class="py-5 mt-header SelfStorage__bg_green">
-		<div class="container py-5">
-			<div class="d-flex flex-column align-items-center">
-				<h1 class="text-white text-center fw-bold mb-4">Арендуйте свой первый бокс прямо сейчас и получите
-					скидку 15% до конца апреля</h1>
-				<h4 class="text-white text-center fw-light">Акция распространяется только на новых пользователей сервиса
-					SelfStorage</h4>
-				<form class="row my-4">
-					<div class="col-12 col-lg-6">
-						<input type="text" required name="EMAIL2"
-							class="form-control border-8 mb-4 me-3 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey"
-							placeholder="Укажите ваш e-mail">
-					</div>
-					<div class="col-12 col-lg-6">
-						<button
-							class="btn w-100 border-8 py-3 px-5 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Рассчитать
-							стоимость</button>
-					</div>
-				</form>
-				<span class="text-white text-center fw-light">Нажимая на кнопку, вы подтверждаете свое <a href="{% static 'consent.pdf' %}"
-						class="text-white">согласие на обработку персональных данных</a></span>
-			</div>
-		</div>
-	</aside>
 
 	<footer>
 		{% include 'includes/footer.html' %}
