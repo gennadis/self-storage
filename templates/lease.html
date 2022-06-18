@@ -161,7 +161,7 @@
           <input type="hidden" name="order_description" value="Аренда бокса №{{ box_code }} - {{ total_price }} Р"/>
           <input type="hidden" name="lease_id" value="{{ id }}"/>
           {% if status|is_not_paid %}
-            <button type="submit" class="btn btn-success">Оплатить</button>
+            <a href="{% url 'make_payment' id %}" class="btn btn-success">Оплатить</a>
             <a data-bs-toggle="modal" data-bs-target="#CancelModal" class="btn btn-danger">Отменить</a>
             <p class="card-text mt-5">Оплатите аренду, чтобы получить доступ к боксу или заказать доставку</p>
             <button type="button" class="btn btn-secondary" disabled>Заказать бесплатную доставку</button>

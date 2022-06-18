@@ -35,7 +35,7 @@
             //Инициализация виджета. Все параметры обязательные.
             const checkout = new window.YooMoneyCheckoutWidget({
                 confirmation_token: '{{ confirmation_token }}', //Токен, который перед проведением оплаты нужно получить от ЮKassa
-                return_url: 'http://127.0.0.1:8000/confirm_payment/{{ lease_id }}', //Ссылка на страницу завершения оплаты, это может быть любая ваша страница
+                return_url: "{{ return_url }}", //Ссылка на страницу завершения оплаты, это может быть любая ваша страница
 
                 error_callback: function (error) {
                     console.log(error)
