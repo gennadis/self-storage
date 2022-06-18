@@ -20,9 +20,9 @@ app.conf.beat_schedule = {
         # "schedule": crontab(minute=15),
         "schedule": crontab(hour=0, minute=0),
     },
-    "check_lease_payment_status_every_minute": {
-        "task": "storage.tasks.check_lease_payment_status",
-        "schedule": crontab(),
-        # "schedule": crontab(hour=0, minute=0),
-    },
+    # "check_lease_payment_status_every_minute": {
+    #     "task": "storage.tasks.check_lease_payment_status",
+    #     "schedule": crontab(),
+    # "schedule": crontab(hour=0, minute=0),
+    # },
 }
