@@ -3,6 +3,15 @@ from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserChangeForm, CustomUserCreationForm
 from .models import CustomUser
+from storage.models import Lease
+
+
+class CustomUserLeaseInline(admin.TabularInline):
+    model = Lease
+    extra = 0
+    readonly_fields = ("status", "box", "created_on", "expires_on", "price")
+    exclude = ["qr_code"]
+    can_delete = False
 
 
 class CustomUserAdmin(UserAdmin):
@@ -15,26 +24,20 @@ class CustomUserAdmin(UserAdmin):
         "last_name",
         "email",
         "is_staff",
-        "is_active",
     )
-    list_filter = (
-        "is_staff",
-        "is_active",
-    )
+    list_filter = ("is_staff",)
     fieldsets = (
         (
             None,
             {
                 "fields": (
-                    "email",
-                    "password",
                     "first_name",
                     "last_name",
                     "phone_number",
+                    "email",
                 )
             },
         ),
-        ("Permissions", {"fields": ("is_staff", "is_active")}),
     )
     add_fieldsets = (
         (
@@ -48,14 +51,14 @@ class CustomUserAdmin(UserAdmin):
                     "phone_number",
                     "password1",
                     "password2",
-                    "is_staff",
-                    "is_active",
                 ),
             },
         ),
     )
     search_fields = ("email", "phone_number")
     ordering = ("email",)
+
+    inlines = [CustomUserLeaseInline]
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
