@@ -71,6 +71,10 @@ def confirm_payment(request, payment_id):
     payment_attmept = get_object_or_404(Payment, id=payment_id)
     lease = payment_attmept.lease
 
+    # Ignore confirmation calls for leases that are already proccessed
+    if lease.status != Lease.Status.NOT_PAID:
+        return redirect("show_lease", lease_id=lease.id)
+
     payment = YooPayment.find_one(payment_id)
     if payment.status == "succeeded":
         payment_attmept.success()
