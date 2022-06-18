@@ -1,25 +1,20 @@
-FROM python:3.9-slim-buster
+FROM python:3.9-alpine as base
 
+FROM base as builder
+RUN apk update && apk add gcc musl-dev jpeg-dev zlib-dev libffi-dev
+RUN mkdir /install
+WORKDIR /install
+COPY requirements.txt /requirements.txt
+RUN pip install --prefix=/install -r /requirements.txt
+
+FROM base
+COPY --from=builder /install /usr/local
+COPY . /home/storage/web
+RUN apk --no-cache add libpq libpq libjpeg
 WORKDIR /home/storage/web
-
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-RUN apt-get update \
-  # psycopg2 dependencies
-  && apt-get install -y libpq-dev gcc \
-  # clean up unused files
-  && rm -rf /var/lib/apt/lists/*
-
-RUN pip install --upgrade pip
-
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
 
 COPY ./entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
-
-COPY . .
 
 ENTRYPOINT ["/entrypoint"]
