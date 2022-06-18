@@ -29,17 +29,17 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body d-flex justify-content-center align-items-center">
-            <form method="get" action="/cancel_lease" class="d-flex flex-column align-items-center" style="max-width: 420px">
+            <div class="d-flex flex-column align-items-center" style="max-width: 420px">
               <h1 class="modal-title text-center fw-bold mb-4">Отмена заказа</h1>
               
               <div class="row">
                 <div class="col-12 d-flex flex-column align-items-center align-items-lg-start">
                   <h4 id="boxWhAddress" class="modal-title text-center mb-3">Вы уверены, что хотите отменить заказ?</h4>
                 </div>
-              <input type="hidden" name="lease_id" value="{{ id }}">
-              <button type="submit" class="btn border-8 py-3 px-5 mt-5 mb-3 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Отменить заказ</button>
-              <a data-bs-dismiss="modal" class="btn border-8 py-3 px-5 mb-3 w-100 text-white fs_12 SelfStorage__bg_orange SelfStorage__btn2_orange">Вернуться к аренде</a>
-            </form>
+                <a href="{% url 'cancel_lease' id %}" class="btn border-8 py-3 px-5 mt-5 mb-3 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Отменить заказ</a>
+                <a data-bs-dismiss="modal" class="btn border-8 py-3 px-5 mb-3 w-100 text-white fs_12 SelfStorage__bg_orange SelfStorage__btn2_orange">Вернуться к аренде</a>
+              </div>
+            </div>
           </div>
         </div>
       </div>

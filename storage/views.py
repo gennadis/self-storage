@@ -186,11 +186,10 @@ def get_qr_code(request, lease_id):
     return JsonResponse({"qr_url": qr_url}) 
 
 
-def cancel_lease(request):
+def cancel_lease(request, lease_id):
     if not request.user.is_authenticated:
         return redirect("account_login")
 
-    lease_id = int(request.GET.get("lease_id"))
     try:
         lease = (
             Lease.objects.select_related("user").get(id=int(lease_id))
