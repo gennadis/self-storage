@@ -1,16 +1,15 @@
 from django.contrib import admin
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import F, Exists, OuterRef
+from django.db.models import Exists, F, OuterRef
 from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
-
-from users.models import CustomUser
 from requests.models import PreparedRequest
 
 from selfstorage.settings import BASE_URL
+from users.models import CustomUser
 
 
 class Warehouse(models.Model):

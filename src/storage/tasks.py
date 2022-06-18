@@ -1,15 +1,15 @@
-from django.template import Template, Context
-from django.core.mail import send_mail
-from django.contrib.auth import get_user_model
-from selfstorage.celery import app
-from storage.models import Lease
-from django.conf import settings
 from dateutil.relativedelta import relativedelta
-from django.core.mail import mail_admins
-from django.utils import timezone
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.mail import mail_admins, send_mail
 from django.db.models import F
-from yookassa import Payment, Configuration
+from django.template import Context, Template
+from django.utils import timezone
+from yookassa import Configuration, Payment
+
+from selfstorage.celery import app
 from selfstorage.settings import YOOKASSA_API_KEY, YOOKASSA_SHOP_ID
+from storage.models import Lease
 
 """Подходит конец срока аренды → Хочу об этом не забыть и забрать вещи вовремя → 
 Мне приходят напоминания на почту за месяц, 2 недели, неделю и 3 дня, пока я не заберу вещи.

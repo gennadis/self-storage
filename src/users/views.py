@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
+
 from storage.models import Lease
 from users.forms import CustomUserCreationForm
 

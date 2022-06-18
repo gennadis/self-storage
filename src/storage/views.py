@@ -1,7 +1,7 @@
-from collections import defaultdict
-from io import BytesIO
 import random
 import sys
+from collections import defaultdict
+from io import BytesIO
 
 import qrcode
 from dateutil.relativedelta import relativedelta
@@ -11,6 +11,7 @@ from django.db.models import Count, Exists, OuterRef, Prefetch
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+
 from storage.models import AdvertisingCompany, Box, Delivery, Lease, Warehouse
 
 

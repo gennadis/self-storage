@@ -1,11 +1,15 @@
 import uuid
-from django.shortcuts import get_object_or_404, render, redirect
+
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from yookassa import Configuration
+from yookassa import Payment as YooPayment
+
 from selfstorage.settings import YOOKASSA_API_KEY, YOOKASSA_SHOP_ID
 from storage.models import Lease
+
 from .models import Payment
-from yookassa import Configuration, Payment as YooPayment
 
 
 def make_payment(request, lease_id):

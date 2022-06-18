@@ -1,15 +1,8 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from storage.models import (
-    Box,
-    Lease,
-    WarehouseImage,
-    AdvertisingCompany,
-    Warehouse,
-    Link,
-    Delivery,
-)
+from storage.models import (AdvertisingCompany, Box, Delivery, Lease, Link,
+                            Warehouse, WarehouseImage)
 
 
 class ImageInline(admin.TabularInline):
