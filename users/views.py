@@ -19,11 +19,13 @@ def register(request):
 def profile(request):
     user_leases = (
         Lease.objects.select_related("box", "box__warehouse")
-        .filter(user__email=request.user.email)
+        .filter(user=request.user)
         .order_by("status")
     )
-    user_leases_serialized = [
-        {
+    relevant_leases_serialized = []
+    irrelevant_leases_serialized = []
+    for lease in user_leases:
+        lease_serialized = {
             "id": lease.id,
             "status": lease.status,
             "status_verbose": lease.get_status_display(),
@@ -33,11 +35,15 @@ def profile(request):
             "lease_from": lease.created_on,
             "lease_till": lease.expires_on,
         }
-        for lease in user_leases
-    ]
+        if not lease.status in [Lease.Status.CANCELED, Lease.Status.COMPLETED]:
+            relevant_leases_serialized.append(lease_serialized)
+        else:
+            irrelevant_leases_serialized.append(lease_serialized)
+
 
     context = {
-        "user_leases": user_leases_serialized,
+        "relevant_user_leases": relevant_leases_serialized,
+        "irrelevant_user_leases": irrelevant_leases_serialized
     }
 
     return render(request, "my-rent.html", context=context)

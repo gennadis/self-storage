@@ -92,8 +92,8 @@
 						<!-- <h4 class="SelfStorage_grey my-3">Срок Вашей аренды подходит к концу :(<br>Вы можете продлить
 							аренду или забрать вещи до 28 июня 2022 года включительно.</h4> -->
 
-						{% if user_leases %}
-              {% for lease in user_leases %}
+						{% if relevant_user_leases or irrelevant_user_leases %}
+              {% for lease in relevant_user_leases %}
               <div class="mb-5">
                 <div class="card">
                   <div class="card-header d-flex justify-content-between {{ lease.status|badge_bg }}">
@@ -116,6 +116,39 @@
                 </div>
               </div>
               {% endfor %}
+
+              <!-- CONTAINER AND CONTROLS FOR NON RELEVANT LEASES -->
+
+              <div class="d-flex justify-content-center mb-3">
+                <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#irrelevantLeases" aria-expanded="false" aria-controls="irrelevantLeases">
+                  Показать / скрыть неактивные аренды
+                </button>
+              </div>
+              <div class="collapse" id="irrelevantLeases">
+                {% for lease in irrelevant_user_leases %}
+                <div class="mb-5">
+                  <div class="card">
+                    <div class="card-header d-flex justify-content-between {{ lease.status|badge_bg }}">
+                      <span class="ms-3 text-white fs-3">Бокс №{{ lease.box_number }}</span>
+                      <span class="me-3 text-white fs-3">{{ lease.status_verbose }}</span>
+                    </div>
+                    <div class="card-body">
+                      <div class="d-flex flex-wrap">
+                        <span class="fs-4 me-auto">Склад:</span><span class="ms-3 fs-4">{{ lease.warehouse_city }}, {{ lease.warehouse_address }}</span>
+                      </div>
+                      <div class="d-flex flex-wrap">
+                        <span class="fs-4 me-auto">Срок аренды:</span><span class="ms-3 fs-4">до {{ lease.lease_till }}</span>
+                      </div>
+                      <div class="d-flex justify-content-end mt-3">
+                        <a href="{% url 'show_lease' lease.id %}" class="btn fs-4 px-5 py-2 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange">
+                          Перейти к боксу
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
 
 						{% else %}
               <h4 class="SelfStorage_grey my-5">У вас еще нет аренды :(<br>Но вы можете арендовать свой первый
