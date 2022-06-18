@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "django_celery_results",
 ]
 
 MIDDLEWARE = [
