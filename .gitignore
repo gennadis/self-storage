@@ -7,3 +7,5 @@ media
 .env.dev
 .env.prod
 *.sqlite3
+
+production/data/certbot/
