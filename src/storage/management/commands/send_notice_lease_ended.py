@@ -17,9 +17,8 @@ from storage.models import Lease
 LEASE_ENDED_NOTICE_TEMPLATE = """
 Срок аренды бокса номер {{ lease.box }},
 расположенного по адресу: {{ lease.box.warehouse.city }} - {{ lease.box.warehouse.address }},
-подошел к концу {{ lease.expires_on }}.
+окончен {{ lease.expires_on }}.
 
-Свяжитесь с менеджером склада для уточнения стоимости дальнейшего хранения имущества.
 Имущество будет храниться не более 6 месяцев с даты окончания срока аренды.
 """
 

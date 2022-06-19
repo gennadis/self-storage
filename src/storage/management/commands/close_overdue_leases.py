@@ -9,11 +9,31 @@ from django.utils import timezone
 from storage.models import Lease
 
 
+LEASE_ENDED_NOTICE_TEMPLATE = """
+Срок аренды бокса номер {{ lease.box }},
+расположенного по адресу: {{ lease.box.warehouse.city }} - {{ lease.box.warehouse.address }},
+подошел к концу {{ lease.expires_on }}.
+
+Свяжитесь с менеджером склада для уточнения стоимости дальнейшего хранения имущества.
+Имущество будет храниться не более 6 месяцев с даты окончания срока аренды.
+"""
+
+
 class Command(BaseCommand):
-    help = "Close overdue leases."
+    help = "Close overdue leases and send Lease ended notice."
 
     def handle(self, *args, **options):
         current_date = timezone.localdate(timezone.now())
         overdue_leases = Lease.objects.filter(
             expires_on__lte=current_date, status=Lease.Status.PAID
         ).update(status=Lease.Status.OVERDUE)
+
+        for lease in overdue_leases:
+            template = Template(LEASE_ENDED_NOTICE_TEMPLATE)
+            send_mail(
+                subject=f"Срок аренды подошел к концу!",
+                message=template.render(context=Context({"lease": lease})),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[lease.user.email],
+                fail_silently=False,
+            )
