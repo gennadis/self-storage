@@ -15,4 +15,5 @@ urlpatterns = [
     ),
     path("request_delivery/", views.request_delivery, name="request_delivery"),
     path("delivery", views.delivery, name="delivery_orders"),
+    path("overdue", views.display_overdue_leases, name="overdue leases"),
 ]

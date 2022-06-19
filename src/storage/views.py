@@ -2,6 +2,7 @@ import random
 import sys
 from collections import defaultdict
 from io import BytesIO
+from django.forms import DateField
 
 import qrcode
 from dateutil.relativedelta import relativedelta
@@ -11,6 +12,10 @@ from django.db.models import Count, Exists, OuterRef, Prefetch
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.contrib.auth.decorators import user_passes_test
+from django.db.models import F, Func, IntegerField
+from django.db.models.functions import Now
+
 
 from storage.models import AdvertisingCompany, Box, Delivery, Lease, Warehouse
 
@@ -64,10 +69,13 @@ def index(request):
         "image": free_warehouse.images.all().first().image_file.url,
     }
 
-    return render(request, "index.html", context={
-        "lowest_rate": lowest_rate,
-        "free_warehouse": free_warehouse_serialized
-        }
+    return render(
+        request,
+        "index.html",
+        context={
+            "lowest_rate": lowest_rate,
+            "free_warehouse": free_warehouse_serialized,
+        },
     )
 
 
@@ -309,4 +317,29 @@ def request_delivery(request):
                 " детали. Спасибо!"
             ),
         }
+    )
+
+
+def is_manager(user):
+    return user.is_staff
+
+
+@user_passes_test(is_manager, login_url="account_login")
+def display_overdue_leases(request):
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+
+    overdue_leases = (
+        Lease.objects.select_related("user", "box", "box__warehouse")
+        .filter(status=Lease.Status.OVERDUE)
+        .annotate(days_overdue=(Now() - F("expires_on")))
+        .order_by("-days_overdue")
+    )
+
+    return render(
+        request,
+        template_name="overdue_leases.html",
+        context={
+            "overdue_leases": overdue_leases,
+        },
     )

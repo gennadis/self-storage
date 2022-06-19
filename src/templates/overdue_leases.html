@@ -1,0 +1,44 @@
+{% extends 'base_template.html' %}
+
+{% block title %}
+Selfstorage | Просроченная аренда
+{% endblock %}
+
+{% block content %}
+<center>
+    <h2>Просроченная аренда</h2>
+</center>
+
+<hr />
+<br />
+<br />
+<div class="container">
+    <table class="table table-responsive">
+        <tr>
+            <th>Склад</th>
+            <th>Бокс</th>
+            <th>Пользователь</th>
+            <th>Номер телефона</th>
+            <th>Дата создания</th>
+            <th>Дата окончания</th>
+            <th>Дней просрочено</th>
+            <th>Ссылка</th>
+        </tr>
+
+        {% for lease in overdue_leases %}
+        <tr>
+            <td>{{ lease.box.warehouse.city }} {{ lease.box.warehouse.address }}</td>
+            <td>{{ lease.box.code }}</td>
+            <td>{{ lease.user.first_name }} {{ lease.user.last_name }}</td>
+            <td>{{ lease.user.phone_number }}</td>
+            <td>{{ lease.created_on }}</td>
+            <td>{{ lease.expires_on }}</td>
+            <td>{{ lease.days_overdue }}</td>
+            <td><a
+                    href="{% url 'admin:storage_lease_change' object_id=lease.id %}?next={{ request.get_full_path|urlencode }}">Редактировать</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
