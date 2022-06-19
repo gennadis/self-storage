@@ -67,6 +67,7 @@ class LeaseAdmin(admin.ModelAdmin):
         "get_warehouse",
         "box",
         "get_user_full_name",
+        "get_user_phone_number",
         "created_on",
         "expires_on",
         "status",
@@ -88,3 +89,7 @@ class LeaseAdmin(admin.ModelAdmin):
     @admin.display(description="Склад")
     def get_warehouse(self, obj):
         return obj.box.warehouse
+
+    @admin.display(description="Номер телефона")
+    def get_user_phone_number(self, obj):
+        return obj.user.phone_number
