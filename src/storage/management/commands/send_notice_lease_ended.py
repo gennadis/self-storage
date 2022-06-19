@@ -27,9 +27,7 @@ class Command(BaseCommand):
     help = "Send Lease ended notice."
 
     def handle(self, *args, **options):
-        overdue_leases = Lease.objects.prefetch_related(
-            "user", "box__warehouse"
-        ).filter(status=Lease.Status.OVERDUE)
+        overdue_leases = Lease.objects.overdue
 
         for lease in overdue_leases:
             template = Template(LEASE_ENDED_NOTICE_TEMPLATE)

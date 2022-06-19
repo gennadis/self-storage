@@ -8,6 +8,8 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 from requests.models import PreparedRequest
+from django.db.models import F, Func, IntegerField
+from django.db.models.functions import Now
 
 from selfstorage.settings import BASE_URL
 from users.models import CustomUser
@@ -87,12 +89,10 @@ class BoxQuerySet(models.QuerySet):
 
     def get_warehouses_with_boxes(self):
         """Create mapping of available boxes for each warehouse"""
-        
+
         warehouses_with_boxes = defaultdict(list)
         avaliable_boxes = (
-            self.select_related("warehouse")
-            .available()
-            .order_by("monthly_rate")
+            self.select_related("warehouse").available().order_by("monthly_rate")
         )
 
         for box in avaliable_boxes:
@@ -160,6 +160,14 @@ class LeaseQuerySet(models.QuerySet):
         """Filter active leases"""
         return self.filter(
             status__in=[Lease.Status.NOT_PAID, Lease.Status.PAID, Lease.Status.OVERDUE]
+        )
+
+    def overdue(self):
+        return (
+            self.select_related("user", "box", "box__warehouse")
+            .filter(status=Lease.Status.OVERDUE)
+            .annotate(days_overdue=(Now() - F("expires_on")))
+            .order_by("-days_overdue")
         )
 
 

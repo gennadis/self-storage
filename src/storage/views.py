@@ -329,12 +329,7 @@ def display_overdue_leases(request):
     if not request.user.is_authenticated:
         return redirect("account_login")
 
-    overdue_leases = (
-        Lease.objects.select_related("user", "box", "box__warehouse")
-        .filter(status=Lease.Status.OVERDUE)
-        .annotate(days_overdue=(Now() - F("expires_on")))
-        .order_by("-days_overdue")
-    )
+    overdue_leases = Lease.objects.overdue
 
     return render(
         request,
