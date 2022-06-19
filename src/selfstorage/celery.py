@@ -20,6 +20,10 @@ app.conf.beat_schedule = {
         "task": "storage.tasks.send_lease_end_soon_notice",
         "schedule": crontab(hour=8, minute=0),
     },
+    "send_notice_lease_ended": {
+        "task": "storage.tasks.send_notice_lease_ended",
+        "schedule": crontab(hour=9, minute=0),
+    },
     "close_overdue_leases_at_midnight": {
         "task": "storage.tasks.close_overdue_leases",
         "schedule": crontab(hour=0, minute=0),

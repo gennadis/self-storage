@@ -25,6 +25,13 @@ def send_lease_end_soon_notice():
 
 
 @app.task
+def send_notice_lease_ended():
+    call_command(
+        "send_notice_lease_ended",
+    )
+
+
+@app.task
 def close_overdue_leases():
     call_command(
         "close_overdue_leases",
