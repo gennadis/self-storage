@@ -8,13 +8,10 @@ from django.utils import timezone
 
 from storage.models import Lease
 
-"""Не забрал вещи в срок → Хочу узнать, что с ними будет → получил письмо, 
-что они будут храниться 6 месяцев по чуть повышенному тарифу, 
-после чего в случае, если я их так и не заберу – я их потеряю.
-Забыл забрать вещи в срок → хочу, чтобы мне об этом напомнили → получаю письма об этом раз в месяц."""
-
 
 LEASE_ENDED_NOTICE_TEMPLATE = """
+Ежемесячное напоминание:
+
 Срок аренды бокса номер {{ lease.box }},
 расположенного по адресу: {{ lease.box.warehouse.city }} - {{ lease.box.warehouse.address }},
 окончен {{ lease.expires_on }}.
@@ -27,9 +24,7 @@ class Command(BaseCommand):
     help = "Send Lease ended notice."
 
     def handle(self, *args, **options):
-        overdue_leases = Lease.objects.overdue
-
-        for lease in overdue_leases:
+        for lease in Lease.objects.overdue():
             template = Template(LEASE_ENDED_NOTICE_TEMPLATE)
             send_mail(
                 subject=f"Срок аренды подошел к концу!",

@@ -10,6 +10,8 @@ from storage.models import Lease
 
 
 LEASE_ENDED_NOTICE_TEMPLATE = """
+Уведомление об окончании срока аренды:
+
 Срок аренды бокса номер {{ lease.box }},
 расположенного по адресу: {{ lease.box.warehouse.city }} - {{ lease.box.warehouse.address }},
 подошел к концу {{ lease.expires_on }}.
@@ -24,11 +26,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         current_date = timezone.localdate(timezone.now())
-        overdue_leases = Lease.objects.filter(
+        new_overdue_leases = Lease.objects.filter(
             expires_on__lte=current_date, status=Lease.Status.PAID
-        ).update(status=Lease.Status.OVERDUE)
+        )
 
-        for lease in overdue_leases:
+        for lease in new_overdue_leases:
             template = Template(LEASE_ENDED_NOTICE_TEMPLATE)
             send_mail(
                 subject=f"Срок аренды подошел к концу!",
@@ -37,3 +39,5 @@ class Command(BaseCommand):
                 recipient_list=[lease.user.email],
                 fail_silently=False,
             )
+
+        new_overdue_leases.update(status=Lease.Status.OVERDUE)
