@@ -1,8 +1,15 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from storage.models import (AdvertisingCompany, Box, Delivery, Lease, Link,
-                            Warehouse, WarehouseImage)
+from storage.models import (
+    AdvertisingCompany,
+    Box,
+    Delivery,
+    Lease,
+    Link,
+    Warehouse,
+    WarehouseImage,
+)
 
 
 class ImageInline(admin.TabularInline):
@@ -38,11 +45,6 @@ class BoxAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Lease)
-class LeaseAdmin(admin.ModelAdmin):
-    pass
-
-
 @admin.register(AdvertisingCompany)
 class AdvertisingCompanyAdmin(admin.ModelAdmin):
     list_display = ("title",)
@@ -57,3 +59,32 @@ class LinkAdmin(admin.ModelAdmin):
 @admin.register(Delivery)
 class DeliveryAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(Lease)
+class LeaseAdmin(admin.ModelAdmin):
+    list_display = (
+        "get_warehouse",
+        "box",
+        "get_user_full_name",
+        "created_on",
+        "expires_on",
+        "status",
+    )
+    list_filter = ("status",)
+    search_fields = (
+        "box",
+        "user",
+    )
+    ordering = (
+        "status",
+        "expires_on",
+    )
+
+    @admin.display(description="Пользователь")
+    def get_user_full_name(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}"
+
+    @admin.display(description="Склад")
+    def get_warehouse(self, obj):
+        return obj.box.warehouse
