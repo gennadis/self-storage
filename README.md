@@ -108,3 +108,7 @@ mv .env.example .env
 ```sh
 python manage.py runserver 127.0.0.1:8000
 ```
+
+
+[просроченная аренда](127.0.0.1:8000/overdue)
+[доставка]()
