@@ -18,9 +18,16 @@ logger = get_task_logger(__name__)
 
 
 @app.task
-def send_lease_end_notice():
+def send_lease_end_soon_notice():
     call_command(
-        "send_lease_end_notice",
+        "send_lease_end_soon_notice",
+    )
+
+
+@app.task
+def close_overdue_leases():
+    call_command(
+        "close_overdue_leases",
     )
 
 
