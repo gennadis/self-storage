@@ -61,7 +61,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     let boxesList = document.querySelector("#pills-tabContent")
     for (let whButton of warehouseRentButtons){
       whButton.addEventListener("click",(event)=>{
-        console.log("poop")
         boxesList.scrollIntoView()
       })
     }
@@ -80,6 +79,19 @@ document.addEventListener("DOMContentLoaded", ()=>{
     let modalBoxDims = document.querySelector("#boxDims")
     let modalBoxArea = document.querySelector("#boxArea")
     let modalBoxPrice = document.querySelector("#boxPrice")
+
+    let url = new URL(window.location.href)
+    let url_target = url.searchParams.get("target")
+    let url_id = url.searchParams.get("id")
+    if (url_target){
+        if(url_target=="warehouse")
+            document.querySelector("#wh"+url_id).click()
+        else if(url_target=="boxes"){
+            document.querySelector("#wh"+url_id).click()
+            document.querySelector("#boxesFor"+url_id).click()
+        }
+    }
+
 
     function fetch_data(event){
         let id = event.currentTarget.dataset.warehouse

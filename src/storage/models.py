@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.contrib import admin
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -83,6 +84,29 @@ class BoxQuerySet(models.QuerySet):
     def available(self):
         """Filter out Boxes with active leases"""
         return self.filter(~Exists(Lease.objects.filter(box=OuterRef("pk")).active()))
+
+    def get_warehouses_with_boxes(self):
+        """Create mapping of available boxes for each warehouse"""
+        
+        warehouses_with_boxes = defaultdict(list)
+        avaliable_boxes = (
+            self.select_related("warehouse")
+            .available()
+            .order_by("monthly_rate")
+        )
+
+        for box in avaliable_boxes:
+            warehouses_with_boxes[box.warehouse.id].append(
+                {
+                    "code": box.code,
+                    "floor": box.floor,
+                    "dimensions": box.get_dimensions_display(),
+                    "square_size": box.get_area(),
+                    "rate": box.monthly_rate,
+                }
+            )
+
+        return warehouses_with_boxes
 
 
 class Box(models.Model):

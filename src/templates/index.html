@@ -167,6 +167,34 @@
 				<h6>Удобная система напоминаний о сроках аренды бокса</h6>
 			</div>
 		</article>
+
+    <article class="row pt-header">
+      <div class="col-12 col-lg-6 mb-3 mb-lg-0 SelfStorage__img" style="background-image: url({{ free_warehouse.image }})"></div>
+      <div class="col-12 col-lg-6 d-flex flex-column align-items-center align-items-lg-start">
+        <h1 class="text-start fw-bold SelfStorage_green mb-4">Всегда найдется место</h1>
+        <h4 class="SelfStorage_grey">{{ free_warehouse.city }}, {{ free_warehouse.address }}</h4>
+        <div class="row">
+          <div class="col-6 d-flex flex-column align-items-center align-items-lg-start">
+            <span class="fs_30 fw-bold SelfStorage_orange">{{ free_warehouse.temperature }} °С</span>
+            <span class="SelfStorage_grey mb-3">Температура на складе</span>
+            <span class="fs_30 fw-bold SelfStorage_orange">{{ free_warehouse.boxes_avaliable }} из {{ free_warehouse.boxes_total }}</span>
+            <span class="SelfStorage_grey mb-3">Боксов свободно</span>
+          </div>
+          <div class="col-6 d-flex flex-column align-items-center align-items-lg-start">
+            <span class="fs_30 fw-bold SelfStorage_orange">до {{ free_warehouse.ceiling_height }} м</span>
+            <span class="SelfStorage_grey mb-3">Высота потолка</span>
+            <span class="fs_30 fw-bold SelfStorage_orange">{{ free_warehouse.starting_rate }} ₽</span>
+            <span class="SelfStorage_grey mb-3">Оплата за месяц</span>
+          </div>
+          <a href="{% url 'boxes'%}?target=warehouse&id={{free_warehouse.id}}" class="text-center text-lg-start mt-4 mb-5 SelfStorage_green">Подробнее о складе</a>
+          <div class="d-flex flex-column align-items-center align-items-lg-start">
+            <a href="{% url 'boxes'%}?target=boxes&id={{free_warehouse.id}}" class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3">Арендовать бокс</a>
+            <a href="{% url 'boxes'%}" class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange">Выбрать склад</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
 		<article class="row pt-header" id="reviews">
 			<h1 class="text-center fw-bold SelfStorage_green mb-4">Забота о ваших ценностях – наша главная задача</h1>
 			<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">

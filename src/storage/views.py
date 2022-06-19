@@ -34,13 +34,41 @@ def index(request):
     else:
         advertising_company = None
 
+    # Acquire lowest rate
+
     lowest_rate_box = (
         Box.objects.available().with_price_per_sqm().order_by("price_per_sqm").first()
     )
 
     lowest_rate = lowest_rate_box.price_per_sqm if lowest_rate_box else 0
 
-    return render(request, "index.html", context={"lowest_rate": lowest_rate})
+    # Acquire least occupied warehouse
+
+    warehouses_with_boxes = Box.objects.get_warehouses_with_boxes()
+    sorted(warehouses_with_boxes.items(), key=lambda kv: len(kv[1]), reverse=True)
+    free_warehouse_id = list(warehouses_with_boxes.keys())[0]
+    free_warehouse = (
+        Warehouse.objects.prefetch_related("images")
+        .annotate(boxes_total=Count("boxes", distinct=True))
+        .get(id=free_warehouse_id)
+    )
+    free_warehouse_serialized = {
+        "id": free_warehouse.id,
+        "boxes_total": free_warehouse.boxes_total,
+        "boxes_avaliable": len(warehouses_with_boxes[free_warehouse.id]),
+        "starting_rate": warehouses_with_boxes[free_warehouse.id][0]["rate"],
+        "city": free_warehouse.city,
+        "address": free_warehouse.address,
+        "temperature": free_warehouse.temperature,
+        "ceiling_height": free_warehouse.ceiling_height / 100,
+        "image": free_warehouse.images.all().first().image_file.url,
+    }
+
+    return render(request, "index.html", context={
+        "lowest_rate": lowest_rate,
+        "free_warehouse": free_warehouse_serialized
+        }
+    )
 
 
 def faq(request):
@@ -48,21 +76,7 @@ def faq(request):
 
 
 def boxes(request):
-    warehouses_with_boxes = defaultdict(list)
-    avaliable_boxes = (
-        Box.objects.select_related("warehouse").available().order_by("monthly_rate")
-    )
-
-    for box in avaliable_boxes:
-        warehouses_with_boxes[box.warehouse.id].append(
-            {
-                "code": box.code,
-                "floor": box.floor,
-                "dimensions": box.get_dimensions_display(),
-                "square_size": box.get_area(),
-                "rate": box.monthly_rate,
-            }
-        )
+    warehouses_with_boxes = Box.objects.get_warehouses_with_boxes()
 
     warehouses = (
         Warehouse.objects.prefetch_related("images")

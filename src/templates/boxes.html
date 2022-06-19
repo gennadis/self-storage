@@ -86,7 +86,7 @@
 			<ul class="nav nav-pills mb-3 d-flex justify-content-between" id="boxes-links" role="tablist">
         {% for wh in warehouses %}
           <li class="nav-item flex-grow-1 mx-2" role="presentation">
-            <a class="js-select-warehouse row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink"
+            <a id="wh{{wh.id}}" class="js-select-warehouse row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink"
               data-warehouse="{{ wh.id }}" data-bs-toggle="pill" data-bs-target="#pills-{{ wh.id }}" role="tab"
               aria-controls="pills-{{ wh.id }}" aria-selected="true">
               <div class="col-12 col-lg-3 d-flex justify-content-center">
@@ -185,7 +185,7 @@
                     <span class="SelfStorage_grey mb-3">Оплата за месяц</span>
                   </div>
                   <div class="d-flex flex-column align-items-center align-items-lg-start">
-                    <button class="js-rent-storage btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3">
+                    <button id="boxesFor{{wh.id}}" class="js-rent-storage btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3">
                       Арендовать бокс
                     </button>
                   </div>
