@@ -18,9 +18,9 @@ logger = get_task_logger(__name__)
 
 
 @app.task
-def send_lease_end_soon_notice():
+def close_overdue_leases():
     call_command(
-        "send_lease_end_soon_notice",
+        "close_overdue_leases",
     )
 
 
@@ -32,9 +32,9 @@ def send_notice_lease_ended():
 
 
 @app.task
-def close_overdue_leases():
+def send_notice_lease_ends_soon():
     call_command(
-        "close_overdue_leases",
+        "send_notice_lease_ends_soon",
     )
 
 

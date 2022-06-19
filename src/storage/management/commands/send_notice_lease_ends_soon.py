@@ -14,7 +14,7 @@ from storage.models import Lease
 Забыл забрать вещи в срок → хочу, чтобы мне об этом напомнили → получаю письма об этом раз в месяц."""
 
 
-LEASE_END_NOTICE_TEMPLATE = """
+LEASE_ENDS_SOON_NOTICE_TEMPLATE = """
 Срок аренды бокса номер {{ lease.box }},
 расположенного по адресу: {{ lease.box.warehouse.city }} - {{ lease.box.warehouse.address }},
 подходит к концу {{ lease.expires_on }}.
@@ -22,7 +22,7 @@ LEASE_END_NOTICE_TEMPLATE = """
 
 
 class Command(BaseCommand):
-    help = "Send Lease end notice at a certain period of time."
+    help = "Send Lease ends soon notice."
 
     def handle(self, *args, **options):
         current_date = timezone.localdate(timezone.now())
@@ -33,7 +33,7 @@ class Command(BaseCommand):
             ).filter(expires_on=expiration_date, status=Lease.Status.PAID)
 
             for lease in ending_leases:
-                template = Template(LEASE_END_NOTICE_TEMPLATE)
+                template = Template(LEASE_ENDS_SOON_NOTICE_TEMPLATE)
                 send_mail(
                     subject=f"Срок аренды подходит к концу!",
                     message=template.render(context=Context({"lease": lease})),
