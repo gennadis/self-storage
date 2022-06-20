@@ -324,22 +324,18 @@ Selfstorage | FAQ
 	<div class="container py-5Арендовать бокс">
 		<div class="d-flex flex-column align-items-center">
 			<h1 class="text-white text-center fw-bold mb-4">Остались вопросы?</h1>
-			<h4 class="text-white text-center fw-light">Оставьте заявку и наши менеджеры свяжутся с вами в ближайшее
-				время</h4>
+			<h4 class="text-white text-center fw-light">Воспользуйтесь нашим чатом для поддержки пользователей</h4>
 			<form class="row my-4">
-				<div class="col-12 col-lg-6">
-					<input type="text" required name="EMAIL2"
-						class="form-control border-8 mb-4 me-3 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey"
-						placeholder="Укажите ваш e-mail">
-				</div>
-				<div class="col-12 col-lg-6">
-					<button
-						class="btn w-100 border-8 py-3 px-5 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Рассчитать
-						стоимость</button>
+				<div class="col-12 col-lg-12">
+					<a href="javascript:jivo_api.open();" class="btn w-100 border-8 py-3 px-5 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">
+            Открыть чат
+          </a>
 				</div>
 			</form>
-			<span class="text-white text-center fw-light">Нажимая на кнопку, вы подтверждаете свое <a href="#"
-					class="text-white">согласие на обработку персональных данных</a></span>
+			<span class="text-white text-center fw-light">
+        Нажимая на кнопку, вы подтверждаете свое
+        <a href="{% static 'consent.pdf' %}" class="text-white">согласие на обработку персональных данных</a>
+        </span>
 		</div>
 	</div>
 </aside>
