@@ -1,0 +1,164 @@
+{{% extends 'base_template.html' %}
+
+{% load static %}
+{% load storage_tags %}
+
+{% block title %}
+Selfstorage | Ваш бокс
+{% endblock %}
+
+{% block content %}
+<main class="container mt-header">
+	<div class="row" role="tablist">
+		<div class="col-lg-3 d-flex flex-column nav nav-pills">
+			<button class="ps-0 btn bg-white fs_24 shadow-none SelfStorage_orange SelfStorage_tab active" id="LK-tab"
+				data-bs-toggle="pill" data-bs-target="#LK" type="button" role="tab" aria-controls="LK"
+				aria-selected="true">Личный кабинет</button>
+			<button class="ps-0 btn bg-white fs_24 shadow-none SelfStorage_grey SelfStorage_tab" id="Rent-tab"
+				data-bs-toggle="pill" data-bs-target="#Rent" type="button" role="tab" aria-controls="Rent"
+				aria-selected="false">Моя аренда</button>
+			<a href="/faq" class="btn fs_24 shadow-none text-decoration-none SelfStorage_grey SelfStorage_tab">FAQ</a>
+			<a href="{% url 'account_logout' %}"
+				class="btn fs_24 shadow-none text-decoration-none SelfStorage_grey SelfStorage_tab">Выйти</a>
+		</div>
+		<!-- USER CARD -->
+		<div class="col-lg-9">
+			{% if user.is_authenticated %}
+			<div class="card tab-content p-5">
+				<div class="tab-pane fade show active" id="LK" role="tabpanel" aria-labelledby="LK-tab">
+					<div class="row">
+						<div class="col-12 col-sm-5 d-flex flex-column align-items-center">
+							<img src="{% static 'img/user.png' %}" class="rounded-pill mb-3" alt="">
+							<h4>{{ user.first_name}} {{ user.last_name }}</h4>
+						</div>
+						<div class="col-12 col-sm-7 d-flex flex-column">
+							<form>
+								<label class="fs_24 SelfStorage_green ms-2" for="EMAIL">E-mail</label>
+								<input type="email" name="EMAIL_EDIT" id="EMAIL"
+									class="form-control fs_24 ps-2 SelfStorage__input" value={{ user.email }} disabled>
+								<label class="fs_24 SelfStorage_green ms-2" for="PHONE">Телефон</label>
+								<input type="tel" name="PHONE_EDIT" id="PHONE"
+									class="form-control fs_24 ps-2 SelfStorage__input" value={{ user.phone_number }}
+									disabled>
+								<label class="fs_24 SelfStorage_green ms-2" for="PASSWORD">Пароль</label>
+								<input type="password" name="PASSWORD_EDIT" id="PASSWORD"
+									class="form-control fs_24 ps-2 SelfStorage__input" value='**********' disabled>
+								<button type="submit" class="btn SelfStorage_green ps-1" id="save"
+									style="display: none">Сохранить</button>
+								<a class="btn SelfStorage_orange ps-1" id="edit">Редактировать</a>
+								<script>
+									document.getElementById('edit').addEventListener('click', e => {
+										e.preventDefault()
+										document.getElementById('EMAIL').disabled = false
+										document.getElementById('PHONE').disabled = false
+										document.getElementById('PASSWORD').disabled = false
+										document.getElementById('PASSWORD').type = 'text'
+										document.getElementById('edit').style.display = 'none'
+										document.getElementById('save').style.display = 'inline-block'
+									})
+									document.getElementById('save').addEventListener('click', () => {
+										setTimeout(() => {
+											document.getElementById('EMAIL').disabled = true
+											document.getElementById('PHONE').disabled = true
+											document.getElementById('PASSWORD').disabled = true
+											document.getElementById('PASSWORD').type = 'password'
+											document.getElementById('edit').style.display = 'inline-block'
+											document.getElementById('save').style.display = 'none'
+										}, 0)
+									})
+								</script>
+							</form>
+						</div>
+					</div>
+				</div>
+
+				<div class="tab-pane fade" id="Rent" role="tabpanel" aria-labelledby="Rent-tab">
+					<h1 class="fw-bold SelfStorage_green mb-5">Добрый день, {{ user.first_name}}!</h1>
+					<a href="#" class="SelfStorage_orange">История аренды</a>
+
+					<!-- #TODO -->
+					<!-- <h4 class="SelfStorage_grey my-3">Срок Вашей аренды подходит к концу :(<br>Вы можете продлить
+							аренду или забрать вещи до 28 июня 2022 года включительно.</h4> -->
+
+					{% if relevant_user_leases or irrelevant_user_leases %}
+					{% for lease in relevant_user_leases %}
+					<div class="mb-5">
+						<div class="card">
+							<div class="card-header d-flex justify-content-between {{ lease.status|badge_bg }}">
+								<span class="ms-3 text-white fs-3">Бокс №{{ lease.box_number }}</span>
+								<span class="me-3 text-white fs-3">{{ lease.status_verbose }}</span>
+							</div>
+							<div class="card-body">
+								<div class="d-flex flex-wrap">
+									<span class="fs-4 me-auto">Склад:</span><span class="ms-3 fs-4">
+                    {{ lease.warehouse_city }}, {{ lease.warehouse_address }}</span>
+								</div>
+								<div class="d-flex flex-wrap">
+									<span class="fs-4 me-auto">Срок аренды:</span><span class="ms-3 fs-4">до 
+                    {{ lease.lease_till }}</span>
+								</div>
+								<div class="d-flex justify-content-end mt-3">
+									<a href="{% url 'show_lease' lease.id %}"
+										class="btn fs-4 px-5 py-2 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange">
+										Перейти к боксу
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+
+					<!-- CONTAINER AND CONTROLS FOR NON RELEVANT LEASES -->
+
+					<div class="d-flex justify-content-center mb-3">
+						<button class="btn btn-secondary" type="button" data-bs-toggle="collapse"
+							data-bs-target="#irrelevantLeases" aria-expanded="false" aria-controls="irrelevantLeases">
+							Показать / скрыть неактивные аренды
+						</button>
+					</div>
+					<div class="collapse" id="irrelevantLeases">
+						{% for lease in irrelevant_user_leases %}
+						<div class="mb-5">
+							<div class="card">
+								<div class="card-header d-flex justify-content-between {{ lease.status|badge_bg }}">
+									<span class="ms-3 text-white fs-3">Бокс №{{ lease.box_number }}</span>
+									<span class="me-3 text-white fs-3">{{ lease.status_verbose }}</span>
+								</div>
+								<div class="card-body">
+									<div class="d-flex flex-wrap">
+										<span class="fs-4 me-auto">Склад:</span><span class="ms-3 fs-4">{{
+											lease.warehouse_city }}, {{ lease.warehouse_address }}</span>
+									</div>
+									<div class="d-flex flex-wrap">
+										<span class="fs-4 me-auto">Срок аренды:</span><span class="ms-3 fs-4">до {{
+											lease.lease_till }}</span>
+									</div>
+									<div class="d-flex justify-content-end mt-3">
+										<a href="{% url 'show_lease' lease.id %}"
+											class="btn fs-4 px-5 py-2 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange">
+											Перейти к боксу
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+
+					{% else %}
+					<h4 class="SelfStorage_grey my-5">У вас еще нет аренды :(<br>Но вы можете арендовать свой первый
+						бокс по привлекательной цене прямо сейчас</h4>
+					<div><button
+							class="btn fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange mb-3">Арендовать
+							бокс</button></div>
+					{% endif %}
+				</div>
+			</div>
+			{% else %}
+			<a class="nav-link SelfStorage_green" href="{% url 'account_login' %}">Войти</a>
+			{% endif %}
+		</div>
+		<!-- USER CARD -->
+	</div>
+</main>
+{% endblock %}

@@ -1,0 +1,195 @@
+{% extends 'base_template.html' %}
+
+{% load static %}
+{% load storage_tags %}
+
+{% block title %}
+Selfstorage | Ваш бокс
+{% endblock %}
+
+{% block content %}
+
+{% if status|is_not_paid %}
+<aside class="modal fade" id="CancelModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body d-flex justify-content-center align-items-center">
+        <div class="d-flex flex-column align-items-center" style="max-width: 420px">
+          <h1 class="modal-title text-center fw-bold mb-4">Отмена заказа</h1>
+
+          <div class="row">
+            <div class="col-12 d-flex flex-column align-items-center align-items-lg-start">
+              <h4 id="boxWhAddress" class="modal-title text-center mb-3">Вы уверены, что хотите отменить заказ?</h4>
+            </div>
+            <a href="{% url 'cancel_lease' id %}"
+              class="btn border-8 py-3 px-5 mt-5 mb-3 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Отменить
+              заказ</a>
+            <a data-bs-dismiss="modal"
+              class="btn border-8 py-3 px-5 mb-3 w-100 text-white fs_12 SelfStorage__bg_orange SelfStorage__btn2_orange">Вернуться
+              к аренде</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+{% endif %}
+
+{% if not already_delivered %}
+<aside class="modal fade" id="DeliveryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body d-flex justify-content-center align-items-center">
+        <form id="deliveryForm" method="post" class="d-flex flex-column align-items-center" style="max-width: 420px">
+          {% csrf_token %}
+          <h1 class="modal-title text-center fw-bold mb-3">Бесплатная доставка</h1>
+          <span class="fw-light SelfStorage_grey">Укажите адрес, откуда нам следует забрать Ваши вещи.</span>
+          <span class="fw-light SelfStorage_grey mb-3">Наш менеджер свяжется с Вами для уточнения деталей.</span>
+          <span id="errorPrompt" class="fw-light SelfStorage_orange mb-3 d-none"></span>
+          <input type="text" required name="address"
+            class="form-control  border-8 mb-4 py-2 px-3 border-0 fs_14 SelfStorage__bg_lightgrey" placeholder="Адрес">
+          <input type="hidden" name="lease_id" value="{{ id }}">
+          <button id="submitButton" type="submit"
+            class="btn border-8 py-3 px-5 mt-5 mb-3 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Заказать</button>
+          <a data-bs-dismiss="modal"
+            class="btn border-8 py-3 px-5 mb-3 w-100 text-white fs_12 SelfStorage__bg_orange SelfStorage__btn2_orange">Вернуться
+            к аренде</a>
+        </form>
+        <div id="deliveryReply" class="d-none d-flex flex-column align-items-center" style="max-width: 420px">
+          <h1 class="modal-title text-center fw-bold mb-3">Бесплатная доставка</h1>
+          <h4 id="deliveryMessage" class="modal-title text-center mb-5"></h4>
+          <a data-bs-dismiss="modal"
+            class="btn border-8 py-3 px-5 mb-3 w-100 text-white fs_12 SelfStorage__bg_orange SelfStorage__btn2_orange">Вернуться
+            к аренде</a>
+        </div>
+        <script>
+          let deliveryForm = document.querySelector("#deliveryForm")
+          let submitButton = document.querySelector("#submitButton")
+          let errorPrompt = document.querySelector("#errorPrompt")
+          let deliveryReply = document.querySelector("#deliveryReply")
+          let deliveryMessage = document.querySelector("#deliveryMessage")
+
+          deliveryForm.addEventListener("submit", (event) => {
+            event.preventDefault()
+            submitButton.disabled = true
+            fetch("{% url 'request_delivery' %}", {
+              method: 'post',
+              body: new FormData(deliveryForm),
+            }).then(response => response.json())
+              .then(json => {
+                if (json.status == "validation_error") {
+                  errorPrompt.textContent = json.message
+                  errorPrompt.classList.remove("d-none")
+                  submitButton.disabled = false
+                } else if (json.status == "already_exists") {
+                  deliveryForm.classList.add("d-none")
+                  deliveryMessage.textContent = json.message
+                  deliveryReply.classList.remove("d-none")
+                } else {
+                  deliveryForm.classList.add("d-none")
+                  deliveryMessage.textContent = json.message
+                  deliveryReply.classList.remove("d-none")
+                }
+              })
+              .catch(error => console.log("error"))
+          })
+        </script>
+      </div>
+    </div>
+  </div>
+</aside>
+{% endif %}
+
+{% if status|is_paid or status|is_overdue %}
+<aside class="modal fade" id="QRModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body d-flex justify-content-center align-items-center">
+        <div class="d-flex flex-column align-items-center" style="max-width: 420px">
+          {% csrf_token %}
+          <h1 class="modal-title text-center fw-bold mb-3">QR код доступа</h1>
+          <img id="QRImage"></img>
+          <a data-bs-dismiss="modal"
+            class="btn border-8 py-3 px-5 mb-3 w-100 text-white fs_12 SelfStorage__bg_orange SelfStorage__btn2_orange">Вернуться
+            к аренде</a>
+        </div>
+        <script>
+          document.addEventListener("DOMContentLoaded", (event) => {
+            let generateQR = document.querySelector("#generateQR")
+            let qrImage = document.querySelector("#QRImage")
+            generateQR.addEventListener("click", (event) => {
+              fetch("{% url 'get_qr_code' id %}")
+                .then(response => response.json())
+                .then(json => {
+                  qrImage.src = json.qr_url
+                })
+            })
+          })
+        </script>
+      </div>
+    </div>
+  </div>
+</aside>
+{% endif %}
+
+<div class="container mt-header">
+  <div class="card text-bg-warning text-center">
+    <div class="card-header">
+      Аренда #{{ id }}
+      <span class="badge {{ status|badge_bg }}">{{ status_verbose }}</span>
+    </div>
+    <div class="card-body text">
+      <div>
+        <h5 class="card-title">Бокс №{{ box_code }}</h5>
+        <p class="card-text">Цена в месяц - {{ box_rate }} Р.</p>
+        <p class="card-text">Срок аренды - до {{ expires_on }}</p>
+        <p class="card-text">Итого - {{ total_price }} Р.</p>
+        {% if status|is_not_paid %}
+        <a href="{% url 'make_payment' id %}" class="btn btn-success">Оплатить</a>
+        <a data-bs-toggle="modal" data-bs-target="#CancelModal" class="btn btn-danger">Отменить</a>
+        <p class="card-text mt-5">Оплатите аренду, чтобы получить доступ к боксу или заказать доставку</p>
+        <button type="button" class="btn btn-secondary" disabled>Заказать бесплатную доставку</button>
+        <button type="button" class="btn btn-secondary" disabled>Получить QR-код доступа</button>
+        {% elif status|is_paid %}
+        {% if already_delivered %}
+        <p class="card-text mt-5 SelfStorage_grey">Вы уже использовали услугу бесплатной доставки для этой аренды.</p>
+        <button type="button" class="btn btn-secondary" disabled>Доставка исполнена</button>
+        {% else %}
+        <p class="card-text mt-5">Наш курьер приедет к Вам и самостоятельно замерит габариты Ваших вещей.</p>
+        <a data-bs-toggle="modal" data-bs-target="#DeliveryModal" class="btn btn-success">Заказать бесплатную
+          доставку</a>
+        {% endif %}
+        <p class="card-text mt-5">QR-код необходим для доступа к Вашему боксу.</p>
+        <p class="card-text">Не волнуйтесь - вы всегда можете забрать или положить свои вещи до окончания срока аренды.
+        </p>
+        <a data-bs-toggle="modal" id="generateQR" data-bs-target="#QRModal" class="btn btn-success">Сгенерировать
+          QR-код</a>
+        {% elif status|is_overdue %}
+        <p class="card-text text-danger fw-bold mt-5">Срок Вашей аренды истек.</p>
+        <p class="card-text text-danger">Если Вы не заберете Ваши вещи до {{ seize_on }} - они будут изъяты.</p>
+        <a data-bs-toggle="modal" id="generateQR" data-bs-target="#QRModal" class="btn btn-success">Сгенерировать
+          QR-код</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl)
+  })
+</script>
+
+{% endblock %}

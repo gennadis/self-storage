@@ -1,0 +1,30 @@
+{% extends 'base_template.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+Selfstorage | Login
+{% endblock %}
+
+{% block content %}
+<div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
+    <div class="modal-content">
+        <div class="modal-header border-0">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex justify-content-center align-items-center">
+            <form class="d-flex flex-column align-items-center" style="max-width: 420px" method="post"
+                action="{% url 'account_logout' %}">
+                <h1>Выйти</h1>
+                <p>{% trans 'Are you sure you want to sign out?' %}</p>
+                {% csrf_token %}
+                {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+                <button type="submit"
+                    class="btn border-8 py-3 px-5 mt-5 mb-3 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Выйти</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

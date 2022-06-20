@@ -1,0 +1,16 @@
+Django==4.0.5
+python-dotenv==0.20.0
+django-phonenumber-field==6.2.0
+phonenumbers==8.12.50
+Pillow==9.1.1
+requests==2.28.0
+django-allauth==0.51.0
+yookassa==2.3.1
+django-debug-toolbar==3.4.0
+python-dateutil==2.8.2
+qrcode==7.3.1
+celery==5.2.7
+redis==4.3.3
+psycopg2-binary==2.9.3
+gunicorn==20.1.0
+rollbar==0.16.3

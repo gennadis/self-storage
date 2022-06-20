@@ -7,3 +7,6 @@ media
 .env.dev
 .env.prod
 *.sqlite3
+celerybeat-schedule
+
+production/data/certbot/

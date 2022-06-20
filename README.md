@@ -87,6 +87,13 @@ pip install -r requirements.txt
 ```sh
 python manage.py migrate
 ```
+Запустить команды чтобы наполнить БД складами и боксами
+```sh
+python manage.py load_warehouses https://raw.githubusercontent.com/aosothra/remote_content/master/self_storage/warehouses.json
+```
+```sh
+python manage.py generate_boxes
+```
 
 7. Переименуйте файл `.env.example` на `.env` и заполните его
 ```sh
@@ -101,3 +108,7 @@ mv .env.example .env
 ```sh
 python manage.py runserver 127.0.0.1:8000
 ```
+
+
+[просроченная аренда](127.0.0.1:8000/overdue)
+[доставка]()

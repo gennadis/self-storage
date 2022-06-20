@@ -1,0 +1,39 @@
+{% extends 'base_template.html' %}
+
+{% load static %}
+{% load storage_tags %}
+
+{% block title %}
+Selfstorage | Прием платежа с помощью виджета ЮKassa
+{% endblock %}
+
+{% block content %}
+<main class="container mt-header">
+    <div id="payment-form"></div>
+
+    <p>Данные банковской карты для оплаты в <b>тестовом магазине</b>:</p>
+    <ul>
+        <li>номер — <b>5555 5555 5555 4477</b></li>
+        <li>срок действия — <b>01/30</b> (или другая дата, больше текущей)</li>
+        <li>CVC — <b>123</b> (или три любые цифры)</li>
+        <li>код для прохождения 3-D Secure — <b>123</b> (или три любые цифры)</li>
+    </ul>
+    <p><a href=https://yookassa.ru/developers/payment-acceptance/testing-and-going-live/testing#test-bank-card>Другие
+            тестовые банковские карты</a></p>
+</main>
+<script src="https://yookassa.ru/checkout-widget/v1/checkout-widget.js"></script>
+<script>
+    //Инициализация виджета. Все параметры обязательные.
+    const checkout = new window.YooMoneyCheckoutWidget({
+        confirmation_token: '{{ confirmation_token }}', //Токен, который перед проведением оплаты нужно получить от ЮKassa
+        return_url: "{{ return_url }}", //Ссылка на страницу завершения оплаты, это может быть любая ваша страница
+
+        error_callback: function (error) {
+            console.log(error)
+        }
+    });
+
+    //Отображение платежной формы в контейнере
+    checkout.render('payment-form');
+</script>
+{% endblock %}

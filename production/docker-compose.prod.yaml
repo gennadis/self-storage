@@ -1,0 +1,93 @@
+version: '3'
+
+services:
+  django:
+    container_name: storage-django
+    build: ../src
+    restart: unless-stopped
+    command: gunicorn selfstorage.wsgi:application --bind 0.0.0.0:8000
+    expose:
+      - 8000
+    volumes:
+      - static_volume:/home/storage/web/staticfiles
+      - media_volume:/home/storage/web/media
+    env_file:
+      - ./.env.prod
+    depends_on:
+      - db
+      - redis
+
+  db:
+    container_name: storage-postgres
+    image: postgres:14.0-alpine
+    restart: unless-stopped
+    expose:
+      - 5432
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.prod
+
+  redis:
+    container_name: storage-redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    expose:
+      - 6379
+
+  celery-worker:
+    container_name: storage-celery-worker
+    build: ../src
+    restart: unless-stopped
+    command: celery -A selfstorage worker -l info
+    # volumes:
+    #   - ./src:/home/storage/web
+    env_file:
+      - ./.env.prod
+    depends_on:
+      - redis
+
+  celery-beat:
+    container_name: storage-celery-beat
+    build: ../src
+    restart: unless-stopped
+    command: celery -A selfstorage beat -l info
+    # volumes:
+    #   - ./src:/home/storage/web
+    env_file:
+      - ./.env.prod
+    depends_on:
+      - redis
+
+  nginx:
+    container_name: storage-nginx
+    image: nginx:1.21-alpine
+    restart: always
+    volumes:
+      - static_volume:/home/storage/web/staticfiles
+      - media_volume:/home/storage/web/media
+      - ./data/nginx/conf.d:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    # reload nginx to obtain updated SSL certs -- every 6h
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - django
+
+  certbot:
+    container_name: sotrage-certbot
+    image: certbot/certbot
+    restart: always
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    # renew SSL certs if possible -- every 12h
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+volumes:
+  postgres_volume:
+  static_volume:
+  media_volume:
