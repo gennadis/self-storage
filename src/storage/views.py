@@ -157,8 +157,7 @@ def show_lease(request, lease_id):
 
     try:
         lease = (
-            Lease.objects.select_related("user")
-            .select_related("box")
+            Lease.objects.select_related("user", "box", "box__warehouse")
             .get(id=int(lease_id))
         )
     except Lease.DoesNotExist:
@@ -168,17 +167,28 @@ def show_lease(request, lease_id):
         raise Http404("User cannot access this data")
 
     already_delivered = Delivery.objects.filter(
-        lease=lease, delivery_status="Completed"
+        lease=lease, delivery_status__in=["Completed", "In_process"]
     ).exists()
+
+    warehouse_address = (
+        f"{lease.box.warehouse.city}, {lease.box.warehouse.address}"
+    )
+
+    lease_duration = relativedelta(lease.expires_on, lease.created_on).months
 
     lease_serialized = {
         "id": lease.id,
         "status": lease.status,
         "status_verbose": lease.get_status_display(),
         "box_code": lease.box.code,
+        "warehouse_address": warehouse_address,
+        "box_area": lease.box.get_area(),
+        "box_dimensions": lease.box.get_dimensions_display(),
+        "box_floor": lease.box.floor,
         "box_rate": lease.box.monthly_rate,
         "expires_on": lease.expires_on,
         "total_price": lease.price,
+        "duration": lease_duration,
         "already_delivered": already_delivered,
     }
     if lease.status == Lease.Status.OVERDUE:
