@@ -21,14 +21,14 @@ app.conf.beat_schedule = {
     # после чего в случае, если я их так и не заберу – я их потеряю.
     "close_overdue_leases": {
         "task": "storage.tasks.close_overdue_leases",
-        "schedule": crontab(0),
+        "schedule": crontab(),
         # "schedule": crontab(hour=0, minute=0),
     },
     # Подходит конец срока аренды → Хочу об этом не забыть и забрать вещи вовремя
     # → Мне приходят напоминания на почту за месяц, 2 недели, неделю и 3 дня, пока я не заберу вещи.
     "send_notice_lease_ends_soon": {
         "task": "storage.tasks.send_notice_lease_ends_soon",
-        "schedule": crontab(0),
+        "schedule": crontab(),
         # "schedule": crontab(hour=12, minute=0),
     },
     # Забыл забрать вещи в срок → хочу, чтобы мне об этом напомнили
@@ -36,7 +36,7 @@ app.conf.beat_schedule = {
     "send_notice_lease_ended": {
         "task": "storage.tasks.send_notice_lease_ended",
         # "schedule": crontab(0, 0, day_of_month="1"),
-        "schedule": crontab(0),
+        "schedule": crontab(),
     },
     # "check_lease_payment_status_every_minute": {
     #     "task": "storage.tasks.check_lease_payment_status",
