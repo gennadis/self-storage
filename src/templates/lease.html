@@ -141,47 +141,49 @@ Selfstorage | Ваш бокс
 </aside>
 {% endif %}
 
-
-<div class="card text-bg-warning text-center">
-  <div class="card-header">
-    Аренда #{{ id }}
-    <span class="badge {{ status|badge_bg }}">{{ status_verbose }}</span>
-  </div>
-  <div class="card-body text">
-    <div>
-      <h5 class="card-title">Бокс №{{ box_code }}</h5>
-      <p class="card-text">Цена в месяц - {{ box_rate }} Р.</p>
-      <p class="card-text">Срок аренды - до {{ expires_on }}</p>
-      <p class="card-text">Итого - {{ total_price }} Р.</p>
-      {% if status|is_not_paid %}
-      <a href="{% url 'make_payment' id %}" class="btn btn-success">Оплатить</a>
-      <a data-bs-toggle="modal" data-bs-target="#CancelModal" class="btn btn-danger">Отменить</a>
-      <p class="card-text mt-5">Оплатите аренду, чтобы получить доступ к боксу или заказать доставку</p>
-      <button type="button" class="btn btn-secondary" disabled>Заказать бесплатную доставку</button>
-      <button type="button" class="btn btn-secondary" disabled>Получить QR-код доступа</button>
-      {% elif status|is_paid %}
-      {% if already_delivered %}
-      <p class="card-text mt-5 SelfStorage_grey">Вы уже использовали услугу бесплатной доставки для этой аренды.</p>
-      <button type="button" class="btn btn-secondary" disabled>Доставка исполнена</button>
-      {% else %}
-      <p class="card-text mt-5">Наш курьер приедет к Вам и самостоятельно замерит габариты Ваших вещей.</p>
-      <a data-bs-toggle="modal" data-bs-target="#DeliveryModal" class="btn btn-success">Заказать бесплатную
-        доставку</a>
-      {% endif %}
-      <p class="card-text mt-5">QR-код необходим для доступа к Вашему боксу.</p>
-      <p class="card-text">Не волнуйтесь - вы всегда можете забрать или положить свои вещи до окончания срока аренды.
-      </p>
-      <a data-bs-toggle="modal" id="generateQR" data-bs-target="#QRModal" class="btn btn-success">Сгенерировать
-        QR-код</a>
-      {% elif status|is_overdue %}
-      <p class="card-text text-danger fw-bold mt-5">Срок Вашей аренды истек.</p>
-      <p class="card-text text-danger">Если Вы не заберете Ваши вещи до {{ seize_on }} - они будут изъяты.</p>
-      <a data-bs-toggle="modal" id="generateQR" data-bs-target="#QRModal" class="btn btn-success">Сгенерировать
-        QR-код</a>
-      {% endif %}
+<div class="container mt-header">
+  <div class="card text-bg-warning text-center">
+    <div class="card-header">
+      Аренда #{{ id }}
+      <span class="badge {{ status|badge_bg }}">{{ status_verbose }}</span>
+    </div>
+    <div class="card-body text">
+      <div>
+        <h5 class="card-title">Бокс №{{ box_code }}</h5>
+        <p class="card-text">Цена в месяц - {{ box_rate }} Р.</p>
+        <p class="card-text">Срок аренды - до {{ expires_on }}</p>
+        <p class="card-text">Итого - {{ total_price }} Р.</p>
+        {% if status|is_not_paid %}
+        <a href="{% url 'make_payment' id %}" class="btn btn-success">Оплатить</a>
+        <a data-bs-toggle="modal" data-bs-target="#CancelModal" class="btn btn-danger">Отменить</a>
+        <p class="card-text mt-5">Оплатите аренду, чтобы получить доступ к боксу или заказать доставку</p>
+        <button type="button" class="btn btn-secondary" disabled>Заказать бесплатную доставку</button>
+        <button type="button" class="btn btn-secondary" disabled>Получить QR-код доступа</button>
+        {% elif status|is_paid %}
+        {% if already_delivered %}
+        <p class="card-text mt-5 SelfStorage_grey">Вы уже использовали услугу бесплатной доставки для этой аренды.</p>
+        <button type="button" class="btn btn-secondary" disabled>Доставка исполнена</button>
+        {% else %}
+        <p class="card-text mt-5">Наш курьер приедет к Вам и самостоятельно замерит габариты Ваших вещей.</p>
+        <a data-bs-toggle="modal" data-bs-target="#DeliveryModal" class="btn btn-success">Заказать бесплатную
+          доставку</a>
+        {% endif %}
+        <p class="card-text mt-5">QR-код необходим для доступа к Вашему боксу.</p>
+        <p class="card-text">Не волнуйтесь - вы всегда можете забрать или положить свои вещи до окончания срока аренды.
+        </p>
+        <a data-bs-toggle="modal" id="generateQR" data-bs-target="#QRModal" class="btn btn-success">Сгенерировать
+          QR-код</a>
+        {% elif status|is_overdue %}
+        <p class="card-text text-danger fw-bold mt-5">Срок Вашей аренды истек.</p>
+        <p class="card-text text-danger">Если Вы не заберете Ваши вещи до {{ seize_on }} - они будут изъяты.</p>
+        <a data-bs-toggle="modal" id="generateQR" data-bs-target="#QRModal" class="btn btn-success">Сгенерировать
+          QR-код</a>
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>
+
 
 <script>
   var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
