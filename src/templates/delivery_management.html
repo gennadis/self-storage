@@ -21,13 +21,13 @@ Selfstorage - управление заказами на Доставку
                   Информация о клиенте
                 </div>
                 <ul class="list-group list-group-flush">
-                  <li class="list-group-item d-inline-flex justify-content-between">
+                  <li class="list-group-item d-inline-flex flex-wrap justify-content-between">
                     <span class="text-muted">Имя</span><span>{{ order.client_firstname }}</span>
                   </li>
-                  <li class="list-group-item d-inline-flex justify-content-between">
+                  <li class="list-group-item d-inline-flex flex-wrap justify-content-between">
                     <span class="text-muted">Номер телефона</span><span>{{ order.client_phone }}</span>
                   </li>
-                  <li class="list-group-item d-inline-flex justify-content-between">
+                  <li class="list-group-item d-inline-flex flex-wrap justify-content-between">
                     <span class="text-muted">Адрес почты</span><span>{{ order.client_email }}</span>
                   </li>
                 </ul>
@@ -39,13 +39,13 @@ Selfstorage - управление заказами на Доставку
                   Данные заказа
                 </div>
                 <ul class="list-group list-group-flush">
-                  <li class="list-group-item d-inline-flex justify-content-between">
+                  <li class="list-group-item d-inline-flex flex-wrap justify-content-between">
                     <span class="text-muted">Адрес вывоза</span><span>{{ order.pickup_address }}</span>
                   </li>
-                  <li class="list-group-item d-inline-flex justify-content-between">
+                  <li class="list-group-item d-inline-flex flex-wrap justify-content-between">
                     <span class="text-muted">Склад, Этаж</span><span>{{ order.warehouse_address }} - эт. {{ order.box_floor }}</span>
                   </li>
-                  <li class="list-group-item d-inline-flex justify-content-between">
+                  <li class="list-group-item d-inline-flex flex-wrap justify-content-between">
                     <span class="text-muted">Код бокса</span><span>№{{ order.box_code }}</span>
                   </li>
                 </ul>
