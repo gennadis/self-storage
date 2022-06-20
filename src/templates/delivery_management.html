@@ -1,0 +1,236 @@
+{% extends 'base_template.html' %}
+{% load static %}
+
+{% block title %}
+Selfstorage - управление заказами на Доставку
+{% endblock %}
+
+{% block content %}
+<div class="container mt-header">
+  {% if delivery_orders.Unprocessed %}
+  <article>
+    <h2>Необработанные заказы</h2>
+    {% for order in delivery_orders.Unprocessed %}
+      <div class="card text-center">
+        <h5 class="card-header bg-warning text-dark">Заказ на доставку №{{ order.id }}</h5>
+        <div class="card-body">          
+          <div class="d-flex flex-wrap row">
+            <div class="col-lg-6 gy-2 gy-lg-0">
+              <div class="card">
+                <div class="card-header">
+                  Информация о клиенте
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item d-inline-flex justify-content-between">
+                    <span class="text-muted">Имя</span><span>{{ order.client_firstname }}</span>
+                  </li>
+                  <li class="list-group-item d-inline-flex justify-content-between">
+                    <span class="text-muted">Номер телефона</span><span>{{ order.client_phone }}</span>
+                  </li>
+                  <li class="list-group-item d-inline-flex justify-content-between">
+                    <span class="text-muted">Адрес почты</span><span>{{ order.client_email }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-lg-6 gy-2 gy-lg-0">
+              <div class="card">
+                <div class="card-header">
+                  Данные заказа
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item d-inline-flex justify-content-between">
+                    <span class="text-muted">Адрес вывоза</span><span>{{ order.pickup_address }}</span>
+                  </li>
+                  <li class="list-group-item d-inline-flex justify-content-between">
+                    <span class="text-muted">Склад, Этаж</span><span>{{ order.warehouse_address }} - эт. {{ order.box_floor }}</span>
+                  </li>
+                  <li class="list-group-item d-inline-flex justify-content-between">
+                    <span class="text-muted">Код бокса</span><span>№{{ order.box_code }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="d-flex flex-wrap row align-items-center">
+            <div class="col-lg-3 gy-1 gy-lg-0">
+              <div>{{ order.registered_at }}</div>
+              <div class="text-muted" >Создан</div>
+            </div>
+            <div class="col-lg-3 gy-1 gy-lg-0">
+              <div>-</div>
+              <div class="text-muted">Курьер назначен</div>
+            </div>
+            <div class="col-lg-3 gy-1 gy-lg-0">
+              <div>-</div>
+              <div class="text-muted">Завершен</div>
+            </div>
+            <div class="col-lg-3 gy-1 gy-lg-0">
+              <a href="{% url 'admin:storage_delivery_change' object_id=order.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-primary">
+                Редактировать
+              </a>
+            </div>
+          </div>     
+        </div>
+      </div>
+    {% endfor %}
+  </article>
+  {% endif %}
+  {% if delivery_orders.In_process %}
+    <article class="pt-header">
+      <h2>Заказы в работе</h2>
+      {% for order in delivery_orders.In_process %}
+        <div class="card text-center">
+          <h5 class="card-header bg-info text-dark">Заказ на доставку №{{ order.id }}</h5>
+          <div class="card-body">          
+            <div class="d-flex flex-wrap row">
+              <div class="col-lg-6 gy-2 gy-lg-0">
+                <div class="card">
+                  <div class="card-header">
+                    Информация о клиенте
+                  </div>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Имя</span><span>{{ order.client_firstname }}</span>
+                    </li>
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Номер телефона</span><span>{{ order.client_phone }}</span>
+                    </li>
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Адрес почты</span><span>{{ order.client_email }}</span>
+                    </li>
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Комментарий</span><span>{{ order.comment }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-6 gy-2 gy-lg-0">
+                <div class="card">
+                  <div class="card-header">
+                    Данные заказа
+                  </div>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Курьер </span>
+                      <span>{{ order.courier_firstname }}, {{ order.courier_phone }}</span>
+                    </li>
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Адрес вывоза</span><span>{{ order.pickup_address }}</span>
+                    </li>
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Склад, Этаж</span><span>{{ order.warehouse_address }} - эт. {{ order.box_floor }}</span>
+                    </li>
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Код бокса</span><span>№{{ order.box_code }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="d-flex flex-wrap row align-items-center">
+              <div class="col-lg-3 gy-1 gy-lg-0">
+                <div>{{ order.registered_at }}</div>
+                <div class="text-muted" >Создан</div>
+              </div>
+              <div class="col-lg-3 gy-1 gy-lg-0">
+                <div>{{ order.processed_at }}</div>
+                <div class="text-muted">Курьер назначен</div>
+              </div>
+              <div class="col-lg-3 gy-1 gy-lg-0">
+                <div>-</div>
+                <div class="text-muted">Завершен</div>
+              </div>
+              <div class="col-lg-3 gy-1 gy-lg-0">
+                <a href="{% url 'admin:storage_delivery_change' object_id=order.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-primary">
+                  Редактировать
+                </a>
+              </div>
+            </div>     
+          </div>
+        </div>
+      {% endfor %}
+    </article>
+  {% endif %}
+  {% if delivery_orders.Completed %}
+    <article class="pt-header">
+      <h2>Завершенные заказы</h2>
+      {% for order in delivery_orders.Completed %}
+        <div class="card text-center">
+          <h5 class="card-header bg-success text-white">Заказ на доставку №{{ order.id }}</h5>
+          <div class="card-body">          
+            <div class="d-flex flex-wrap row">
+              <div class="col-lg-6 gy-2 gy-lg-0">
+                <div class="card">
+                  <div class="card-header">
+                    Информация о клиенте
+                  </div>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Имя</span><span>{{ order.client_firstname }}</span>
+                    </li>
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Номер телефона</span><span>{{ order.client_phone }}</span>
+                    </li>
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Адрес почты</span><span>{{ order.client_email }}</span>
+                    </li>
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Комментарий</span><span>{{ order.comment }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-6 gy-2 gy-lg-0">
+                <div class="card">
+                  <div class="card-header">
+                    Данные заказа
+                  </div>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Курьер </span>
+                      <span>{{ order.courier_firstname }}, {{ order.courier_phone }}</span>
+                    </li>
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Адрес вывоза</span><span>{{ order.pickup_address }}</span>
+                    </li>
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Склад, Этаж</span><span>{{ order.warehouse_address }} - эт. {{ order.box_floor }}</span>
+                    </li>
+                    <li class="list-group-item d-inline-flex justify-content-between">
+                      <span class="text-muted">Код бокса</span><span>№{{ order.box_code }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="d-flex flex-wrap row align-items-center">
+              <div class="col-lg-3 gy-1 gy-lg-0">
+                <div>{{ order.registered_at }}</div>
+                <div class="text-muted" >Создан</div>
+              </div>
+              <div class="col-lg-3 gy-1 gy-lg-0">
+                <div>{{ order.processed_at }}</div>
+                <div class="text-muted">Курьер назначен</div>
+              </div>
+              <div class="col-lg-3 gy-1 gy-lg-0">
+                <div>{{ order.delivered_at }}</div>
+                <div class="text-muted">Завершен</div>
+              </div>
+              <div class="col-lg-3 gy-1 gy-lg-0">
+                Заказ завершен
+              </div>
+            </div>     
+          </div>
+        </div>
+      {% endfor %}
+    </article>
+  {% endif %}
+</div>
+{% endblock %}

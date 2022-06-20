@@ -15,6 +15,7 @@ urlpatterns = [
         "warehouse/<int:warehouse_id>/", views.avaliable_boxes, name="avaliable_boxes"
     ),
     path("request_delivery/", views.request_delivery, name="request_delivery"),
-    path("delivery", views.delivery, name="delivery_orders"),
+    path("delivery/courier", views.delivery, name="delivery_orders"),
+    path("delivery/management", views.delivery_management, name="delivery_management"),
     path("overdue", views.display_overdue_leases, name="overdue leases"),
 ]
