@@ -6,6 +6,7 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("faq", views.faq, name="faq"),
     path("boxes", views.boxes, name="boxes"),
+    path("contacts", views.contacts, name="contacts"),
     path("lease", views.create_lease, name="create_lease"),
     path("leases/<int:lease_id>", views.show_lease, name="show_lease"),
     path("leases/<int:lease_id>/qrcode", views.get_qr_code, name="get_qr_code"),
