@@ -50,8 +50,8 @@ def index(request):
     # Acquire least occupied warehouse
 
     warehouses_with_boxes = Box.objects.get_warehouses_with_boxes()
-    sorted(warehouses_with_boxes.items(), key=lambda kv: len(kv[1]), reverse=True)
-    free_warehouse_id = list(warehouses_with_boxes.keys())[0]
+    free_warehouse_id = sorted(warehouses_with_boxes.items(), key=lambda kv: len(kv[1]), reverse=True)[0][0]
+    
     free_warehouse = (
         Warehouse.objects.prefetch_related("images")
         .annotate(boxes_total=Count("boxes", distinct=True))
