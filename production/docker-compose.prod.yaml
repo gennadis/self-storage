@@ -21,8 +21,8 @@ services:
     container_name: storage-postgres
     image: postgres:14.0-alpine
     restart: unless-stopped
-    ports:
-      - 5432:5432
+    expose:
+      - 5432
     volumes:
       - postgres_volume:/var/lib/postgresql/data/
     env_file:
@@ -32,8 +32,8 @@ services:
     container_name: storage-redis
     image: redis:7-alpine
     restart: unless-stopped
-    ports:
-      - 6379:6379
+    expose:
+      - 6379
 
   celery-worker:
     container_name: storage-celery-worker
