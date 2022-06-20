@@ -18,6 +18,9 @@ def register(request):
 
 
 def profile(request):
+    if not request.user.is_authenticated:
+        return redirect("account_login")
+
     user_leases = (
         Lease.objects.select_related("box", "box__warehouse")
         .filter(user=request.user)
