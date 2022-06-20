@@ -33,7 +33,8 @@ app.conf.beat_schedule = {
     # → получаю письма об этом раз в месяц.
     "send_notice_lease_ended": {
         "task": "storage.tasks.send_notice_lease_ended",
-        "schedule": crontab(9, 0, day_of_month="1"),
+        # "schedule": crontab(0, 0, day_of_month="1"),
+        "schedule": crontab(0),
     },
     # "check_lease_payment_status_every_minute": {
     #     "task": "storage.tasks.check_lease_payment_status",
