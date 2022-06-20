@@ -126,12 +126,10 @@ Selfstorage | Ваш бокс
 								</div>
 								<div class="card-body">
 									<div class="d-flex flex-wrap">
-										<span class="fs-4 me-auto">Склад:</span><span class="ms-3 fs-4">{{
-											lease.warehouse_city }}, {{ lease.warehouse_address }}</span>
+										<span class="fs-4 me-auto">Склад:</span><span class="ms-3 fs-4">{{ lease.warehouse_city }}, {{ lease.warehouse_address }}</span>
 									</div>
 									<div class="d-flex flex-wrap">
-										<span class="fs-4 me-auto">Срок аренды:</span><span class="ms-3 fs-4">до {{
-											lease.lease_till }}</span>
+										<span class="fs-4 me-auto">Срок аренды:</span><span class="ms-3 fs-4">до {{ lease.lease_till }}</span>
 									</div>
 									<div class="d-flex justify-content-end mt-3">
 										<a href="{% url 'show_lease' lease.id %}"
