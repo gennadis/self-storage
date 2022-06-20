@@ -1,6 +1,6 @@
 # Сервис SelfStorage
 
-![screenshot](Screenshot.png)
+![screenshot](src/Screenshot.png)
 
 Николай, предприниматель, владеет сетью складов для юридических лиц в Москве. Узнал о проекте https://cherdak.io/ и решил, что он тоже так может! 
 
@@ -21,20 +21,18 @@
 
 ---
 
-# DEV `docker compose` instrucitons
-1.
+# Инструкция по установке
+
+1. Клонируйте репозиторий и перейдите в созданную директорию
 ```sh
 git clone https://github.com/gennadis/self-storage.git
-cd self-storage
 ```
 
-2.
+2. Переименуйте файл `.env.dev.example` на `.env.dev` и заполните его по образцу
 ```sh
-cp .env.dev.example .env.dev
-
-SECRET_KEY=<your_secret_key>
+SECRET_KEY=<secret_key>
 DEBUG=True
-ALLOWED_HOSTS=localhost 127.0.0.1
+ALLOWED_HOSTS=127.0.0.1 localhost
 
 YOOKASSA_API_KEY=<yookassa_api_key>
 YOOKASSA_SHOP_ID=<yookassa_shop_id>
@@ -45,70 +43,44 @@ POSTGRES_DB=storage_db
 POSTGRES_ENGINE=django.db.backends.postgresql
 POSTGRES_HOST=db
 POSTGRES_PORT=5432
+
+EMAIL_USE_TLS=True
+EMAIL_HOST=smtp.gmail.com
+EMAIL_HOST_USER=<your_email>
+EMAIL_HOST_PASSWORD=<your_password>
+EMAIL_PORT=587
+DEFAULT_FROM_EMAIL=<your_email>
+
+DOCKERIZED=True
+
+BASE_URL=http://127.0.0.1
+CSRF_TRUSTED_ORIGINS=http://127.0.0.1
 ```
-3.
+
+3. Соберите и поднимите проект с помощью `docker compose`
 ```sh
 docker compose -f docker-compose.dev.yaml up -d --build
-docker compose -f docker-compose.dev.yaml exec backend python manage.py makemigrations
-docker compose -f docker-compose.dev.yaml exec backend python manage.py migrate
-docker compose -f docker-compose.dev.yaml exec backend python manage.py loaddata db.json
-docker compose -f docker-compose.dev.yaml exec backend python manage.py createsuperuser
 ```
 
-
-# DEV instructions
-
-1. Скачайте код
-```sh
-git clone https://github.com/gennadis/self-storage.git
-```
-
-2. Перейдите в каталог проекта
-```sh
-cd self-storage
-```
-
-3. В каталоге проекта создайте виртуальное окружение
-```sh
-python3 -m venv venv
-```
-
-4. Активируйте его
-```sh
-source venv/bin/activate
-```
-
-5. Установите зависимости
-```sh
-pip install -r requirements.txt
-```
-
-6. Накатите миграции
-```sh
-python manage.py migrate
-```
-Запустить команды чтобы наполнить БД складами и боксами
+4. Запустите команды для наполнения БД тестовыми данными
 ```sh
 python manage.py load_warehouses https://raw.githubusercontent.com/aosothra/remote_content/master/self_storage/warehouses.json
 ```
-```sh
+
+```
 python manage.py generate_boxes
 ```
 
-7. Переименуйте файл `.env.example` на `.env` и заполните его
-```sh
-mv .env.example .env
+5. Создайте суперпользователя
 ```
-- `DEBUG` — дебаг-режим, `True` или `False`
-- `SECRET_KEY` — секретный ключ проекта
-- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
-
-8. Запустите сервер и откройте сайт в браузере по адресу [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-
-```sh
-python manage.py runserver 127.0.0.1:8000
+docker compose -f docker-compose.dev.yaml exec backend python manage.py createsuperuser
 ```
 
+6. Запустите сервер и откройте сайт в браузере по адресу [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
-[просроченная аренда](127.0.0.1:8000/overdue)
-[доставка]()
+
+
+В дополнение к пользовательской части сайта, также доступны следующие страницы для менеджера:
+- [панель управления просроченной арендой](127.0.0.1:8000/overdue)
+
+- [панель управления доставкой](127.0.0.1:8000/delivery)
