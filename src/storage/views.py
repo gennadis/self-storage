@@ -338,3 +338,7 @@ def display_overdue_leases(request):
             "overdue_leases": overdue_leases,
         },
     )
+
+
+def contacts(request):
+    return render(request, template_name="contacts.html")
