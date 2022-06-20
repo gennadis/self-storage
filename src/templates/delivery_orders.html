@@ -1,64 +1,38 @@
+{% extends 'base_template.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-	<link rel="stylesheet" href="{% static 'css/Style.css' %}">
-	<title>Заказы на доставку</title>
-</head>
-
-<body>
-	<header>
-		{% include 'includes/navbar.html' %}
-	</header>
-
-
-
-	{% block content %}
-
-  <hr/>
-  <br/>
-  <br/>
-    <br/>
-    <br/>
-  <div class="container">
-   <table class="table table-responsive">
-    <tr>
-       <th>Имя клиента</th>
-       <th>Телефон клиента</th>
-       <th>Адрес забора груза</th>
-       <th>Город склада</th>
-       <th>Адрес склада</th>
-       <th>Номер бокса</th>
-       <th>Статус доставки</th>
-    </tr>
-    {% for delivery_order in delivery_orders %}
-        <tr>
-            <td>{{delivery_order.client_first_name|default_if_none:""}}</td>
-            <td>{{delivery_order.client_phone_number|default_if_none:""}}</td>
-            <td>{{delivery_order.pickup_address|default_if_none:""}}</td>
-            <td>{{delivery_order.warehouse_city}}</td>
-            <td>{{delivery_order.warehouse_address}}</td>
-            <td>{{delivery_order.box_number}}</td>
-            <td>{{delivery_order.delivery_status}}</td>
-        </tr>
-    {% endfor %}
-   </table>
-  </div>
+{% block title %}
+Selfstorage | Заказы на доставку
 {% endblock %}
 
-	<footer>
-		{% include 'includes/footer.html' %}
-	</footer>
-
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-		crossorigin="anonymous"></script>
-</body>
-
-</html>
+{% block content %}
+<hr />
+<br />
+<br />
+<br />
+<br />
+<div class="container">
+  <table class="table table-responsive">
+    <tr>
+      <th>Имя клиента</th>
+      <th>Телефон клиента</th>
+      <th>Адрес забора груза</th>
+      <th>Город склада</th>
+      <th>Адрес склада</th>
+      <th>Номер бокса</th>
+      <th>Статус доставки</th>
+    </tr>
+    {% for delivery_order in delivery_orders %}
+    <tr>
+      <td>{{delivery_order.client_first_name|default_if_none:""}}</td>
+      <td>{{delivery_order.client_phone_number|default_if_none:""}}</td>
+      <td>{{delivery_order.pickup_address|default_if_none:""}}</td>
+      <td>{{delivery_order.warehouse_city}}</td>
+      <td>{{delivery_order.warehouse_address}}</td>
+      <td>{{delivery_order.box_number}}</td>
+      <td>{{delivery_order.delivery_status}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
