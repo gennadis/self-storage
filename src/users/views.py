@@ -1,7 +1,9 @@
+import phonenumbers
 from django.shortcuts import redirect, render
 
 from storage.models import Lease
-from users.forms import CustomUserCreationForm
+from users.forms import CustomUserCreationForm, CustomUserChangeForm
+from users.models import CustomUser
 
 
 def register(request):
@@ -44,9 +46,35 @@ def profile(request):
         else:
             irrelevant_leases_serialized.append(lease_serialized)
 
+    form = CustomUserChangeForm()
     context = {
         "relevant_user_leases": relevant_leases_serialized,
         "irrelevant_user_leases": irrelevant_leases_serialized,
+        "form": form,
     }
+
+    user = CustomUser.objects.get(email=request.user.email)
+
+    if request.method == 'POST':
+        changed_form = CustomUserChangeForm(request.POST)
+        if changed_form.is_valid():
+            user.email = changed_form.cleaned_data.get('email')
+            phone_number = phonenumbers.parse(changed_form.data.get('phone_number'), "RU")
+
+            if not phonenumbers.is_valid_number(phone_number):
+                context["not_valid_phone_number"] = "Введите верный номер телефона"
+
+                return render(request, "my-rent.html", context=context)
+            else:
+                user.phone_number = phone_number
+                user.save()
+
+                context["user"] = user
+
+                return render(request, "my-rent.html", context=context)
+        else:
+            context["user"] = user
+
+            return render(request, "my-rent.html", context=context)
 
     return render(request, "my-rent.html", context=context)

@@ -32,17 +32,21 @@ Selfstorage | Ваш бокс
 							<h4>{{ user.first_name}} {{ user.last_name }}</h4>
 						</div>
 						<div class="col-12 col-sm-7 d-flex flex-column">
-							<form>
+							<form method="post">
+								{% csrf_token %}
 								<label class="fs_24 SelfStorage_green ms-2" for="EMAIL">E-mail</label>
-								<input type="email" name="EMAIL_EDIT" id="EMAIL"
+								<input type="email" name="email" id="EMAIL"
 									class="form-control fs_24 ps-2 SelfStorage__input" value={{ user.email }} disabled>
 								<label class="fs_24 SelfStorage_green ms-2" for="PHONE">Телефон</label>
-								<input type="tel" name="PHONE_EDIT" id="PHONE"
-									class="form-control fs_24 ps-2 SelfStorage__input" value={{ user.phone_number }}
-									disabled>
-								<label class="fs_24 SelfStorage_green ms-2" for="PASSWORD">Пароль</label>
-								<input type="password" name="PASSWORD_EDIT" id="PASSWORD"
-									class="form-control fs_24 ps-2 SelfStorage__input" value='**********' disabled>
+								{% if not_valid_phone_number %}
+									<p for="PHONE">{{not_valid_phone_number}}</p>
+								{% endif %}
+								<input type="tel" name="phone_number" id="PHONE"
+									   class="form-control fs_24 ps-2 SelfStorage__input" value={{ user.phone_number }}
+									   disabled>
+								<a href="{% url 'account_set_password' %}" class="btn SelfStorage_orange ps-1">
+									Изменить пароль
+								</a>
 								<button type="submit" class="btn SelfStorage_green ps-1" id="save"
 									style="display: none">Сохранить</button>
 								<a class="btn SelfStorage_orange ps-1" id="edit">Редактировать</a>
@@ -51,17 +55,13 @@ Selfstorage | Ваш бокс
 										e.preventDefault()
 										document.getElementById('EMAIL').disabled = false
 										document.getElementById('PHONE').disabled = false
-										document.getElementById('PASSWORD').disabled = false
-										document.getElementById('PASSWORD').type = 'text'
 										document.getElementById('edit').style.display = 'none'
 										document.getElementById('save').style.display = 'inline-block'
 									})
 									document.getElementById('save').addEventListener('click', () => {
 										setTimeout(() => {
-											document.getElementById('EMAIL').disabled = true
-											document.getElementById('PHONE').disabled = true
-											document.getElementById('PASSWORD').disabled = true
-											document.getElementById('PASSWORD').type = 'password'
+											document.getElementById('email').disabled = true
+											document.getElementById('phone_number').disabled = true
 											document.getElementById('edit').style.display = 'inline-block'
 											document.getElementById('save').style.display = 'none'
 										}, 0)
