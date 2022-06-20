@@ -10,11 +10,11 @@ RUN pip install --prefix=/install -r /requirements.txt
 FROM base
 COPY --from=builder /install /usr/local
 COPY . /home/storage/web
-RUN apk --no-cache add libpq libpq libjpeg
+RUN apk --no-cache add libpq libjpeg
 WORKDIR /home/storage/web
 
-COPY ./entrypoint /entrypoint
-RUN sed -i 's/\r$//g' /entrypoint
-RUN chmod +x /entrypoint
+COPY ./entrypoint.sh /entrypoint.sh
+RUN sed -i 's/\r$//g' /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-ENTRYPOINT ["/entrypoint"]
+ENTRYPOINT ["/entrypoint.sh"]
