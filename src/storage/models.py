@@ -281,6 +281,7 @@ class Delivery(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Курьер",
         related_name="courier",
+        blank=True,
         null=True,
     )
     delivery_status = models.CharField(
@@ -290,15 +291,22 @@ class Delivery(models.Model):
         default="Unprocessed",
         db_index=True,
     )
-    comment = models.TextField("Комментарий", blank=True, null=True)
+    comment = models.TextField(
+        "Комментарий",
+        blank=True, 
+        null=True
+    )
     registered_at = models.DateTimeField(
-        "Время назначения курьера", default=now, db_index=True
+        "Время регистрации заказа", default=now, db_index=True
+    )
+    processed_at = models.DateTimeField(
+        "Время назначения курьера", blank=True, null=True, db_index=True
     )
     delivered_at = models.DateTimeField(
         "Время доставки груза", blank=True, null=True, db_index=True
     )
     pickup_address = models.CharField(
-        "Адрес забора груза", max_length=150, db_index=True
+        "Адрес забора груза", max_length=200, db_index=True
     )
 
     class Meta:
