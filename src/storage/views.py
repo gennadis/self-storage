@@ -340,5 +340,48 @@ def display_overdue_leases(request):
     )
 
 
+@user_passes_test(is_manager, login_url="account_login")
+def delivery_management(request):
+    delivery_orders = (
+        Delivery.objects.prefetch_related("lease", "courier")
+        .order_by("-registered_at")
+    )
+    delivery_orders_serialized = dict()
+    delivery_orders_serialized["Unprocessed"] = []
+    delivery_orders_serialized["In_process"] = []
+    delivery_orders_serialized["Completed"] = []
+
+    for order in delivery_orders:
+        warehouse_address = (
+            f"{order.lease.box.warehouse.city}, {order.lease.box.warehouse.address}"
+        )
+        order_serialized = {
+            "id": order.id,            
+            "delivery_status": order.get_delivery_status_display(),
+            "warehouse_address": warehouse_address,
+            "box_floor": order.lease.box.floor,
+            "box_code": order.lease.box.code,
+            "client_email": order.lease.user.email,
+            "client_phone": order.lease.user.phone_number,
+            "client_firstname": order.lease.user.first_name,
+            "pickup_address": order.pickup_address,
+            "registered_at": order.registered_at
+        }
+        if (order.delivery_status == "In_process" 
+            or order.delivery_status == "Completed"):
+            order_serialized["courier_firstname"] = order.courier.first_name
+            order_serialized["courier_phone"] = order.courier.phone_number
+            order_serialized["processed_at"] = order.processed_at
+            order_serialized["comment"] = order.comment
+        if order.delivery_status == "Completed":
+            order_serialized["delivered_at"] = order.delivered_at
+        
+        delivery_orders_serialized[order.delivery_status].append(order_serialized)
+
+    return render(request, "delivery_management.html", context={
+        "delivery_orders": delivery_orders_serialized,
+    })
+
+
 def contacts(request):
     return render(request, template_name="contacts.html")

@@ -1,5 +1,7 @@
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 from django.utils.html import format_html
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from storage.models import (
     AdvertisingCompany,
@@ -58,7 +60,71 @@ class LinkAdmin(admin.ModelAdmin):
 
 @admin.register(Delivery)
 class DeliveryAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        "delivery_status",
+        "get_client_phone",
+        "pickup_address",
+        "get_warehouse_address",
+        "get_box_code",
+        "courier",
+        "registered_at",
+        "processed_at",
+        "delivered_at",
+    )
+    fields = (
+        "lease",
+        "courier",
+        "delivery_status",
+        "pickup_address",
+        "get_warehouse_address",
+        "comment",
+        "registered_at",
+        "processed_at",
+        "delivered_at",
+    )
+
+    list_filter = ("delivery_status",)
+
+    ordering = (
+        "registered_at",
+        "processed_at",
+        "delivered_at",
+    )
+
+    readonly_fields = (
+        "get_warehouse_address",
+    )
+
+    @admin.display(description="Адрес склада")
+    def get_warehouse_address(self, obj):
+        return (
+            f"{obj.lease.box.warehouse.city},"
+            f"{obj.lease.box.warehouse.address}"
+            f" - {obj.lease.box.floor} эт."
+        )
+
+    @admin.display(description="Телефон клиента")
+    def get_client_phone(self, obj):
+        return (
+            f"{obj.lease.user.phone_number}"
+        )
+
+    @admin.display(description="Код Бокса")
+    def get_box_code(self, obj):
+        return (
+            f"{obj.lease.box.code}"
+        )
+    
+    def response_post_save_change(self, request, obj):
+        # Redirect back if request comes from manager view
+
+        generic_response = super().response_post_save_change(request, obj)
+        redirect_url = request.GET.get('next')
+        return (
+            HttpResponseRedirect(redirect_url)
+            if redirect_url and url_has_allowed_host_and_scheme(redirect_url, None)
+            else generic_response
+        )
 
 
 @admin.register(Lease)
