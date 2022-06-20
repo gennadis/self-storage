@@ -23,17 +23,14 @@ Selfstorage | Прием платежа с помощью виджета ЮKassa
 </main>
 <script src="https://yookassa.ru/checkout-widget/v1/checkout-widget.js"></script>
 <script>
-    //Инициализация виджета. Все параметры обязательные.
     const checkout = new window.YooMoneyCheckoutWidget({
-        confirmation_token: '{{ confirmation_token }}', //Токен, который перед проведением оплаты нужно получить от ЮKassa
-        return_url: "{{ return_url }}", //Ссылка на страницу завершения оплаты, это может быть любая ваша страница
+        confirmation_token: '{{ confirmation_token }}',
+        return_url: "{{ return_url }}", 
 
         error_callback: function (error) {
             console.log(error)
         }
     });
-
-    //Отображение платежной формы в контейнере
     checkout.render('payment-form');
 </script>
 {% endblock %}
