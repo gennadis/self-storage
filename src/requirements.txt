@@ -1,5 +1,5 @@
 Django==4.0.5
-python-dotenv==0.20.0
+django-environ==0.9.0
 django-phonenumber-field==6.2.0
 phonenumbers==8.12.50
 Pillow==9.1.1
