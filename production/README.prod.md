@@ -5,7 +5,11 @@
 git clone https://github.com/gennadis/self-storage.git
 ```
 
-2. Переименуйте файл `.env.dev.example` на `.env.dev` и заполните его по образцу
+2. Скопируйте файл `.env.dev.example` и заполните его по образцу
+```sh
+cp .env.prod.example src/selfstorage/.env && nano src/selfstorage/.env
+```
+
 ```sh
 SECRET_KEY=<secret_key>
 DEBUG=False
@@ -16,6 +20,9 @@ CSRF_TRUSTED_ORIGINS=https://example.com,https://www.example.com
 
 YOOKASSA_API_KEY=<yookassa_api_key>
 YOOKASSA_SHOP_ID=<yookassa_shop_id>
+
+# set True for SQLite or False for PostgreSQL
+USE_SQLITE=False
 
 POSTGRES_USER=<storage_user>
 POSTGRES_PASSWORD=<storage_password>
