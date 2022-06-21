@@ -130,19 +130,6 @@ def avaliable_boxes(request, warehouse_id):
     return JsonResponse({"boxes": boxes_serialized})
 
 
-@transaction.atomic
-def create_lease_qr_code(lease):
-    random_number = random.randint(-sys.maxsize, sys.maxsize)
-    qr_code_info = f"{lease.box.code}{lease.expires_on}{random_number}"
-    qr_code = qrcode.make(hash(qr_code_info))
-    blob = BytesIO()
-    qr_code.save(blob, "JPEG")
-    lease.qr_code.save(f"{qr_code_info}.jpg", File(blob))
-    lease.save()
-
-    return lease.qr_code.url
-
-
 def show_lease(request, lease_id):
     if not request.user.is_authenticated:
         return redirect("account_login")
@@ -201,11 +188,20 @@ def get_qr_code(request, lease_id):
     except Lease.DoesNotExist:
         raise Http404("Lease does not exist")
 
-    if lease.user != request.user:
+    if (lease.user != request.user
+        or lease.status not in [Lease.Status.PAID, Lease.Status.OVERDUE]):
         raise Http404("User cannot access this data")
 
-    qr_url = create_lease_qr_code(lease)
-    return JsonResponse({"qr_url": qr_url})
+    with transaction.atomic():
+        random_number = random.randint(-sys.maxsize, sys.maxsize)
+        qr_code_info = f"{lease.box.code}{lease.expires_on}{random_number}"
+        qr_code = qrcode.make(hash(qr_code_info))
+        blob = BytesIO()
+        qr_code.save(blob, "JPEG")
+        lease.qr_code.save(f"{qr_code_info}.jpg", File(blob))
+        lease.save()
+
+    return JsonResponse({"qr_url": lease.qr_code.url})
 
 
 def cancel_lease(request, lease_id):
