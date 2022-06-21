@@ -12,7 +12,7 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from src.storage.forms import CreateLeaseForm, RequestDeliveryForm
+from storage.forms import CreateLeaseForm, RequestDeliveryForm
 from storage.models import AdvertisingCompany, Box, Delivery, Lease, Warehouse
 
 
@@ -46,7 +46,9 @@ def index(request):
     # Acquire least occupied warehouse
 
     warehouses_with_boxes = Box.objects.get_warehouses_with_boxes()
-    free_warehouse_id = sorted(warehouses_with_boxes.items(), key=lambda kv: len(kv[1]), reverse=True)[0][0]
+    free_warehouse_id = sorted(
+        warehouses_with_boxes.items(), key=lambda kv: len(kv[1]), reverse=True
+    )[0][0]
 
     free_warehouse = (
         Warehouse.objects.prefetch_related("images")
@@ -65,7 +67,10 @@ def index(request):
         "image": free_warehouse.images.all().first().image_file.url,
     }
 
-    return render(request, "index.html", context={
+    return render(
+        request,
+        "index.html",
+        context={
             "lowest_rate": lowest_rate,
             "free_warehouse": free_warehouse_serialized,
         },
@@ -98,8 +103,9 @@ def boxes(request):
             "temperature": warehouse.temperature,
             "ceiling_height": warehouse.ceiling_height / 100,
             "images": [image.image_file.url for image in warehouse.images.all()],
-        } 
-        for warehouse in warehouses if warehouses_with_boxes[warehouse.id]
+        }
+        for warehouse in warehouses
+        if warehouses_with_boxes[warehouse.id]
     ]
 
     return render(request, "boxes.html", context={"warehouses": warehouses_serialized})
@@ -131,9 +137,8 @@ def show_lease(request, lease_id):
         return redirect("account_login")
 
     try:
-        lease = (
-            Lease.objects.select_related("user", "box", "box__warehouse")
-            .get(id=int(lease_id))
+        lease = Lease.objects.select_related("user", "box", "box__warehouse").get(
+            id=int(lease_id)
         )
     except Lease.DoesNotExist:
         raise Http404("Lease does not exist")
@@ -145,9 +150,7 @@ def show_lease(request, lease_id):
         lease=lease, delivery_status__in=["Completed", "In_process"]
     ).exists()
 
-    warehouse_address = (
-        f"{lease.box.warehouse.city}, {lease.box.warehouse.address}"
-    )
+    warehouse_address = f"{lease.box.warehouse.city}, {lease.box.warehouse.address}"
 
     lease_duration = relativedelta(lease.expires_on, lease.created_on).months
 
@@ -184,8 +187,10 @@ def get_qr_code(request, lease_id):
     except Lease.DoesNotExist:
         raise Http404("Lease does not exist")
 
-    if (lease.user != request.user
-        or lease.status not in [Lease.Status.PAID, Lease.Status.OVERDUE]):
+    if lease.user != request.user or lease.status not in [
+        Lease.Status.PAID,
+        Lease.Status.OVERDUE,
+    ]:
         raise Http404("User cannot access this data")
 
     with transaction.atomic():
@@ -224,7 +229,7 @@ def create_lease(request):
     create_lease_form = CreateLeaseForm(request.POST)
     if not create_lease_form.is_valid():
         raise Http404("Request data is invalid")
-    
+
     box_code = create_lease_form.cleaned_data["code"]
     lease_duration = create_lease_form.cleaned_data["duration"]
 
@@ -286,7 +291,7 @@ def request_delivery(request):
                 "message": "Что-то пошло не так. Повторите запрос позже.",
             }
         )
-    
+
     lease_id = request_delivery_form.cleaned_data["lease_id"]
     address = request_delivery_form.cleaned_data["address"]
 
@@ -349,9 +354,8 @@ def display_overdue_leases(request):
 
 @user_passes_test(is_manager, login_url="account_login")
 def delivery_management(request):
-    delivery_orders = (
-        Delivery.objects.prefetch_related("lease", "courier")
-        .order_by("-registered_at")
+    delivery_orders = Delivery.objects.prefetch_related("lease", "courier").order_by(
+        "-registered_at"
     )
     delivery_orders_serialized = dict()
     delivery_orders_serialized["Unprocessed"] = []
@@ -363,7 +367,7 @@ def delivery_management(request):
             f"{order.lease.box.warehouse.city}, {order.lease.box.warehouse.address}"
         )
         order_serialized = {
-            "id": order.id,            
+            "id": order.id,
             "delivery_status": order.get_delivery_status_display(),
             "warehouse_address": warehouse_address,
             "box_floor": order.lease.box.floor,
@@ -372,22 +376,28 @@ def delivery_management(request):
             "client_phone": order.lease.user.phone_number,
             "client_firstname": order.lease.user.first_name,
             "pickup_address": order.pickup_address,
-            "registered_at": order.registered_at
+            "registered_at": order.registered_at,
         }
-        if (order.delivery_status == "In_process" 
-            or order.delivery_status == "Completed"):
+        if (
+            order.delivery_status == "In_process"
+            or order.delivery_status == "Completed"
+        ):
             order_serialized["courier_firstname"] = order.courier.first_name
             order_serialized["courier_phone"] = order.courier.phone_number
             order_serialized["processed_at"] = order.processed_at
             order_serialized["comment"] = order.comment
         if order.delivery_status == "Completed":
             order_serialized["delivered_at"] = order.delivered_at
-        
+
         delivery_orders_serialized[order.delivery_status].append(order_serialized)
 
-    return render(request, "delivery_management.html", context={
-        "delivery_orders": delivery_orders_serialized,
-    })
+    return render(
+        request,
+        "delivery_management.html",
+        context={
+            "delivery_orders": delivery_orders_serialized,
+        },
+    )
 
 
 def contacts(request):
