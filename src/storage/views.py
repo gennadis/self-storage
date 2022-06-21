@@ -15,7 +15,7 @@ from django.utils import timezone
 from django.contrib.auth.decorators import user_passes_test
 from django.db.models import F, Func, IntegerField
 from django.db.models.functions import Now
-from src.storage.forms import CreateLeaseForm
+from src.storage.forms import CreateLeaseForm, RequestDeliveryForm
 
 
 from storage.models import AdvertisingCompany, Box, Delivery, Lease, Warehouse
@@ -283,8 +283,17 @@ def request_delivery(request):
     if not request.user.is_authenticated:
         return redirect("account_login")
 
-    lease_id = int(request.POST.get("lease_id"))
-    address = request.POST.get("address")
+    request_delivery_form = RequestDeliveryForm(request.POST)
+    if not request_delivery_form.is_valid():
+        return JsonResponse(
+            {
+                "status": "validation_error",
+                "message": "Что-то пошло не так. Повторите запрос позже.",
+            }
+        )
+    
+    lease_id = request_delivery_form.cleaned_data["lease_id"]
+    address = request_delivery_form.cleaned_data["address"]
 
     try:
         lease = Lease.objects.select_related("user").get(id=int(lease_id))
