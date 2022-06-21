@@ -13,7 +13,7 @@ services:
     volumes:
       - ./src:/home/storage/web
     env_file:
-      - ./.env.dev
+      - ./src/selfstorage/.env
     depends_on:
       - db
       - redis
@@ -27,7 +27,7 @@ services:
     volumes:
       - postgres_volume:/var/lib/postgresql/data/
     env_file:
-      - ./.env.dev
+      - ./src/selfstorage/.env
 
   redis:
     container_name: storage-redis
@@ -44,7 +44,7 @@ services:
     volumes:
       - ./src:/home/storage/web
     env_file:
-      - ./.env.dev
+      - ./src/selfstorage/.env
     depends_on:
       - redis
 
@@ -56,7 +56,7 @@ services:
     volumes:
       - ./src:/home/storage/web
     env_file:
-      - ./.env.dev
+      - ./src/selfstorage/.env
     depends_on:
       - redis
 

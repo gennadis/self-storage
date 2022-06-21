@@ -14,7 +14,8 @@ Selfstorage | Boxes
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body d-flex justify-content-center align-items-center">
-        <form method="get" action="/lease" class="d-flex flex-column align-items-center" style="max-width: 420px">
+        <form method="post" action="{% url 'create_lease' %}" class="d-flex flex-column align-items-center" style="max-width: 420px">
+          {% csrf_token %}
           <h1 class="modal-title text-center fw-bold mb-4">Оформление аренды</h1>
 
           <div class="row">

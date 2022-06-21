@@ -3,30 +3,22 @@ import socket
 from pathlib import Path
 
 import rollbar
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# DOCKERIZED DEV
-DOCKERIZED = os.getenv("DOCKERIZED", default="False").lower() == "true"
+from environ import Env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
+env = Env()
+Env.read_env()
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", default="False").lower() == "true"
+DEBUG = env.bool("DEBUG", default="False")
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", default="127.0.0.1").split(" ")
-CSRF_TRUSTED_ORIGINS = os.getenv(
-    "CSRF_TRUSTED_ORIGINS", default="http://localhost"
-).split(" ")
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1"])
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["http://localhost"])
 
 
 # Application definition
@@ -89,26 +81,22 @@ WSGI_APPLICATION = "selfstorage.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+USE_SQLITE = env.bool("USE_SQLITE")  # for docker-less development only
 DATABASES = {
-    "default": {
+    "sqlite": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
-    }
+    },
+    "postgres": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": env.str("POSTGRES_DB"),
+        "USER": env.str("POSTGRES_USER"),
+        "PASSWORD": env.str("POSTGRES_PASSWORD"),
+        "HOST": "db",
+        "PORT": 5432,
+    },
 }
-
-if DOCKERIZED:  # FIXME временный костыль для дев разработки в докере
-    DATABASES = {
-        # "prod": dj_database_url.config(default=os.getenv("DATABASE_URL")),
-        "default": {
-            "ENGINE": os.getenv("POSTGRES_ENGINE"),
-            "NAME": os.getenv("POSTGRES_DB"),
-            "USER": os.getenv("POSTGRES_USER"),
-            "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-            "HOST": os.getenv("POSTGRES_HOST"),
-            "PORT": os.getenv("POSTGRES_PORT"),
-        },
-    }
-
+DATABASES["default"] = DATABASES["sqlite" if USE_SQLITE else "postgres"]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -142,7 +130,7 @@ USE_TZ = True
 
 # Serving Media content
 
-MEDIA_ROOT = os.path.join(BASE_DIR, os.getenv("MEDIA_ROOT", default="media"))
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
 
@@ -162,8 +150,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.CustomUser"
 
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-BASE_URL = os.getenv("BASE_URL", default="http://127.0.0.1:8000")
+BASE_URL = env.str("BASE_URL", default="http://127.0.0.1:8000")
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
@@ -192,8 +181,8 @@ LOGIN_REDIRECT_URL = "index"
 ACCOUNT_LOGOUT_REDIRECT_URL = "index"
 
 # YOOKASSA
-YOOKASSA_API_KEY = os.getenv("YOOKASSA_API_KEY")
-YOOKASSA_SHOP_ID = os.getenv("YOOKASSA_SHOP_ID")
+YOOKASSA_API_KEY = env.str("YOOKASSA_API_KEY")
+YOOKASSA_SHOP_ID = env.str("YOOKASSA_SHOP_ID")
 
 # Django debug toolbar settings for Docker
 if DEBUG:
@@ -213,14 +202,8 @@ CELERY_TIMEZONE = "Europe/Moscow"
 
 # Email settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", default="True").lower() == "true"
-EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-EMAIL_PORT = os.getenv("EMAIL_PORT")
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+EMAIL_URL = env.str("EMAIL_URL")
 
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Rollbar
 ROLLBAR_TOKEN = os.getenv("ROLLBAR_TOKEN", default="")

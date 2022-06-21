@@ -5,35 +5,36 @@
 git clone https://github.com/gennadis/self-storage.git
 ```
 
-2. Переименуйте файл `.env.dev.example` на `.env.dev` и заполните его по образцу
+2. Скопируйте файл `.env.prod.example` и заполните его по образцу
+```sh
+cp production/.env.prod.example src/selfstorage/.env
+
+cp .env.prod.example src/selfstorage/.env && nano src/selfstorage/.env
+```
+
 ```sh
 SECRET_KEY=<secret_key>
 DEBUG=False
-ALLOWED_HOSTS=<example.com www.example.com>
+
+BASE_URL=https://example.com
+ALLOWED_HOSTS=example.com,www.example.com
+CSRF_TRUSTED_ORIGINS=https://example.com,https://www.example.com
 
 YOOKASSA_API_KEY=<yookassa_api_key>
 YOOKASSA_SHOP_ID=<yookassa_shop_id>
 
+# set True for SQLite or False for PostgreSQL
+USE_SQLITE=False
+
 POSTGRES_USER=<storage_user>
 POSTGRES_PASSWORD=<storage_password>
 POSTGRES_DB=<storage_db>
-POSTGRES_ENGINE=django.db.backends.postgresql
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
 
-EMAIL_USE_TLS=True
-EMAIL_HOST=smtp.gmail.com
-EMAIL_HOST_USER=<your_email>
-EMAIL_HOST_PASSWORD=<your_password>
-EMAIL_PORT=587
-DEFAULT_FROM_EMAIL=<your_email>
-
-DOCKERIZED=True
-
-BASE_URL=https://example.com
-CSRF_TRUSTED_ORIGINS=https://example.com
+EMAIL_URL=smtp+tls://user@gmail.com:passw0rd@smtp.gmail.com:587
+DEFAULT_FROM_EMAIL=user@gmail.com
 
 ROLLBAR_TOKEN=<rollbar_token>
+
 ```
 
 3. Запустите скрипт для автоматического деплоя
@@ -46,7 +47,7 @@ ROLLBAR_TOKEN=<rollbar_token>
 ./deploy.sh
 ```
 
-4. В файле `production/data/ngin/conf.d/nginx.conf` в отмеченных комментариями местах замените доменное имя 
+4. В файле `production/data/ngin/conf.d/nginx.conf` в отмеченных комментариями местах замените example.com на свое доменное имя 
 
 5. Запустите скрипт инициализации `letsencrypt`, который:
 - загрузит SSL сертификаты от Let’s Encrypt
@@ -57,21 +58,21 @@ sudo ./init-letsencrypt.sh
 
 6. Накатите миграции
 ```sh
-docker compose -f docker-compose.prod.yaml exec backend python manage.py migrate
+docker compose -f docker-compose.prod.yaml exec django python manage.py migrate
 ```
 
 7. Запустите команды для наполнения БД тестовыми данными
 ```sh
-python manage.py load_warehouses https://raw.githubusercontent.com/aosothra/remote_content/master/self_storage/warehouses.json
+docker compose -f docker-compose.prod.yaml exec django python manage.py load_warehouses https://raw.githubusercontent.com/aosothra/remote_content/master/self_storage/warehouses.json
 ```
 
 ```
-python manage.py generate_boxes
+docker compose -f docker-compose.prod.yaml exec django python manage.py generate_boxes
 ```
 
 8. Создайте суперпользователя
 ```
-docker compose -f docker-compose.prod.yaml exec backend python manage.py createsuperuser
+docker compose -f docker-compose.prod.yaml exec django python manage.py createsuperuser
 ```
 
 9. Запустите сервер и откройте сайт в браузере по адресу [https://example.com](https://example.com)

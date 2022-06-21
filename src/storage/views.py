@@ -1,22 +1,18 @@
 import random
 import sys
-from collections import defaultdict
 from io import BytesIO
-from django.forms import DateField
 
 import qrcode
 from dateutil.relativedelta import relativedelta
+from django.contrib.auth.decorators import user_passes_test
 from django.core.files.base import File
 from django.db import transaction
-from django.db.models import Count, Exists, OuterRef, Prefetch
+from django.db.models import Count, Prefetch
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-from django.contrib.auth.decorators import user_passes_test
-from django.db.models import F, Func, IntegerField
-from django.db.models.functions import Now
 
-
+from storage.forms import CreateLeaseForm, RequestDeliveryForm
 from storage.models import AdvertisingCompany, Box, Delivery, Lease, Warehouse
 
 
@@ -50,8 +46,10 @@ def index(request):
     # Acquire least occupied warehouse
 
     warehouses_with_boxes = Box.objects.get_warehouses_with_boxes()
-    free_warehouse_id = sorted(warehouses_with_boxes.items(), key=lambda kv: len(kv[1]), reverse=True)[0][0]
-    
+    free_warehouse_id = sorted(
+        warehouses_with_boxes.items(), key=lambda kv: len(kv[1]), reverse=True
+    )[0][0]
+
     free_warehouse = (
         Warehouse.objects.prefetch_related("images")
         .annotate(boxes_total=Count("boxes", distinct=True))
@@ -91,28 +89,24 @@ def boxes(request):
         .annotate(boxes_total=Count("boxes", distinct=True))
         .all()
     )
-    warehouses_serialized = []
-    for warehouse in warehouses:
-        # Do not display warehouses that have no boxes avaliable
-        if not warehouses_with_boxes[warehouse.id]:
-            continue
-
-        warehouses_serialized.append(
-            {
-                "id": warehouse.id,
-                "boxes_total": warehouse.boxes_total,
-                "boxes_avaliable": len(warehouses_with_boxes[warehouse.id]),
-                "starting_rate": warehouses_with_boxes[warehouse.id][0]["rate"],
-                "city": warehouse.city,
-                "address": warehouse.address,
-                "description": warehouse.description,
-                "thumbnail": warehouse.get_thumbnail_display(),
-                "contact_phone": warehouse.contact_phone,
-                "temperature": warehouse.temperature,
-                "ceiling_height": warehouse.ceiling_height / 100,
-                "images": [image.image_file.url for image in warehouse.images.all()],
-            }
-        )
+    warehouses_serialized = [
+        {
+            "id": warehouse.id,
+            "boxes_total": warehouse.boxes_total,
+            "boxes_avaliable": len(warehouses_with_boxes[warehouse.id]),
+            "starting_rate": warehouses_with_boxes[warehouse.id][0]["rate"],
+            "city": warehouse.city,
+            "address": warehouse.address,
+            "description": warehouse.description,
+            "thumbnail": warehouse.get_thumbnail_display(),
+            "contact_phone": warehouse.contact_phone,
+            "temperature": warehouse.temperature,
+            "ceiling_height": warehouse.ceiling_height / 100,
+            "images": [image.image_file.url for image in warehouse.images.all()],
+        }
+        for warehouse in warehouses
+        if warehouses_with_boxes[warehouse.id]
+    ]
 
     return render(request, "boxes.html", context={"warehouses": warehouses_serialized})
 
@@ -138,27 +132,13 @@ def avaliable_boxes(request, warehouse_id):
     return JsonResponse({"boxes": boxes_serialized})
 
 
-@transaction.atomic
-def create_lease_qr_code(lease):
-    random_number = random.randint(-sys.maxsize, sys.maxsize)
-    qr_code_info = f"{lease.box.code}{lease.expires_on}{lease.user.id}{random_number}"
-    qr_code = qrcode.make(hash(qr_code_info))
-    blob = BytesIO()
-    qr_code.save(blob, "JPEG")
-    lease.qr_code.save(f"{qr_code_info}.jpg", File(blob))
-    lease.save()
-
-    return lease.qr_code.url
-
-
 def show_lease(request, lease_id):
     if not request.user.is_authenticated:
         return redirect("account_login")
 
     try:
-        lease = (
-            Lease.objects.select_related("user", "box", "box__warehouse")
-            .get(id=int(lease_id))
+        lease = Lease.objects.select_related("user", "box", "box__warehouse").get(
+            id=int(lease_id)
         )
     except Lease.DoesNotExist:
         raise Http404("Lease does not exist")
@@ -170,9 +150,7 @@ def show_lease(request, lease_id):
         lease=lease, delivery_status__in=["Completed", "In_process"]
     ).exists()
 
-    warehouse_address = (
-        f"{lease.box.warehouse.city}, {lease.box.warehouse.address}"
-    )
+    warehouse_address = f"{lease.box.warehouse.city}, {lease.box.warehouse.address}"
 
     lease_duration = relativedelta(lease.expires_on, lease.created_on).months
 
@@ -209,11 +187,22 @@ def get_qr_code(request, lease_id):
     except Lease.DoesNotExist:
         raise Http404("Lease does not exist")
 
-    if lease.user != request.user:
+    if lease.user != request.user or lease.status not in [
+        Lease.Status.PAID,
+        Lease.Status.OVERDUE,
+    ]:
         raise Http404("User cannot access this data")
 
-    qr_url = create_lease_qr_code(lease)
-    return JsonResponse({"qr_url": qr_url})
+    with transaction.atomic():
+        random_number = random.randint(-sys.maxsize, sys.maxsize)
+        qr_code_info = f"{lease.box.code}{lease.expires_on}{random_number}"
+        qr_code = qrcode.make(hash(qr_code_info))
+        blob = BytesIO()
+        qr_code.save(blob, "JPEG")
+        lease.qr_code.save(f"{qr_code_info}.jpg", File(blob))
+        lease.save()
+
+    return JsonResponse({"qr_url": lease.qr_code.url})
 
 
 def cancel_lease(request, lease_id):
@@ -237,18 +226,22 @@ def create_lease(request):
     if not request.user.is_authenticated:
         return redirect("account_login")
 
-    # FIXME: Implement some validation
-    box_code = request.GET.get("code")
-    lease_duration = int(request.GET.get("duration"))
+    create_lease_form = CreateLeaseForm(request.POST)
+    if not create_lease_form.is_valid():
+        raise Http404("Request data is invalid")
 
-    # FIXME: Catch ObjectDoesNotExist exception.
-    box = Box.objects.prefetch_related(
-        Prefetch("leases", queryset=Lease.objects.active(), to_attr="active_leases")
-    ).get(code=box_code)
+    box_code = create_lease_form.cleaned_data["code"]
+    lease_duration = create_lease_form.cleaned_data["duration"]
+
+    try:
+        box = Box.objects.prefetch_related(
+            Prefetch("leases", queryset=Lease.objects.active(), to_attr="active_leases")
+        ).get(code=box_code)
+    except Box.DoesNotExist:
+        raise Http404("Box does not exist")
 
     if box.active_leases:
-        # FIXME: Display error message if box is not avaliable
-        return redirect(request.META.get("HTTP_REFERER", "/"))
+        raise Http404("Box is already leased")
 
     lease_expiration_date = timezone.now() + relativedelta(months=+lease_duration)
     lease_total_price = box.monthly_rate * lease_duration
@@ -290,8 +283,17 @@ def request_delivery(request):
     if not request.user.is_authenticated:
         return redirect("account_login")
 
-    lease_id = int(request.POST.get("lease_id"))
-    address = request.POST.get("address")
+    request_delivery_form = RequestDeliveryForm(request.POST)
+    if not request_delivery_form.is_valid():
+        return JsonResponse(
+            {
+                "status": "validation_error",
+                "message": "Что-то пошло не так. Повторите запрос позже.",
+            }
+        )
+
+    lease_id = request_delivery_form.cleaned_data["lease_id"]
+    address = request_delivery_form.cleaned_data["address"]
 
     try:
         lease = Lease.objects.select_related("user").get(id=int(lease_id))
@@ -352,9 +354,8 @@ def display_overdue_leases(request):
 
 @user_passes_test(is_manager, login_url="account_login")
 def delivery_management(request):
-    delivery_orders = (
-        Delivery.objects.prefetch_related("lease", "courier")
-        .order_by("-registered_at")
+    delivery_orders = Delivery.objects.prefetch_related("lease", "courier").order_by(
+        "-registered_at"
     )
     delivery_orders_serialized = dict()
     delivery_orders_serialized["Unprocessed"] = []
@@ -366,7 +367,7 @@ def delivery_management(request):
             f"{order.lease.box.warehouse.city}, {order.lease.box.warehouse.address}"
         )
         order_serialized = {
-            "id": order.id,            
+            "id": order.id,
             "delivery_status": order.get_delivery_status_display(),
             "warehouse_address": warehouse_address,
             "box_floor": order.lease.box.floor,
@@ -375,22 +376,28 @@ def delivery_management(request):
             "client_phone": order.lease.user.phone_number,
             "client_firstname": order.lease.user.first_name,
             "pickup_address": order.pickup_address,
-            "registered_at": order.registered_at
+            "registered_at": order.registered_at,
         }
-        if (order.delivery_status == "In_process" 
-            or order.delivery_status == "Completed"):
+        if (
+            order.delivery_status == "In_process"
+            or order.delivery_status == "Completed"
+        ):
             order_serialized["courier_firstname"] = order.courier.first_name
             order_serialized["courier_phone"] = order.courier.phone_number
             order_serialized["processed_at"] = order.processed_at
             order_serialized["comment"] = order.comment
         if order.delivery_status == "Completed":
             order_serialized["delivered_at"] = order.delivered_at
-        
+
         delivery_orders_serialized[order.delivery_status].append(order_serialized)
 
-    return render(request, "delivery_management.html", context={
-        "delivery_orders": delivery_orders_serialized,
-    })
+    return render(
+        request,
+        "delivery_management.html",
+        context={
+            "delivery_orders": delivery_orders_serialized,
+        },
+    )
 
 
 def contacts(request):

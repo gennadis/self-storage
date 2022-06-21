@@ -28,33 +28,29 @@
 git clone https://github.com/gennadis/self-storage.git
 ```
 
-2. Переименуйте файл `.env.dev.example` на `.env.dev` и заполните его по образцу
+2. Скопируйте файл `.env.dev.example` и заполните его по образцу
 ```sh
+cp .env.dev.example src/selfstorage/.env && nano src/selfstorage/.env
+```
+
+```
 SECRET_KEY=<secret_key>
 DEBUG=True
-ALLOWED_HOSTS=127.0.0.1 localhost
+ALLOWED_HOSTS=127.0.0.1,localhost
 
 YOOKASSA_API_KEY=<yookassa_api_key>
 YOOKASSA_SHOP_ID=<yookassa_shop_id>
 
+# set True for SQLite or False for PostgreSQL
+USE_SQLITE=False
+
 POSTGRES_USER=storage_user
 POSTGRES_PASSWORD=storage_password
 POSTGRES_DB=storage_db
-POSTGRES_ENGINE=django.db.backends.postgresql
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
 
-EMAIL_USE_TLS=True
-EMAIL_HOST=smtp.gmail.com
-EMAIL_HOST_USER=<your_email>
-EMAIL_HOST_PASSWORD=<your_password>
-EMAIL_PORT=587
-DEFAULT_FROM_EMAIL=<your_email>
+EMAIL_URL=smtp+tls://user@gmail.com:passw0rd@smtp.gmail.com:587
+DEFAULT_FROM_EMAIL=user@gmail.com
 
-DOCKERIZED=True
-
-BASE_URL=http://127.0.0.1
-CSRF_TRUSTED_ORIGINS=http://127.0.0.1
 ```
 
 3. Соберите и поднимите проект с помощью `docker compose`
@@ -64,11 +60,11 @@ docker compose -f docker-compose.dev.yaml up -d --build
 
 4. Запустите команды для наполнения БД тестовыми данными
 ```sh
-python manage.py load_warehouses https://raw.githubusercontent.com/aosothra/remote_content/master/self_storage/warehouses.json
+docker compose -f docker-compose.dev.yaml exec django python manage.py load_warehouses https://raw.githubusercontent.com/aosothra/remote_content/master/self_storage/warehouses.json
 ```
 
 ```
-python manage.py generate_boxes
+docker compose -f docker-compose.dev.yaml exec django python manage.py generate_boxes
 ```
 
 5. Создайте суперпользователя
