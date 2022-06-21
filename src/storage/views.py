@@ -1,23 +1,18 @@
 import random
 import sys
-from collections import defaultdict
 from io import BytesIO
-from django.forms import DateField
 
 import qrcode
 from dateutil.relativedelta import relativedelta
+from django.contrib.auth.decorators import user_passes_test
 from django.core.files.base import File
 from django.db import transaction
-from django.db.models import Count, Exists, OuterRef, Prefetch
+from django.db.models import Count, Prefetch
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-from django.contrib.auth.decorators import user_passes_test
-from django.db.models import F, Func, IntegerField
-from django.db.models.functions import Now
+
 from src.storage.forms import CreateLeaseForm, RequestDeliveryForm
-
-
 from storage.models import AdvertisingCompany, Box, Delivery, Lease, Warehouse
 
 
