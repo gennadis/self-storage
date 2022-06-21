@@ -3,16 +3,16 @@ import socket
 from pathlib import Path
 
 import rollbar
-import environ
-
-env = environ.Env()
-
+from environ import Env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = Env()
+Env.read_env()
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str("SECRET_KEY")
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default="False")
@@ -81,15 +81,13 @@ WSGI_APPLICATION = "selfstorage.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+USE_SQLITE = env.bool("USE_SQLITE")  # for docker-less development only
 DATABASES = {
-    "default": {
+    "sqlite": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
-DATABASES = {
-    "default": {
+    },
+    "postgres": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": env.str("POSTGRES_DB"),
         "USER": env.str("POSTGRES_USER"),
@@ -98,7 +96,7 @@ DATABASES = {
         "PORT": 5432,
     },
 }
-
+DATABASES["default"] = DATABASES["sqlite" if USE_SQLITE else "postgres"]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
