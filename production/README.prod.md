@@ -5,8 +5,10 @@
 git clone https://github.com/gennadis/self-storage.git
 ```
 
-2. Скопируйте файл `.env.dev.example` и заполните его по образцу
+2. Скопируйте файл `.env.prod.example` и заполните его по образцу
 ```sh
+cp production/.env.prod.example src/selfstorage/.env
+
 cp .env.prod.example src/selfstorage/.env && nano src/selfstorage/.env
 ```
 
