@@ -51,7 +51,7 @@ def index(request):
 
     warehouses_with_boxes = Box.objects.get_warehouses_with_boxes()
     free_warehouse_id = sorted(warehouses_with_boxes.items(), key=lambda kv: len(kv[1]), reverse=True)[0][0]
-    
+
     free_warehouse = (
         Warehouse.objects.prefetch_related("images")
         .annotate(boxes_total=Count("boxes", distinct=True))
@@ -69,10 +69,7 @@ def index(request):
         "image": free_warehouse.images.all().first().image_file.url,
     }
 
-    return render(
-        request,
-        "index.html",
-        context={
+    return render(request, "index.html", context={
             "lowest_rate": lowest_rate,
             "free_warehouse": free_warehouse_serialized,
         },
@@ -91,28 +88,23 @@ def boxes(request):
         .annotate(boxes_total=Count("boxes", distinct=True))
         .all()
     )
-    warehouses_serialized = []
-    for warehouse in warehouses:
-        # Do not display warehouses that have no boxes avaliable
-        if not warehouses_with_boxes[warehouse.id]:
-            continue
-
-        warehouses_serialized.append(
-            {
-                "id": warehouse.id,
-                "boxes_total": warehouse.boxes_total,
-                "boxes_avaliable": len(warehouses_with_boxes[warehouse.id]),
-                "starting_rate": warehouses_with_boxes[warehouse.id][0]["rate"],
-                "city": warehouse.city,
-                "address": warehouse.address,
-                "description": warehouse.description,
-                "thumbnail": warehouse.get_thumbnail_display(),
-                "contact_phone": warehouse.contact_phone,
-                "temperature": warehouse.temperature,
-                "ceiling_height": warehouse.ceiling_height / 100,
-                "images": [image.image_file.url for image in warehouse.images.all()],
-            }
-        )
+    warehouses_serialized = [
+        {
+            "id": warehouse.id,
+            "boxes_total": warehouse.boxes_total,
+            "boxes_avaliable": len(warehouses_with_boxes[warehouse.id]),
+            "starting_rate": warehouses_with_boxes[warehouse.id][0]["rate"],
+            "city": warehouse.city,
+            "address": warehouse.address,
+            "description": warehouse.description,
+            "thumbnail": warehouse.get_thumbnail_display(),
+            "contact_phone": warehouse.contact_phone,
+            "temperature": warehouse.temperature,
+            "ceiling_height": warehouse.ceiling_height / 100,
+            "images": [image.image_file.url for image in warehouse.images.all()],
+        } 
+        for warehouse in warehouses if warehouses_with_boxes[warehouse.id]
+    ]
 
     return render(request, "boxes.html", context={"warehouses": warehouses_serialized})
 
@@ -141,7 +133,7 @@ def avaliable_boxes(request, warehouse_id):
 @transaction.atomic
 def create_lease_qr_code(lease):
     random_number = random.randint(-sys.maxsize, sys.maxsize)
-    qr_code_info = f"{lease.box.code}{lease.expires_on}{lease.user.id}{random_number}"
+    qr_code_info = f"{lease.box.code}{lease.expires_on}{random_number}"
     qr_code = qrcode.make(hash(qr_code_info))
     blob = BytesIO()
     qr_code.save(blob, "JPEG")
