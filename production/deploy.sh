@@ -13,7 +13,7 @@ docker compose -f docker-compose.prod.yaml exec django python manage.py collects
 echo "Static files collected."
 
 echo '----- 4. Registering deploy on Rollbar...'
-ROLLBAR_TOKEN=$(cat .env.prod | grep ROLLBAR_TOKEN | cut -d=   -f2)
+ROLLBAR_TOKEN=$(cat ../src/selfstorage/.env | grep ROLLBAR_TOKEN | cut -d=   -f2)
 REVISION=$(git rev-parse --short HEAD)
 
 curl -s \
