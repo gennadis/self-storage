@@ -15,6 +15,7 @@ from django.utils import timezone
 from django.contrib.auth.decorators import user_passes_test
 from django.db.models import F, Func, IntegerField
 from django.db.models.functions import Now
+from src.storage.forms import CreateLeaseForm
 
 
 from storage.models import AdvertisingCompany, Box, Delivery, Lease, Warehouse
@@ -225,18 +226,22 @@ def create_lease(request):
     if not request.user.is_authenticated:
         return redirect("account_login")
 
-    # FIXME: Implement some validation
-    box_code = request.GET.get("code")
-    lease_duration = int(request.GET.get("duration"))
+    create_lease_form = CreateLeaseForm(request.POST)
+    if not create_lease_form.is_valid():
+        raise Http404("Request data is invalid")
+    
+    box_code = create_lease_form.cleaned_data["code"]
+    lease_duration = create_lease_form.cleaned_data["duration"]
 
-    # FIXME: Catch ObjectDoesNotExist exception.
-    box = Box.objects.prefetch_related(
-        Prefetch("leases", queryset=Lease.objects.active(), to_attr="active_leases")
-    ).get(code=box_code)
+    try:
+        box = Box.objects.prefetch_related(
+            Prefetch("leases", queryset=Lease.objects.active(), to_attr="active_leases")
+        ).get(code=box_code)
+    except Box.DoesNotExist:
+        raise Http404("Box does not exist")
 
     if box.active_leases:
-        # FIXME: Display error message if box is not avaliable
-        return redirect(request.META.get("HTTP_REFERER", "/"))
+        raise Http404("Box is already leased")
 
     lease_expiration_date = timezone.now() + relativedelta(months=+lease_duration)
     lease_total_price = box.monthly_rate * lease_duration
