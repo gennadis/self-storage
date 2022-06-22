@@ -30,25 +30,27 @@ git clone https://github.com/gennadis/self-storage.git
 
 2. Скопируйте файл `.env.dev.example` и заполните его по образцу
 ```sh
-cp .env.dev.example src/selfstorage/.env && nano src/selfstorage/.env
+cp .env.dev.example .env.dev
 ```
 
 ```
 SECRET_KEY=<secret_key>
 DEBUG=True
-ALLOWED_HOSTS=127.0.0.1,localhost
+ALLOWED_HOSTS=127.0.0.1
 
 YOOKASSA_API_KEY=<yookassa_api_key>
 YOOKASSA_SHOP_ID=<yookassa_shop_id>
-
-# set True for SQLite or False for PostgreSQL
-USE_SQLITE=False
 
 POSTGRES_USER=storage_user
 POSTGRES_PASSWORD=storage_password
 POSTGRES_DB=storage_db
 
 EMAIL_URL=smtp+tls://user@gmail.com:passw0rd@smtp.gmail.com:587
+EMAIL_USE_TLS=True
+EMAIL_HOST=smtp.gmail.com
+EMAIL_HOST_USER=user@gmail.com
+EMAIL_HOST_PASSWORD=passw0rd
+EMAIL_PORT=587
 DEFAULT_FROM_EMAIL=user@gmail.com
 
 ```
