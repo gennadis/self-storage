@@ -14,16 +14,24 @@ Selfstorage | Sing up
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body d-flex justify-content-center align-items-center">
-            <form method="post" enctype="multipart/form-data">
+            <form class="d-flex flex-column align-items-center" style="max-width: 400px" method="post">
                 <h1>Зарегистрироваться</h1>
                 {% csrf_token %}
-                {{ form.as_p }}
+                {% for field in form %}
+                    <div class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey">
+                        {{ field.errors }}
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="help">{{ field.help_text|safe }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
                 {% if redirect_field_value %}
-                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                 {% endif %}
                 <button type="submit"
                     class="btn border-8 py-3 px-5 mt-5 mb-3 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Зарегистрироваться
-                    &raquo;</button>
+                </button>
                 <p>Уже зарегистрированы? <a href="{{ login_url }}">Войдите</a>.</p>
             </form>
         </div>

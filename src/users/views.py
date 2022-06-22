@@ -6,13 +6,17 @@ from users.forms import CustomUserCreationForm, CustomUserChangeForm
 from users.models import CustomUser
 
 
+def signup_confirmation(request):
+    return render(request, "account/signup_confirmation.html")
+
+
 def register(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             custom_user = form.save()
             custom_user.save()
-            return redirect("index")
+            return redirect("signup_confirmation")
     else:
         form = CustomUserCreationForm()
 

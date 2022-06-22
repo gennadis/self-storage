@@ -1,0 +1,24 @@
+{% extends 'base_template.html' %}
+{% load static %}
+
+{% block title %}
+Selfstorage | Sing up confirmation
+{% endblock %}
+
+{% block content %}
+<div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
+    <div class="modal-content">
+        <div class="modal-header border-0">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex justify-content-center align-items-center">
+            <form class="d-flex flex-column align-items-center" style="max-width: 620px; text-align:center;">
+                <h2>Для подтверждения регистрации проверьте вашу почту.</h2>
+                <a class="btn border-8 py-3 px-5 mt-5 mb-3 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange" href="{% url 'account_login' %}">
+                        Войти
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
