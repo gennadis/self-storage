@@ -12,7 +12,7 @@ services:
       - static_volume:/home/storage/web/staticfiles
       - media_volume:/home/storage/web/media
     env_file:
-      - ../src/selfstorage/.env
+      - ./.env.prod
     depends_on:
       - db
       - redis
@@ -26,7 +26,7 @@ services:
     volumes:
       - postgres_volume:/var/lib/postgresql/data/
     env_file:
-      - ../src/selfstorage/.env
+      - ./.env.prod
 
   redis:
     container_name: storage-redis
@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
     command: celery -A selfstorage worker -l info
     env_file:
-      - ../src/selfstorage/.env
+      - ./.env.prod
     depends_on:
       - redis
 
@@ -51,7 +51,7 @@ services:
     restart: unless-stopped
     command: celery -A selfstorage beat -l info
     env_file:
-      - ../src/selfstorage/.env
+      - ./.env.prod
     depends_on:
       - redis
 
