@@ -91,9 +91,7 @@ class DeliveryAdmin(admin.ModelAdmin):
         "delivered_at",
     )
 
-    readonly_fields = (
-        "get_warehouse_address",
-    )
+    readonly_fields = ("get_warehouse_address",)
 
     @admin.display(description="Адрес склада")
     def get_warehouse_address(self, obj):
@@ -105,21 +103,17 @@ class DeliveryAdmin(admin.ModelAdmin):
 
     @admin.display(description="Телефон клиента")
     def get_client_phone(self, obj):
-        return (
-            f"{obj.lease.user.phone_number}"
-        )
+        return f"{obj.lease.user.phone_number}"
 
     @admin.display(description="Код Бокса")
     def get_box_code(self, obj):
-        return (
-            f"{obj.lease.box.code}"
-        )
-    
+        return f"{obj.lease.box.code}"
+
     def response_post_save_change(self, request, obj):
         # Redirect back if request comes from manager view
 
         generic_response = super().response_post_save_change(request, obj)
-        redirect_url = request.GET.get('next')
+        redirect_url = request.GET.get("next")
         return (
             HttpResponseRedirect(redirect_url)
             if redirect_url and url_has_allowed_host_and_scheme(redirect_url, None)

@@ -2,7 +2,7 @@ import phonenumbers
 from django.shortcuts import redirect, render
 
 from storage.models import Lease
-from users.forms import CustomUserCreationForm, CustomUserChangeForm
+from users.forms import CustomUserChangeForm, CustomUserCreationForm
 from users.models import CustomUser
 
 
@@ -59,11 +59,13 @@ def profile(request):
 
     user = CustomUser.objects.get(email=request.user.email)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         changed_form = CustomUserChangeForm(request.POST)
         if changed_form.is_valid():
-            user.email = changed_form.cleaned_data.get('email')
-            phone_number = phonenumbers.parse(changed_form.data.get('phone_number'), "RU")
+            user.email = changed_form.cleaned_data.get("email")
+            phone_number = phonenumbers.parse(
+                changed_form.data.get("phone_number"), "RU"
+            )
 
             if not phonenumbers.is_valid_number(phone_number):
                 context["not_valid_phone_number"] = "Введите верный номер телефона"

@@ -1,15 +1,15 @@
 from collections import defaultdict
+
 from django.contrib import admin
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Exists, F, OuterRef
+from django.db.models import Exists, F, Func, IntegerField, OuterRef
+from django.db.models.functions import Now
 from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 from requests.models import PreparedRequest
-from django.db.models import F, Func, IntegerField
-from django.db.models.functions import Now
 
 from selfstorage.settings import BASE_URL
 from users.models import CustomUser
@@ -291,11 +291,7 @@ class Delivery(models.Model):
         default="Unprocessed",
         db_index=True,
     )
-    comment = models.TextField(
-        "Комментарий",
-        blank=True, 
-        null=True
-    )
+    comment = models.TextField("Комментарий", blank=True, null=True)
     registered_at = models.DateTimeField(
         "Время регистрации заказа", default=now, db_index=True
     )

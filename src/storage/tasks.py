@@ -1,14 +1,13 @@
+from celery.utils.log import get_task_logger
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import mail_admins, send_mail
+from django.core.management import call_command
 from django.db.models import F
 from django.template import Context, Template
 from django.utils import timezone
 from yookassa import Configuration, Payment
-from celery.utils.log import get_task_logger
-from django.core.management import call_command
-
 
 from selfstorage.celery import app
 from selfstorage.settings import YOOKASSA_API_KEY, YOOKASSA_SHOP_ID
